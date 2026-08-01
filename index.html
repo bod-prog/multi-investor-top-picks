@@ -1682,6 +1682,7 @@
     let apiKey = localStorage.getItem(STORAGE_KEY) || '';
     let ws = null;
     let pollTimer = null;
+    let pollGeneration = 0;
     let restQueue = Promise.resolve();
     let ticksReceived = 0;
     let lastResultsTickers = [];
@@ -1697,12 +1698,20 @@
     let analyzerTicker = null;
     /** Timestamps of REST calls (ms) for sliding 60s window */
     let restCallTimes = [];
-    let wsStatus = 'Disconnected'; // Connected | Disconnected | Reconnecting
+    let wsStatus = 'Disconnected'; // Connected | Disconnected | Reconnecting | Error
     let wsReconnectAttempts = 0;
     let wsManualClose = false;
     let wsReconnectTimer = null;
+    let wsGeneration = 0; // ignore stale onclose from previous sockets (critical on mobile)
+    let wsLastMessageAt = 0;
+    let wsHealthTimer = null;
+    let wsLastToastAt = 0;
     const REST_LIMIT = 60;
-    const WS_MAX_RECONNECT = 3;
+    /** Soft cap for toast spam; reconnect itself is unlimited while connected + online */
+    const WS_TOAST_EVERY_N = 5;
+    const WS_BACKOFF_BASE_MS = 1500;
+    const WS_BACKOFF_MAX_MS = 30000;
+    const WS_STALE_MS = 120000; // force reconnect if socket open but silent too long during session
 
     // ─── Helpers ──────────────────────────────────────────────────────
     function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
@@ -1774,16 +1783,31 @@
     function updateWsBar() {
       const text = document.getElementById('bar-ws-text');
       const dot = document.getElementById('bar-ws-dot');
-      if (text) text.textContent = `WS: ${wsStatus}`;
+      const short =
+        wsStatus === 'Connected' ? 'On' :
+        wsStatus === 'Reconnecting' ? '…' :
+        wsStatus === 'Error' ? 'Err' : 'Off';
+      if (text) {
+        const ticks = ticksReceived > 0 ? ` · ${ticksReceived}` : '';
+        text.textContent = `WS: ${short}${wsStatus === 'Connected' ? ticks : ''}`;
+      }
       if (dot) {
         dot.className = 'live-dot';
         if (wsStatus === 'Connected') dot.classList.add('on');
         else if (wsStatus === 'Reconnecting') dot.classList.add('warn');
-        else if (wsStatus === 'Disconnected') { /* grey */ }
-        else dot.classList.add('err');
+        else if (wsStatus === 'Error') dot.classList.add('err');
       }
       const st = document.getElementById('stat-ws');
-      if (st) st.textContent = wsStatus.toLowerCase();
+      if (st) {
+        st.textContent = wsStatus === 'Connected'
+          ? `connected · ${ticksReceived} ticks`
+          : wsStatus.toLowerCase();
+      }
+      const btn = document.getElementById('btn-ws-reconnect');
+      if (btn) {
+        btn.textContent = isWsOpen() ? 'WS OK' : 'Reconnect';
+        btn.classList.toggle('opacity-60', isWsOpen());
+      }
     }
     // refresh REST counter every 5s
     setInterval(updateLimitBar, 5000);
@@ -2036,6 +2060,111 @@
       return true;
     }
 
+    function isWsOpen() {
+      return !!(ws && ws.readyState === WebSocket.OPEN);
+    }
+
+    function wsToast(msg, type = 'warn', force = false) {
+      const now = Date.now();
+      if (!force && now - wsLastToastAt < 8000) return;
+      wsLastToastAt = now;
+      showToast(msg, type, type === 'ok' ? 2200 : 3200);
+    }
+
+    function clearWsReconnectTimer() {
+      if (wsReconnectTimer) {
+        clearTimeout(wsReconnectTimer);
+        wsReconnectTimer = null;
+      }
+    }
+
+    function scheduleWsReconnect(reason) {
+      if (wsManualClose || !connected || !apiKey) return;
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        wsStatus = 'Disconnected';
+        updateWsBar();
+        setLiveBadge('warn', 'Offline · REST when online');
+        return;
+      }
+      // Don't hammer while tab is backgrounded (mobile browsers kill timers/WS)
+      if (typeof document !== 'undefined' && document.hidden) {
+        wsStatus = 'Disconnected';
+        updateWsBar();
+        setLiveBadge('warn', 'WS paused (tab hidden) · REST');
+        return;
+      }
+      clearWsReconnectTimer();
+      wsReconnectAttempts += 1;
+      const exp = Math.min(wsReconnectAttempts - 1, 6);
+      const delay = Math.min(WS_BACKOFF_MAX_MS, WS_BACKOFF_BASE_MS * Math.pow(1.7, exp));
+      wsStatus = 'Reconnecting';
+      updateWsBar();
+      setLiveBadge('warn', `WS reconnect #${wsReconnectAttempts}… · REST active`);
+      if (wsReconnectAttempts === 1 || wsReconnectAttempts % WS_TOAST_EVERY_N === 0) {
+        wsToast(`WS reconnect #${wsReconnectAttempts}${reason ? ` (${reason})` : ''}`, 'warn');
+      }
+      wsReconnectTimer = setTimeout(() => {
+        wsReconnectTimer = null;
+        connectWebSocket({ isReconnect: true });
+      }, delay);
+    }
+
+    function subscribeWsSymbols(socket) {
+      if (!socket || socket.readyState !== WebSocket.OPEN) return;
+      const list = stocks.slice(0, 50);
+      // Stagger subscribes — mobile networks drop burst traffic more often
+      list.forEach((s, i) => {
+        setTimeout(() => {
+          if (socket.readyState !== WebSocket.OPEN) return;
+          try { socket.send(JSON.stringify({ type: 'subscribe', symbol: s.ticker })); } catch (_) {}
+        }, Math.min(i * 25, 800));
+      });
+      if (analyzerTicker && !list.find((s) => s.ticker === analyzerTicker)) {
+        setTimeout(() => {
+          if (socket.readyState !== WebSocket.OPEN) return;
+          try { socket.send(JSON.stringify({ type: 'subscribe', symbol: analyzerTicker })); } catch (_) {}
+        }, 50);
+      }
+      return list.length;
+    }
+
+    function ensureWsConnected(reason) {
+      if (!apiKey || !connected || wsManualClose) return;
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+      if (typeof document !== 'undefined' && document.hidden) return;
+      if (isWsOpen()) return;
+      if (ws && (ws.readyState === WebSocket.CONNECTING)) return;
+      wsReconnectAttempts = 0;
+      clearWsReconnectTimer();
+      connectWebSocket({ isReconnect: true, reason: reason || 'ensure' });
+    }
+
+    function startWsHealthWatch() {
+      if (wsHealthTimer) return;
+      wsHealthTimer = setInterval(() => {
+        if (!connected || !apiKey || wsManualClose) return;
+        if (typeof document !== 'undefined' && document.hidden) return;
+        if (!isWsOpen()) {
+          if (!wsReconnectTimer && !(ws && ws.readyState === WebSocket.CONNECTING)) {
+            ensureWsConnected('health');
+          }
+          return;
+        }
+        // Socket open but no traffic for a long time can mean a zombie connection on mobile
+        // (especially after sleep). Only force if we previously received ticks this session.
+        if (ticksReceived > 0 && wsLastMessageAt > 0 && Date.now() - wsLastMessageAt > WS_STALE_MS) {
+          try { ws.close(); } catch (_) {}
+        }
+      }, 20000);
+    }
+
+    function stopWsHealthWatch() {
+      if (wsHealthTimer) {
+        clearInterval(wsHealthTimer);
+        wsHealthTimer = null;
+      }
+    }
+
     function connectWebSocket(opts = {}) {
       const { isReconnect = false } = opts;
       if (!apiKey) {
@@ -2043,52 +2172,82 @@
         updateWsBar();
         return;
       }
-      // clear pending reconnect if manual connect
-      if (wsReconnectTimer) {
-        clearTimeout(wsReconnectTimer);
-        wsReconnectTimer = null;
-      }
-      disconnectWebSocket(false, { silent: true });
-      wsManualClose = false;
-      wsStatus = isReconnect ? 'Reconnecting' : 'Reconnecting';
-      updateWsBar();
-      if (!isReconnect) showGlobalBusy('Connecting to live data...');
-
-      try {
-        ws = new WebSocket(`${FINNHUB_WS}?token=${encodeURIComponent(apiKey)}`);
-      } catch (_) {
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
         wsStatus = 'Disconnected';
         updateWsBar();
-        hideGlobalBusy();
-        showToast('WebSocket failed to open', 'err');
+        setLiveBadge('warn', 'No network · cannot open WS');
         return;
       }
 
-      ws.onopen = () => {
+      clearWsReconnectTimer();
+      // Invalidate previous socket handlers (prevents double-reconnect race on mobile)
+      wsGeneration += 1;
+      const gen = wsGeneration;
+      wsManualClose = false;
+
+      if (ws) {
+        const old = ws;
+        ws = null;
+        try {
+          old.onopen = null;
+          old.onmessage = null;
+          old.onerror = null;
+          old.onclose = null;
+          if (old.readyState === WebSocket.OPEN || old.readyState === WebSocket.CONNECTING) {
+            old.close();
+          }
+        } catch (_) {}
+      }
+
+      wsStatus = 'Reconnecting';
+      updateWsBar();
+      if (!isReconnect) showGlobalBusy('Connecting to live data...');
+
+      let socket;
+      try {
+        // Prefer token as query (Finnhub docs). Some mobile proxies mangle headers; query is reliable.
+        socket = new WebSocket(`${FINNHUB_WS}?token=${encodeURIComponent(apiKey)}`);
+      } catch (_) {
+        wsStatus = 'Error';
+        updateWsBar();
+        hideGlobalBusy();
+        wsToast('WebSocket failed to open', 'err', true);
+        scheduleWsReconnect('open-fail');
+        return;
+      }
+      ws = socket;
+
+      socket.onopen = () => {
+        if (gen !== wsGeneration || ws !== socket) return;
         wsReconnectAttempts = 0;
+        wsLastMessageAt = Date.now();
         wsStatus = 'Connected';
         updateWsBar();
         hideGlobalBusy();
-        const list = stocks.slice(0, 50);
-        list.forEach((s) => {
-          try { ws.send(JSON.stringify({ type: 'subscribe', symbol: s.ticker })); } catch (_) {}
-        });
-        if (analyzerTicker && !list.find((s) => s.ticker === analyzerTicker)) {
-          try { ws.send(JSON.stringify({ type: 'subscribe', symbol: analyzerTicker })); } catch (_) {}
-        }
-        setLiveBadge('on', `Live · WS ${list.length} symbols`);
-        if (isReconnect) showToast('WebSocket reconnected', 'ok');
-        else showToast('Live data connected', 'ok');
+        startWsHealthWatch();
+        const n = subscribeWsSymbols(socket) || 0;
+        setLiveBadge('on', `Live · WS ${n} · ticks in market hours`);
+        document.getElementById('api-status').textContent =
+          `OK · WS connected · ${n} symbols · REST backup every ${POLL_MS / 1000}s`;
+        document.getElementById('api-status').className = 'text-xs text-emerald-400 mt-2';
+        if (isReconnect) wsToast('WebSocket reconnected', 'ok', true);
+        else wsToast('Live data connected (WS + REST)', 'ok', true);
       };
 
-      ws.onmessage = (ev) => {
+      socket.onmessage = (ev) => {
+        if (gen !== wsGeneration || ws !== socket) return;
+        wsLastMessageAt = Date.now();
         try {
           const msg = JSON.parse(ev.data);
-          if (msg.type === 'ping') return;
+          if (msg.type === 'ping') {
+            // Finnhub may send ping; browsers handle WS protocol pings. App-level ping is noop.
+            return;
+          }
           if (msg.type === 'error') {
             wsStatus = 'Error';
             updateWsBar();
-            showToast(msg.msg || 'WebSocket error', 'warn');
+            setLiveBadge('warn', `WS: ${msg.msg || 'error'} · REST active`);
+            wsToast(msg.msg || 'WebSocket error', 'warn', true);
             return;
           }
           if (msg.type === 'trade' && Array.isArray(msg.data)) {
@@ -2141,47 +2300,41 @@
         } catch (_) {}
       };
 
-      ws.onerror = () => {
+      socket.onerror = () => {
+        if (gen !== wsGeneration || ws !== socket) return;
         setLiveBadge('warn', 'WS error · REST polling active');
+        // onclose will schedule reconnect
       };
 
-      ws.onclose = () => {
-        ws = null;
+      socket.onclose = () => {
+        if (gen !== wsGeneration) return; // superseded by newer connect
+        if (ws === socket) ws = null;
         if (wsManualClose) {
           wsStatus = 'Disconnected';
           updateWsBar();
           return;
         }
-        // Auto-reconnect up to 3 times
-        if (connected && apiKey && wsReconnectAttempts < WS_MAX_RECONNECT) {
-          wsReconnectAttempts += 1;
-          wsStatus = 'Reconnecting';
-          updateWsBar();
-          setLiveBadge('warn', `WS reconnect ${wsReconnectAttempts}/${WS_MAX_RECONNECT}…`);
-          showToast(`WebSocket disconnected · reconnect ${wsReconnectAttempts}/${WS_MAX_RECONNECT}`, 'warn');
-          const delay = 1200 * wsReconnectAttempts;
-          wsReconnectTimer = setTimeout(() => connectWebSocket({ isReconnect: true }), delay);
-        } else {
-          wsStatus = 'Disconnected';
-          updateWsBar();
-          if (connected) {
-            setLiveBadge('warn', 'WS closed · REST polling');
-            showToast('WebSocket disconnected', 'warn');
-          }
-        }
+        // Always try again while session is "connected" (mobile drops WS often)
+        scheduleWsReconnect('close');
       };
     }
 
     function disconnectWebSocket(updateUi = true, opts = {}) {
       const { silent = false } = opts;
       wsManualClose = true;
-      if (wsReconnectTimer) {
-        clearTimeout(wsReconnectTimer);
-        wsReconnectTimer = null;
-      }
+      wsGeneration += 1; // invalidate in-flight handlers
+      clearWsReconnectTimer();
+      stopWsHealthWatch();
       if (ws) {
-        try { ws.close(); } catch (_) {}
+        const old = ws;
         ws = null;
+        try {
+          old.onopen = null;
+          old.onmessage = null;
+          old.onerror = null;
+          old.onclose = null;
+          old.close();
+        } catch (_) {}
       }
       if (updateUi) {
         wsStatus = 'Disconnected';
@@ -2192,32 +2345,77 @@
 
     function manualReconnectWs() {
       if (!apiKey) {
-        showToast('Connect Finnhub API key first', 'warn');
+        showToast('Connect Finnhub API key first', 'warn', 2800);
         return;
       }
-      wsReconnectAttempts = 0;
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        showToast('Немає інтернету — увімкни Wi‑Fi / мобільні дані', 'warn', 3500);
+        return;
+      }
       connected = true;
+      wsManualClose = false;
+      wsReconnectAttempts = 0;
+      clearWsReconnectTimer();
       showToast('Reconnecting WebSocket…', 'ok', 2000);
       connectWebSocket({ isReconnect: true });
+      if (!pollTimer) startPolling();
+      startWsHealthWatch();
     }
+
+    // Mobile: resume WS after screen sleep / tab switch / network blip
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) return;
+      if (!connected || !apiKey) return;
+      setTimeout(() => ensureWsConnected('visible'), 300);
+    });
+    window.addEventListener('online', () => {
+      if (!connected || !apiKey) return;
+      wsReconnectAttempts = 0;
+      ensureWsConnected('online');
+    });
+    window.addEventListener('pageshow', (ev) => {
+      if (!connected || !apiKey) return;
+      // bfcache restore on iOS Safari
+      if (ev.persisted) ensureWsConnected('pageshow');
+    });
+    window.addEventListener('focus', () => {
+      if (!connected || !apiKey) return;
+      ensureWsConnected('focus');
+    });
     function startPolling() {
       stopPolling();
-      pollTimer = setInterval(async () => {
+      const gen = pollGeneration;
+      // When WS is down (common on mobile), poll a bit more often so prices still move
+      const tick = async () => {
+        if (gen !== pollGeneration) return;
         if (!apiKey || !connected) return;
+        if (typeof document !== 'undefined' && document.hidden) {
+          pollTimer = setTimeout(tick, 5000);
+          return;
+        }
         for (const s of stocks) {
+          if (gen !== pollGeneration) return;
           try {
             await fetchQuoteFor(s);
             updatePriceInDom(s.ticker, s);
           } catch (_) {}
         }
+        if (gen !== pollGeneration) return;
         renderUniverse();
         updateResultsPricesIfOpen();
         updateAnalyzerLivePrice();
         touchLastUpdate();
-      }, POLL_MS);
+        try {
+          if (window.MITPPages?.onPricesUpdated) window.MITPPages.onPricesUpdated();
+        } catch (_) {}
+        const nextMs = isWsOpen() ? POLL_MS : Math.max(25000, Math.floor(POLL_MS * 0.5));
+        pollTimer = setTimeout(tick, nextMs);
+      };
+      pollTimer = setTimeout(tick, isWsOpen() ? POLL_MS : 8000);
     }
     function stopPolling() {
-      if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+      pollGeneration += 1;
+      if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
     }
 
     function setLiveBadge(mode, text) {
@@ -3213,11 +3411,20 @@
       else if (stock.price > stock.prevClose * 1.003) trend = 'Bullish';
       else if (stock.price < stock.prevClose * 0.997) trend = 'Bearish';
 
-      const entry = support * 1.005;
-      const stopLoss = support * 0.985;
-      const takeProfit = resistance * 0.995;
+      // Build levels with min R:R ~1.5 (avoid tiny reward vs wide stop)
+      const px = stock.price > 0 ? stock.price : (support + resistance) / 2;
+      const range = Math.max(resistance - support, px * 0.01, 0.05);
+      const atrProxy = Math.max(range * 0.35, px * 0.008);
+      let entry = Math.min(Math.max(support + atrProxy * 0.25, px - atrProxy * 0.3), resistance - atrProxy * 0.4);
+      if (!(entry > support && entry < resistance)) entry = px;
+      let stopLoss = Math.max(support - atrProxy * 0.35, entry - atrProxy * 1.1);
+      if (entry - stopLoss < atrProxy * 0.45) stopLoss = entry - atrProxy * 0.6;
+      const risk = Math.max(entry - stopLoss, atrProxy * 0.45);
+      let takeProfit = Math.max(entry + risk * 1.6, Math.min(resistance * 0.998, entry + risk * 2.2));
+      if (takeProfit <= entry) takeProfit = entry + risk * 1.6;
+      const rr = risk > 0 ? (takeProfit - entry) / risk : 0;
 
-      return { support, resistance, trend, entry, stopLoss, takeProfit, fromCandles };
+      return { support, resistance, trend, entry, stopLoss, takeProfit, fromCandles, rr, risk };
     }
 
     async function fetchAnalyzerBundle(ticker) {
@@ -3504,6 +3711,8 @@
 
       // D. Technical
       const trendColor = tech.trend === 'Bullish' ? 'text-emerald-400' : tech.trend === 'Bearish' ? 'text-red-400' : 'text-amber-300';
+      const rrVal = num(tech.rr, 0);
+      const rrColor = rrVal >= 1.5 ? 'text-emerald-300' : rrVal >= 1 ? 'text-amber-300' : 'text-red-300';
       document.getElementById('az-tech').innerHTML = [
         metricHtml('Trend', `<span class="${trendColor}">${escapeHtml(tech.trend)}</span>`),
         metricHtml('Support', escapeHtml(formatPrice(tech.support))),
@@ -3511,10 +3720,11 @@
         metricHtml('Entry zone', escapeHtml(formatPrice(tech.entry))),
         metricHtml('Stop Loss', `<span class="text-red-300">${escapeHtml(formatPrice(tech.stopLoss))}</span>`),
         metricHtml('Take Profit', `<span class="text-emerald-300">${escapeHtml(formatPrice(tech.takeProfit))}</span>`),
+        metricHtml('Risk : Reward', `<span class="${rrColor}">1 : ${rrVal.toFixed(2)}</span>${rrVal < 1.5 ? ' <span class="text-slate-500 text-[10px]">(мін. 1.5 бажано)</span>' : ''}`),
       ].join('') + `
         <p class="col-span-2 sm:col-span-3 text-[11px] text-slate-500 mt-1">
           Джерело рівнів: ${tech.fromCandles ? 'daily candles (~10 днів)' : 'day high/low + prev close (candles недоступні на free / помилка)'}.
-          Це спрощені орієнтири, не торгові сигнали.
+          SL обмежений ~ATR, TP з мін. R:R ≈1.5–1.6. Це орієнтири, не сигнали.
         </p>`;
 
       document.getElementById('az-content').classList.remove('hidden');
@@ -4018,7 +4228,7 @@ ${newsLines}
       } catch (_) {}
     };
   </script>
-  <script src="app-pages.js"></script>
-  <script src="day-trading.js"></script>
+  <script src="app-pages.js?v=20260801c"></script>
+  <script src="day-trading.js?v=20260801c"></script>
 </body>
 </html>

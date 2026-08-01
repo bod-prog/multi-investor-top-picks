@@ -6,6 +6,8 @@
 (function () {
   'use strict';
 
+  /** Bump when trade-plan math changes (shown in UI so cache issues are obvious) */
+  const DT_PLAN_VERSION = 'v3-rr-live';
   const STORAGE_SAVED = 'mitp_dt_saved_v1';
   const STORAGE_LAST = 'mitp_dt_last_v1';
 
@@ -490,9 +492,17 @@
     else if (score <= -45) { verdict = 'Strong Sell'; verdictClass = 'verdict-strong-sell'; }
     else if (score <= -18) { verdict = 'Sell'; verdictClass = 'verdict-sell'; }
 
-    // Trade plan
+    // ── Trade plan (v3) ─────────────────────────────────────────────
+    // CRITICAL: R:R is always measured from CURRENT PRICE (live),
+    // not a fantasy pullback entry. Old bug capped TP at near resistance
+    // while SL sat under far support → 1:0.12. Now:
+    //   risk  = |price − SL|  capped to ~0.6–1.1×ATR
+    //   TP1   = price ± risk×1.5  (minimum)
+    //   TP2   = price ± risk×2.5
+    // Structure only improves targets, never shrinks reward below min R:R.
     const atrApprox = (() => {
       const n = Math.min(14, bars.length - 1);
+      if (n <= 0) return Math.max(price * 0.01, 0.01);
       let sum = 0;
       for (let k = bars.length - n; k < bars.length; k++) {
         const b = bars[k];
@@ -500,36 +510,158 @@
         const tr = Math.max(b.high - b.low, Math.abs(b.high - p.close), Math.abs(b.low - p.close));
         sum += tr;
       }
-      return sum / n;
+      return Math.max(sum / n, price * 0.002, 0.01);
     })();
 
+    const MIN_RR1 = 1.5;
+    const MIN_RR2 = 2.5;
+    const ATR = atrApprox;
     const isLong = score >= 0;
-    let entryLow, entryHigh, sl, tp1, tp2;
+    const ns = levels.nearSupport > 0 ? levels.nearSupport : price - ATR;
+    const nr = levels.nearResistance > 0 ? levels.nearResistance : price + ATR * 2;
+    const farR = levels.resistance > nr ? levels.resistance : nr + ATR * 1.5;
+    const farS = levels.support > 0 && levels.support < ns ? levels.support : ns - ATR * 1.5;
+
+    let entryLow;
+    let entryHigh;
+    let entryRef = price; // R:R anchor = live price
+    let sl;
+    let tp1;
+    let tp2;
+    let risk;
+    let rr = MIN_RR1;
+    let rr2 = MIN_RR2;
+    let planQuality = 'ok';
+    let planQualityNote = '';
+
     if (isLong) {
-      entryLow = Math.max(levels.nearSupport, price - atrApprox * 0.35);
-      entryHigh = price + atrApprox * 0.15;
-      sl = Math.min(levels.nearSupport, price) - atrApprox * 0.6;
-      tp1 = price + atrApprox * 1.0;
-      tp2 = price + atrApprox * 1.8;
-      if (levels.nearResistance > price) {
-        tp1 = Math.min(tp1, levels.nearResistance * 0.998);
-        tp2 = Math.max(tp2, levels.nearResistance * 1.004);
+      // SL under structure OR ATR cap — whichever is CLOSER (smaller risk)
+      const slStruct = Math.min(ns, price) - ATR * 0.25;
+      const slCap = price - ATR * 1.0;
+      const slFloor = price - ATR * 0.55; // min distance so stop isn't noise
+      sl = Math.max(slStruct, slCap); // higher price = tighter stop
+      if (price - sl < ATR * 0.5) sl = slFloor;
+      if (sl >= price) sl = price - ATR * 0.65;
+
+      risk = Math.max(price - sl, ATR * 0.5);
+
+      // Force min R:R from LIVE price (this is what the chip shows)
+      tp1 = price + risk * MIN_RR1;
+      tp2 = price + risk * MIN_RR2;
+      // Structure can only PUSH targets farther, never pull them back under min
+      if (nr > tp1) tp1 = Math.min(nr * 0.998, price + risk * 2.2);
+      if (tp1 < price + risk * MIN_RR1) tp1 = price + risk * MIN_RR1;
+      if (farR > tp2) tp2 = Math.min(farR * 0.997, price + risk * 3.5);
+      if (tp2 <= tp1) tp2 = tp1 + risk * 0.9;
+
+      rr = (tp1 - price) / risk;
+      rr2 = (tp2 - price) / risk;
+      // Hard clamp display (float safety)
+      if (rr < MIN_RR1 - 0.01) {
+        tp1 = price + risk * MIN_RR1;
+        rr = MIN_RR1;
+      }
+      if (rr2 < MIN_RR2 - 0.01) {
+        tp2 = price + risk * MIN_RR2;
+        rr2 = MIN_RR2;
+      }
+
+      entryLow = Math.max(ns + ATR * 0.1, price - ATR * 0.45);
+      entryHigh = price + ATR * 0.08;
+      if (entryLow > entryHigh) {
+        entryLow = price - ATR * 0.2;
+        entryHigh = price;
+      }
+      entryRef = price;
+
+      const roomAtr = (nr - price) / ATR;
+      if (roomAtr < 0.4) {
+        planQuality = 'wait';
+        planQualityNote =
+          `Ціна близько до resistance (${formatPrice(nr)}). Рівні дають R:R 1:${rr.toFixed(2)} від ринку, ` +
+          `але TP1 потребує breakout. Краще ліміт у ${formatPrice(entryLow)}–${formatPrice(price)}.`;
+      } else {
+        planQuality = 'ok';
+        planQualityNote =
+          `Long від ринку ${formatPrice(price)}: ризик ${formatPrice(risk)}, ` +
+          `R:R 1:${rr.toFixed(2)} → TP1 / 1:${rr2.toFixed(2)} → TP2. Мін. 1:1.5 завжди.`;
       }
     } else {
-      entryHigh = Math.min(levels.nearResistance, price + atrApprox * 0.35);
-      entryLow = price - atrApprox * 0.15;
-      sl = Math.max(levels.nearResistance, price) + atrApprox * 0.6;
-      tp1 = price - atrApprox * 1.0;
-      tp2 = price - atrApprox * 1.8;
-      if (levels.nearSupport < price) {
-        tp1 = Math.max(tp1, levels.nearSupport * 1.002);
-        tp2 = Math.min(tp2, levels.nearSupport * 0.996);
+      const slStruct = Math.max(nr, price) + ATR * 0.25;
+      const slCap = price + ATR * 1.0;
+      const slCeil = price + ATR * 0.55;
+      sl = Math.min(slStruct, slCap);
+      if (sl - price < ATR * 0.5) sl = slCeil;
+      if (sl <= price) sl = price + ATR * 0.65;
+
+      risk = Math.max(sl - price, ATR * 0.5);
+
+      tp1 = price - risk * MIN_RR1;
+      tp2 = price - risk * MIN_RR2;
+      if (ns < tp1) tp1 = Math.max(ns * 1.002, price - risk * 2.2);
+      if (tp1 > price - risk * MIN_RR1) tp1 = price - risk * MIN_RR1;
+      if (farS < tp2) tp2 = Math.max(farS * 1.003, price - risk * 3.5);
+      if (tp2 >= tp1) tp2 = tp1 - risk * 0.9;
+
+      rr = (price - tp1) / risk;
+      rr2 = (price - tp2) / risk;
+      if (rr < MIN_RR1 - 0.01) {
+        tp1 = price - risk * MIN_RR1;
+        rr = MIN_RR1;
+      }
+      if (rr2 < MIN_RR2 - 0.01) {
+        tp2 = price - risk * MIN_RR2;
+        rr2 = MIN_RR2;
+      }
+
+      entryHigh = Math.min(nr - ATR * 0.1, price + ATR * 0.45);
+      entryLow = price - ATR * 0.08;
+      if (entryLow > entryHigh) {
+        entryLow = price;
+        entryHigh = price + ATR * 0.2;
+      }
+      entryRef = price;
+
+      const roomAtr = (price - ns) / ATR;
+      if (roomAtr < 0.4) {
+        planQuality = 'wait';
+        planQualityNote =
+          `Ціна близько до support (${formatPrice(ns)}). R:R 1:${rr.toFixed(2)} від ринку ок, ` +
+          `але TP1 = breakdown. Краще short від ${formatPrice(price)}–${formatPrice(entryHigh)}.`;
+      } else {
+        planQuality = 'ok';
+        planQualityNote =
+          `Short від ринку ${formatPrice(price)}: ризик ${formatPrice(risk)}, ` +
+          `R:R 1:${rr.toFixed(2)} / TP2 1:${rr2.toFixed(2)}. Мін. 1:1.5 завжди.`;
       }
     }
 
-    const risk = Math.abs(price - sl) || atrApprox;
-    const reward1 = Math.abs(tp1 - price) || atrApprox;
-    const rr = risk > 0 ? reward1 / risk : 0;
+    // Final invariant — never ship broken R:R
+    risk = Math.abs(price - sl);
+    if (risk < 1e-9) risk = ATR * 0.6;
+    if (isLong) {
+      if (tp1 <= price) tp1 = price + risk * MIN_RR1;
+      if (tp2 <= tp1) tp2 = price + risk * MIN_RR2;
+      rr = (tp1 - price) / risk;
+      rr2 = (tp2 - price) / risk;
+    } else {
+      if (tp1 >= price) tp1 = price - risk * MIN_RR1;
+      if (tp2 >= tp1) tp2 = price - risk * MIN_RR2;
+      rr = (price - tp1) / risk;
+      rr2 = (price - tp2) / risk;
+    }
+    if (rr < MIN_RR1) {
+      // absolute last resort
+      if (isLong) {
+        tp1 = price + risk * MIN_RR1;
+        tp2 = price + risk * MIN_RR2;
+      } else {
+        tp1 = price - risk * MIN_RR1;
+        tp2 = price - risk * MIN_RR2;
+      }
+      rr = MIN_RR1;
+      rr2 = MIN_RR2;
+    }
 
     const dayChg = quote && quote.dp != null ? num(quote.dp) : ((price - prev.close) / prev.close) * 100;
 
@@ -584,30 +716,37 @@
 
     const planExplain = {
       entry: isLong
-        ? `Зона входу ${formatPrice(entryLow)}–${formatPrice(entryHigh)}: біля поточної ціни / ближче до support (${formatPrice(levels.nearSupport)}), щоб не купувати «в стелю» range. Буфер ≈ 0.15–0.35×ATR (${formatPrice(atrApprox)}).`
-        : `Зона входу ${formatPrice(entryLow)}–${formatPrice(entryHigh)}: біля ціни / ближче до resistance (${formatPrice(levels.nearResistance)}) для short, з буфером від ATR.`,
+        ? `R:R рахується від поточної ціни ${formatPrice(price)} (не від «казкового» pullback). Зона ліміту ${formatPrice(entryLow)}–${formatPrice(entryHigh)}. ATR≈${formatPrice(atrApprox)}.`
+        : `R:R від ринку ${formatPrice(price)}. Зона short-ліміту ${formatPrice(entryLow)}–${formatPrice(entryHigh)}. ATR≈${formatPrice(atrApprox)}.`,
       sl: isLong
-        ? `Stop Loss ${formatPrice(sl)}: під support / за ATR×0.6 — якщо рівень пробито, long-теза скасовується.`
-        : `Stop Loss ${formatPrice(sl)}: над resistance / ATR×0.6 — invalidation short.`,
-      tp: `TP1 ${formatPrice(tp1)} ≈ 1×ATR (фіксуємо частину). TP2 ${formatPrice(tp2)} ≈ 1.8×ATR або за resistance/support. R:R до TP1 ≈ 1:${rr.toFixed(2)}.`,
-      risk: `Ризик на угоду: зазвичай 0.25–1% депозиту. Розмір позиції = (ризик $) / |entry − SL|. Не збільшуй size, якщо R:R < 1.`,
+        ? `Stop Loss ${formatPrice(sl)}: ближчий з (під near-support / cap ~1×ATR). Ризик = ${formatPrice(risk)} від live price.`
+        : `Stop Loss ${formatPrice(sl)}: ближчий з (над near-resistance / cap ~1×ATR). Ризик = ${formatPrice(risk)} від live price.`,
+      tp:
+        `TP1 ${formatPrice(tp1)} = live ± risk×${MIN_RR1} (мін. R:R 1:${MIN_RR1}). ` +
+        `TP2 ${formatPrice(tp2)} = live ± risk×${MIN_RR2}. ` +
+        `Факт з ринку: 1:${rr.toFixed(2)} / 1:${rr2.toFixed(2)}. Структуру (S/R) лише відсуває TP далі, ніколи не ріже reward.`,
+      risk: `${planQualityNote} Size = (ризик $) / |price − SL|. Правило: не торгуй, якщо R:R < 1.5.`,
     };
 
     const nextSteps = [];
-    if (verdict === 'Strong Buy' || verdict === 'Buy') {
-      nextSteps.push(`Розглянь ${isLong ? 'long' : 'short'} лише в зоні ${formatPrice(entryLow)}–${formatPrice(entryHigh)}.`);
-      nextSteps.push(`Постав SL ${formatPrice(sl)} одразу; частково виходь на TP1 ${formatPrice(tp1)}.`);
-      nextSteps.push(`Основна стратегія: ${bestStrat.name} — ${bestStrat.how}`);
+    if (planQuality === 'wait') {
+      nextSteps.push(`⏳ Wait / breakout: ${planQualityNote}`);
+      nextSteps.push(`Якщо входиш market — SL ${formatPrice(sl)}, TP1 ${formatPrice(tp1)} (R:R 1:${rr.toFixed(2)} від ${formatPrice(price)}).`);
+      nextSteps.push(`Або ліміт у ${formatPrice(entryLow)}–${formatPrice(entryHigh)} для кращого краю.`);
+    } else if (verdict === 'Strong Buy' || verdict === 'Buy' || verdict === 'Strong Sell' || verdict === 'Sell') {
+      nextSteps.push(`${isLong ? 'Long' : 'Short'} від ${formatPrice(price)} · R:R 1:${rr.toFixed(2)} (мін. 1:1.5).`);
+      nextSteps.push(`SL ${formatPrice(sl)} одразу · частково TP1 ${formatPrice(tp1)} · TP2/trail ${formatPrice(tp2)}.`);
+      nextSteps.push(`Стратегія: ${bestStrat.name} — ${bestStrat.how}`);
     } else if (verdict === 'Neutral') {
-      nextSteps.push('Не форсуй вхід: дочекайся breakout з volume або чіткого pullback до EMA9/VWAP.');
-      nextSteps.push(`Слідкуй за стратегією ${bestStrat.name} (score ${bestStrat.score}) — якщо score зросте після нової свічки, перезапусти Analyze.`);
-      nextSteps.push('Можна готувати ордери, але не market «в нікуди».');
+      nextSteps.push('Bias нейтральний — не форсуй market. Чекай pullback/breakout з volume.');
+      nextSteps.push(`Рівні готові (R:R 1:${rr.toFixed(2)}): SL ${formatPrice(sl)} / TP1 ${formatPrice(tp1)}.`);
+      nextSteps.push(`Фокус: ${bestStrat.name} (${bestStrat.score}/100).`);
     } else {
-      nextSteps.push(`Bias ${verdict}: long зараз низької якості — ${isLong ? 'краще wait' : 'пріоритет short/wait'}.`);
-      nextSteps.push(`Не торгуй проти: ${worstStrat.name} і слабкі long-сигнали.`);
-      nextSteps.push('Перезапусти аналіз після зміни TF (5m↔15m) або після сильної свічки з volume.');
+      nextSteps.push(`Bias ${verdict}: обережно з ${isLong ? 'long' : 'short'}.`);
+      nextSteps.push(`Якщо все ж план: SL ${formatPrice(sl)}, TP1 ${formatPrice(tp1)}, R:R 1:${rr.toFixed(2)}.`);
+      nextSteps.push('Краще змінити TF або дочекатись сильнішого setup.');
     }
-    nextSteps.push('Для глибшого розбору: Generate Full Grok Analysis (кнопка нижче).');
+    nextSteps.push('Grok: кнопка Generate Full Grok Analysis нижче.');
 
     // Pattern notes with meaning
     const patternExplain = {
@@ -673,11 +812,17 @@
         side: isLong ? 'Long' : 'Short',
         entryLow,
         entryHigh,
+        entryRef,
         sl,
         tp1,
         tp2,
+        risk,
         rr,
+        rr2,
+        quality: planQuality,
+        qualityNote: planQualityNote,
         atr: atrApprox,
+        planVersion: DT_PLAN_VERSION,
       },
       quote,
       barCount: bars.length,
@@ -1088,13 +1233,36 @@
     }
 
     const p = a.plan;
+    const rrNum = Number(p.rr);
+    const rr2Num = Number(p.rr2);
+    const rrSafe = Number.isFinite(rrNum) && rrNum > 0 ? rrNum : 0;
+    const rr2Safe = Number.isFinite(rr2Num) && rr2Num > 0 ? rr2Num : null;
+    const rrColor =
+      p.quality === 'skip' ? 'text-red-400' :
+      p.quality === 'wait' ? 'text-amber-300' :
+      rrSafe >= 2 ? 'text-emerald-300' :
+      rrSafe >= 1.5 ? 'text-cyan-300' : 'text-red-400';
+    const qLabel =
+      p.quality === 'skip' ? '⛔ Skip' :
+      p.quality === 'wait' ? '⏳ Wait / breakout' : '✓ Tradeable';
+    const qColor =
+      p.quality === 'skip' ? 'text-red-300' :
+      p.quality === 'wait' ? 'text-amber-300' : 'text-emerald-300';
+    const riskTxt = p.risk != null && p.risk > 0 ? formatPrice(p.risk) : '—';
     document.getElementById('dt-levels').innerHTML = [
       chip('Side', escapeHtml(p.side)),
-      chip('Entry zone', `${formatPrice(p.entryLow)} – ${formatPrice(p.entryHigh)}`),
+      chip('Plan quality', `<span class="${qColor}">${qLabel}</span>`),
+      chip('From price (live)', formatPrice(a.price)),
       chip('Stop Loss', `<span class="text-red-300">${formatPrice(p.sl)}</span>`),
       chip('Take Profit 1', `<span class="text-emerald-300">${formatPrice(p.tp1)}</span>`),
       chip('Take Profit 2', `<span class="text-emerald-300">${formatPrice(p.tp2)}</span>`),
-      chip('Risk : Reward', `1 : ${p.rr.toFixed(2)}`),
+      chip('Risk $ (to SL)', `<span class="text-red-200/90">${riskTxt}</span>`),
+      chip(
+        'Risk : Reward (live)',
+        `<span class="${rrColor} text-base">1 : ${rrSafe.toFixed(2)}</span>` +
+          (rr2Safe != null ? ` <span class="text-slate-500 text-xs">TP2 1:${rr2Safe.toFixed(2)}</span>` : '') +
+          `<div class="text-[10px] text-slate-500 font-normal mt-0.5">мін. 1:1.50 · ${escapeHtml(p.planVersion || 'v3')}</div>`
+      ),
     ].join('');
 
     // Plan explanation
@@ -1251,8 +1419,13 @@
 ## App trade sketch (${a.plan.side})
 - Entry zone: ${formatPrice(a.plan.entryLow)} – ${formatPrice(a.plan.entryHigh)}
 - Stop Loss: ${formatPrice(a.plan.sl)}
+- Live price (R:R anchor): ${formatPrice(a.price)}
+- Entry zone (optional limit): ${formatPrice(a.plan.entryLow)}–${formatPrice(a.plan.entryHigh)}
 - TP1: ${formatPrice(a.plan.tp1)} | TP2: ${formatPrice(a.plan.tp2)}
-- R:R (to TP1): 1:${a.plan.rr.toFixed(2)}
+- Risk to SL: ${formatPrice(a.plan.risk || Math.abs(a.price - a.plan.sl))}
+- R:R from LIVE price to TP1: 1:${Number(a.plan.rr).toFixed(2)} | to TP2: 1:${Number(a.plan.rr2 ?? a.plan.rr).toFixed(2)}
+- Plan engine: ${a.plan.planVersion || 'v3'} | quality: ${a.plan.quality || 'ok'}${a.plan.qualityNote ? ` — ${a.plan.qualityNote}` : ''}
+- HARD RULE: never propose R:R < 1.5 from current price. Prefer ≥ 1:2. If structure kills R:R, say WAIT/SKIP — do not invent 1:0.1x.
 
 ## Strategy scores
 ${stratLines}
@@ -1402,8 +1575,9 @@ ${a.summary}
         );
       } catch (_) {}
 
+      const rrShow = analysis.plan?.rr != null ? Number(analysis.plan.rr).toFixed(2) : '—';
       setStatus(
-        `OK · ${ticker} · ${bars.length} bars · ${meta.label} · ${analysis.verdict} · data: ${source}`,
+        `OK · ${ticker} · ${bars.length} bars · ${meta.label} · ${analysis.verdict} · R:R 1:${rrShow} · plan ${analysis.plan?.planVersion || DT_PLAN_VERSION} · ${source}`,
         'text-emerald-400'
       );
     } catch (e) {
