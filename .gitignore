@@ -1,0 +1,9 @@
+# local only
+*.zip
+__pycache__/
+.DS_Store
+Thumbs.db
+.env
+*.log
+.idea/
+.vscode/

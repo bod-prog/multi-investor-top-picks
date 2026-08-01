@@ -1,0 +1,3683 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="midnight">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Investor Top Picks Generator</title>
+  <script>
+    // Apply theme ASAP to avoid flash
+    (function () {
+      try {
+        var t = localStorage.getItem('mitp_theme_v1') || 'midnight';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            surface: {
+              950: '#070b14',
+              900: '#0b1220',
+              800: '#111a2e',
+              700: '#1a2540',
+              600: '#243352',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'Segoe UI', 'system-ui', 'sans-serif'],
+          },
+          boxShadow: {
+            glow: '0 0 40px rgba(59, 130, 246, 0.15)',
+            'glow-green': '0 0 30px rgba(34, 197, 94, 0.12)',
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Theme tokens ───────────────────────────────── */
+    :root, [data-theme="midnight"] {
+      --bg0: #070b14;
+      --bg1: #0b1220;
+      --bg2: #111a2e;
+      --bg3: #1a2540;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --faint: #64748b;
+      --accent: #3b82f6;
+      --accent2: #10b981;
+      --accent-soft: rgba(59, 130, 246, 0.18);
+      --accent2-soft: rgba(16, 185, 129, 0.14);
+      --glass: rgba(17, 26, 46, 0.78);
+      --glass-border: rgba(59, 130, 246, 0.14);
+      --nav-bg: rgba(7, 11, 20, 0.92);
+      --panel: linear-gradient(180deg, #0d1528 0%, #0a1020 100%);
+      --glow: 0 0 40px rgba(59, 130, 246, 0.15);
+      --btn-grad: linear-gradient(135deg, #2563eb, #059669);
+      --score-grad: linear-gradient(90deg, #2563eb, #10b981);
+      --chip-grad: linear-gradient(135deg, rgba(59,130,246,0.28), rgba(16,185,129,0.22));
+      --radius: 1rem;
+      --font: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    }
+    [data-theme="aurora"] {
+      --bg0: #0a0614;
+      --bg1: #120a22;
+      --bg2: #1a1030;
+      --bg3: #2a1848;
+      --text: #f0e9ff;
+      --muted: #b8a4d9;
+      --faint: #7c6a9e;
+      --accent: #a78bfa;
+      --accent2: #22d3ee;
+      --accent-soft: rgba(167, 139, 250, 0.2);
+      --accent2-soft: rgba(34, 211, 238, 0.14);
+      --glass: rgba(28, 16, 48, 0.82);
+      --glass-border: rgba(167, 139, 250, 0.22);
+      --nav-bg: rgba(10, 6, 20, 0.94);
+      --panel: linear-gradient(180deg, #1a1030 0%, #0c0618 100%);
+      --glow: 0 0 48px rgba(167, 139, 250, 0.18);
+      --btn-grad: linear-gradient(135deg, #7c3aed, #0891b2);
+      --score-grad: linear-gradient(90deg, #a78bfa, #22d3ee);
+      --chip-grad: linear-gradient(135deg, rgba(167,139,250,0.3), rgba(34,211,238,0.2));
+    }
+    [data-theme="ember"] {
+      --bg0: #12090a;
+      --bg1: #1a0e10;
+      --bg2: #261416;
+      --bg3: #3a1c1a;
+      --text: #fff1e8;
+      --muted: #d4a894;
+      --faint: #9a6b5c;
+      --accent: #f97316;
+      --accent2: #ef4444;
+      --accent-soft: rgba(249, 115, 22, 0.18);
+      --accent2-soft: rgba(239, 68, 68, 0.14);
+      --glass: rgba(38, 18, 20, 0.85);
+      --glass-border: rgba(249, 115, 22, 0.2);
+      --nav-bg: rgba(18, 9, 10, 0.94);
+      --panel: linear-gradient(180deg, #261416 0%, #12090a 100%);
+      --glow: 0 0 44px rgba(249, 115, 22, 0.16);
+      --btn-grad: linear-gradient(135deg, #ea580c, #dc2626);
+      --score-grad: linear-gradient(90deg, #f97316, #ef4444);
+      --chip-grad: linear-gradient(135deg, rgba(249,115,22,0.3), rgba(239,68,68,0.22));
+    }
+    [data-theme="ocean"] {
+      --bg0: #041016;
+      --bg1: #071a22;
+      --bg2: #0c2530;
+      --bg3: #123a48;
+      --text: #e6f7fb;
+      --muted: #8db8c4;
+      --faint: #5a8794;
+      --accent: #06b6d4;
+      --accent2: #34d399;
+      --accent-soft: rgba(6, 182, 212, 0.18);
+      --accent2-soft: rgba(52, 211, 153, 0.14);
+      --glass: rgba(10, 36, 46, 0.82);
+      --glass-border: rgba(6, 182, 212, 0.2);
+      --nav-bg: rgba(4, 16, 22, 0.94);
+      --panel: linear-gradient(180deg, #0c2530 0%, #041016 100%);
+      --glow: 0 0 44px rgba(6, 182, 212, 0.16);
+      --btn-grad: linear-gradient(135deg, #0891b2, #059669);
+      --score-grad: linear-gradient(90deg, #06b6d4, #34d399);
+      --chip-grad: linear-gradient(135deg, rgba(6,182,212,0.28), rgba(52,211,153,0.2));
+    }
+    [data-theme="noir"] {
+      --bg0: #09090b;
+      --bg1: #121214;
+      --bg2: #1c1c1f;
+      --bg3: #2a2a30;
+      --text: #fafafa;
+      --muted: #a1a1aa;
+      --faint: #71717a;
+      --accent: #e4e4e7;
+      --accent2: #a3e635;
+      --accent-soft: rgba(228, 228, 231, 0.1);
+      --accent2-soft: rgba(163, 230, 53, 0.12);
+      --glass: rgba(24, 24, 27, 0.88);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --nav-bg: rgba(9, 9, 11, 0.95);
+      --panel: linear-gradient(180deg, #18181b 0%, #09090b 100%);
+      --glow: 0 0 36px rgba(163, 230, 53, 0.08);
+      --btn-grad: linear-gradient(135deg, #3f3f46, #65a30d);
+      --score-grad: linear-gradient(90deg, #a1a1aa, #a3e635);
+      --chip-grad: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(163,230,53,0.15));
+    }
+    [data-theme="rose"] {
+      --bg0: #100810;
+      --bg1: #1a0f18;
+      --bg2: #281622;
+      --bg3: #3d2034;
+      --text: #fdf2f8;
+      --muted: #d8a0c0;
+      --faint: #9d6a88;
+      --accent: #f472b6;
+      --accent2: #c084fc;
+      --accent-soft: rgba(244, 114, 182, 0.18);
+      --accent2-soft: rgba(192, 132, 252, 0.14);
+      --glass: rgba(40, 18, 32, 0.85);
+      --glass-border: rgba(244, 114, 182, 0.22);
+      --nav-bg: rgba(16, 8, 16, 0.94);
+      --panel: linear-gradient(180deg, #281622 0%, #100810 100%);
+      --glow: 0 0 44px rgba(244, 114, 182, 0.16);
+      --btn-grad: linear-gradient(135deg, #db2777, #9333ea);
+      --score-grad: linear-gradient(90deg, #f472b6, #c084fc);
+      --chip-grad: linear-gradient(135deg, rgba(244,114,182,0.3), rgba(192,132,252,0.22));
+    }
+    [data-theme="paper"] {
+      --bg0: #f4f1ea;
+      --bg1: #ebe6dc;
+      --bg2: #ffffff;
+      --bg3: #e7e0d4;
+      --text: #1c1917;
+      --muted: #57534e;
+      --faint: #a8a29e;
+      --accent: #2563eb;
+      --accent2: #059669;
+      --accent-soft: rgba(37, 99, 235, 0.1);
+      --accent2-soft: rgba(5, 150, 105, 0.1);
+      --glass: rgba(255, 255, 255, 0.86);
+      --glass-border: rgba(28, 25, 23, 0.08);
+      --nav-bg: rgba(244, 241, 234, 0.95);
+      --panel: linear-gradient(180deg, #ffffff 0%, #f4f1ea 100%);
+      --glow: 0 8px 30px rgba(28, 25, 23, 0.06);
+      --btn-grad: linear-gradient(135deg, #2563eb, #059669);
+      --score-grad: linear-gradient(90deg, #2563eb, #059669);
+      --chip-grad: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(5,150,105,0.12));
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, var(--accent-soft), transparent 50%),
+        radial-gradient(ellipse 60% 40% at 90% 10%, var(--accent2-soft), transparent 45%),
+        var(--bg0);
+      min-height: 100vh;
+      color: var(--text);
+      font-family: var(--font);
+      transition: background 0.35s ease, color 0.25s ease;
+    }
+    body.modal-open { overflow: hidden; }
+    .glass {
+      background: var(--glass);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glow);
+      border-radius: var(--radius);
+    }
+    .style-chip input:checked + span {
+      background: var(--chip-grad);
+      border-color: var(--accent);
+      color: var(--text);
+      box-shadow: 0 0 20px var(--accent-soft);
+    }
+    .horizon-btn.active, .topn-btn.active, .tf-btn.active {
+      background: var(--btn-grad) !important;
+      border-color: transparent !important;
+      color: white !important;
+      box-shadow: 0 8px 24px var(--accent-soft);
+    }
+    .score-bar, .strategy-bar { background: var(--score-grad) !important; }
+    .table-row:hover { background: var(--accent-soft); }
+    .fade-in { animation: fadeIn 0.45s ease-out both; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .price-flash-up { animation: flashUp 0.6s ease; }
+    .price-flash-down { animation: flashDown 0.6s ease; }
+    @keyframes flashUp {
+      0% { background-color: rgba(34, 197, 94, 0.35); }
+      100% { background-color: transparent; }
+    }
+    @keyframes flashDown {
+      0% { background-color: rgba(239, 68, 68, 0.35); }
+      100% { background-color: transparent; }
+    }
+    .spinner {
+      border: 2px solid color-mix(in srgb, var(--text) 15%, transparent);
+      border-top-color: var(--accent2);
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      animation: spin 0.7s linear infinite;
+    }
+    .spinner-lg {
+      width: 36px;
+      height: 36px;
+      border-width: 3px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { opacity: 0.5; }
+    .scroll-thin::-webkit-scrollbar { height: 6px; width: 8px; }
+    .scroll-thin::-webkit-scrollbar-track { background: transparent; }
+    .scroll-thin::-webkit-scrollbar-thumb {
+      background: color-mix(in srgb, var(--accent) 45%, transparent);
+      border-radius: 999px;
+    }
+    .live-dot {
+      width: 8px; height: 8px; border-radius: 999px; background: var(--faint);
+    }
+    .live-dot.on {
+      background: var(--accent2);
+      box-shadow: 0 0 10px var(--accent2-soft);
+      animation: pulse 1.5s ease infinite;
+    }
+    .live-dot.err { background: #f87171; }
+    .live-dot.warn { background: #fbbf24; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+    /* Analyzer panel */
+    #analyzer-overlay {
+      position: fixed; inset: 0; z-index: 50;
+      background: color-mix(in srgb, var(--bg0) 72%, transparent);
+      backdrop-filter: blur(6px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    #analyzer-overlay.open { opacity: 1; pointer-events: auto; }
+    #analyzer-panel {
+      position: fixed; top: 0; right: 0; z-index: 51;
+      width: min(720px, 100vw);
+      height: 100%;
+      height: 100dvh;
+      max-height: 100dvh;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      background: var(--panel);
+      border-left: 1px solid var(--glass-border);
+      box-shadow: -20px 0 60px rgba(0, 0, 0, 0.35);
+      display: flex; flex-direction: column;
+    }
+    #analyzer-overlay.open #analyzer-panel { transform: translateX(0); }
+    @media (max-width: 640px) {
+      #analyzer-panel {
+        width: 100vw;
+        border-left: none;
+        border-radius: 0;
+      }
+    }
+    .th-sort {
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      transition: color 0.15s;
+    }
+    .th-sort:hover { color: var(--text); }
+    .th-sort .sort-icon { opacity: 0.35; margin-left: 0.25rem; font-size: 0.65rem; }
+    .th-sort.active { color: var(--accent2); }
+    .th-sort.active .sort-icon { opacity: 1; }
+    #generate-loading { display: none; }
+    #generate-loading.show { display: flex; background: color-mix(in srgb, var(--bg1) 80%, transparent); }
+    .pick-card {
+      background: color-mix(in srgb, var(--bg1) 92%, transparent);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    #finnhub-status-bar {
+      position: sticky;
+      top: 0;
+      z-index: 45;
+      border-bottom: 1px solid var(--glass-border);
+      background: var(--nav-bg);
+      backdrop-filter: blur(10px);
+      color: var(--muted);
+    }
+    #finnhub-status-bar.warn {
+      border-bottom-color: rgba(251, 191, 36, 0.35);
+      background: color-mix(in srgb, #78350f 35%, var(--nav-bg));
+    }
+    #finnhub-status-bar.danger {
+      border-bottom-color: rgba(248, 113, 113, 0.4);
+      background: color-mix(in srgb, #7f1d1d 35%, var(--nav-bg));
+    }
+    #toast-root {
+      position: fixed;
+      top: 4.5rem;
+      right: 0.75rem;
+      z-index: 80;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-width: min(22rem, calc(100vw - 1.5rem));
+      pointer-events: none;
+    }
+    .toast {
+      pointer-events: auto;
+      padding: 0.7rem 0.9rem;
+      border-radius: 0.75rem;
+      font-size: 0.75rem;
+      line-height: 1.35;
+      color: var(--text);
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glow);
+      animation: toastIn 0.25s ease both;
+    }
+    .toast.ok { border-color: color-mix(in srgb, var(--accent2) 50%, transparent); }
+    .toast.warn { border-color: rgba(251, 191, 36, 0.45); color: #fde68a; }
+    .toast.err { border-color: rgba(248, 113, 113, 0.5); color: #fecaca; }
+    .toast.out { animation: toastOut 0.25s ease both; }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; }
+      to { opacity: 0; transform: translateY(-6px); }
+    }
+    #global-busy {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      background: color-mix(in srgb, var(--bg0) 40%, transparent);
+      pointer-events: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 5.5rem;
+    }
+    #global-busy.show { display: flex; }
+    #global-busy .busy-card {
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1.15rem;
+      border-radius: 1rem;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glow);
+      color: var(--text);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    /* Theme switcher */
+    .theme-picker {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+    .theme-dot {
+      width: 1.15rem;
+      height: 1.15rem;
+      border-radius: 999px;
+      border: 2px solid color-mix(in srgb, var(--text) 20%, transparent);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      padding: 0;
+    }
+    .theme-dot:hover { transform: scale(1.12); }
+    .theme-dot.active {
+      box-shadow: 0 0 0 2px var(--bg0), 0 0 0 4px var(--accent2);
+      transform: scale(1.08);
+    }
+    #app-nav {
+      background: var(--nav-bg) !important;
+      border-color: var(--glass-border) !important;
+    }
+    .nav-tab.active {
+      background: var(--chip-grad) !important;
+      border-color: var(--glass-border) !important;
+      color: var(--text) !important;
+    }
+    .grok-hero {
+      background:
+        radial-gradient(ellipse 90% 80% at 10% 0%, var(--accent2-soft), transparent 55%),
+        radial-gradient(ellipse 70% 60% at 100% 20%, var(--accent-soft), transparent 50%),
+        var(--panel) !important;
+      border: 1px solid var(--glass-border) !important;
+      box-shadow: var(--glow) !important;
+    }
+    .metric-chip, .analyzer-card {
+      background: color-mix(in srgb, var(--bg1) 90%, transparent) !important;
+      border-color: var(--glass-border) !important;
+    }
+    [data-theme="paper"] .text-white,
+    [data-theme="paper"] .text-slate-200,
+    [data-theme="paper"] .text-slate-100 { color: #1c1917 !important; }
+    [data-theme="paper"] .text-slate-400,
+    [data-theme="paper"] .text-slate-500 { color: #57534e !important; }
+    [data-theme="paper"] .text-slate-600 { color: #78716c !important; }
+    [data-theme="paper"] .bg-surface-900,
+    [data-theme="paper"] .bg-surface-800 { background-color: #fff !important; }
+    [data-theme="paper"] input,
+    [data-theme="paper"] select,
+    [data-theme="paper"] textarea {
+      color: #1c1917 !important;
+      background: #fff !important;
+      border-color: #d6d3d1 !important;
+    }
+
+    /* ── Theme-aware primary buttons (override Tailwind hardcodes) ── */
+    button.bg-emerald-600,
+    button.bg-emerald-600\/90,
+    button.bg-blue-600,
+    button.bg-blue-600\/90,
+    button[class*="bg-emerald-600"],
+    button[class*="bg-blue-600"],
+    button[class*="from-blue-600"],
+    button[class*="from-emerald-600"],
+    button[class*="from-emerald-500"],
+    button[class*="from-blue-500"],
+    a.bg-emerald-600,
+    .btn-primary {
+      background-image: var(--btn-grad) !important;
+      background-color: transparent !important;
+      background-size: 100% 100% !important;
+      border-color: transparent !important;
+      color: #fff !important;
+      box-shadow: 0 8px 22px var(--accent-soft) !important;
+    }
+    button.bg-emerald-600:hover,
+    button[class*="bg-emerald-600"]:hover,
+    button[class*="bg-blue-600"]:hover,
+    button[class*="from-blue-600"]:hover,
+    button[class*="from-emerald-600"]:hover,
+    button[class*="from-emerald-500"]:hover,
+    button[class*="hover:bg-emerald-500"]:hover,
+    button[class*="hover:bg-blue-500"]:hover,
+    .btn-primary:hover {
+      filter: brightness(1.08);
+      opacity: 1;
+    }
+    /* Soft / secondary themed buttons */
+    button[class*="bg-blue-600/20"],
+    button[class*="bg-emerald-500/10"],
+    button[class*="bg-blue-500/10"] {
+      background-image: none !important;
+      background-color: var(--accent-soft) !important;
+      border-color: var(--glass-border) !important;
+      color: var(--text) !important;
+      box-shadow: none !important;
+    }
+    /* Accent text that should follow theme */
+    .text-emerald-400,
+    .text-emerald-300,
+    .text-blue-300,
+    .text-blue-400,
+    .text-cyan-300 {
+      color: var(--accent2) !important;
+    }
+    .text-blue-300,
+    .font-mono.text-blue-300,
+    span.text-blue-300 {
+      color: var(--accent) !important;
+    }
+    /* Gradient title clips */
+    .bg-clip-text.text-transparent[class*="from-"],
+    [class*="bg-gradient-to-r"][class*="bg-clip-text"] {
+      background-image: var(--score-grad) !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      color: transparent !important;
+    }
+    /* Border accents on soft buttons */
+    button[class*="border-emerald"],
+    button[class*="border-blue-500"] {
+      border-color: var(--glass-border) !important;
+    }
+    #connect-btn,
+    #generate-btn,
+    #dt-load-btn,
+    #dt-grok-btn,
+    #az-grok-btn,
+    #pf-grok-gen,
+    #pf-grok-save,
+    #dt-copy-btn,
+    #az-copy-btn,
+    #az-manual-btn {
+      background-image: var(--btn-grad) !important;
+      background-color: transparent !important;
+      color: #fff !important;
+      border: none !important;
+      box-shadow: 0 8px 22px var(--accent-soft) !important;
+    }
+    #connect-btn:hover,
+    #generate-btn:hover,
+    #dt-load-btn:hover,
+    #dt-grok-btn:hover,
+    #az-grok-btn:hover,
+    #pf-grok-gen:hover,
+    #pf-grok-save:hover {
+      filter: brightness(1.1);
+    }
+
+    .analyzer-card {
+      border-radius: 1rem;
+    }
+    .metric-chip {
+      border-radius: 0.75rem;
+      padding: 0.75rem 0.9rem;
+    }
+    .news-item {
+      border-left: 3px solid var(--faint);
+      padding-left: 0.75rem;
+    }
+    .news-item.pos { border-left-color: #22c55e; }
+    .news-item.neg { border-left-color: #f87171; }
+    .news-item.neu { border-left-color: var(--faint); }
+    .grok-prompt-area {
+      min-height: 220px;
+      max-height: 380px;
+      font-family: ui-monospace, 'Cascadia Code', 'Segoe UI Mono', Consolas, monospace;
+    }
+    .rec-buy {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      color: #4ade80;
+    }
+    .rec-wait {
+      background: rgba(251, 191, 36, 0.1);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      color: #fbbf24;
+    }
+    .rec-avoid {
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      color: #f87171;
+    }
+    .nav-tab {
+      padding: 0.55rem 1rem;
+      border-radius: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--muted);
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+    .nav-tab:hover { color: var(--text); background: var(--accent-soft); }
+    .tf-btn {
+      padding: 0.4rem 0.7rem;
+      border-radius: 0.6rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--bg1);
+      border: 1px solid var(--glass-border);
+      transition: all 0.15s;
+    }
+    .tf-btn:hover { border-color: var(--accent); color: var(--text); }
+    #dt-chart-wrap {
+      height: 420px;
+      min-height: 320px;
+      position: relative;
+    }
+    @media (min-width: 1024px) {
+      #dt-chart-wrap { height: 520px; }
+    }
+    .verdict-strong-buy { background: rgba(16, 185, 129, 0.2); color: #34d399; border-color: rgba(16, 185, 129, 0.45); }
+    .verdict-buy { background: rgba(34, 197, 94, 0.12); color: #4ade80; border-color: rgba(34, 197, 94, 0.35); }
+    .verdict-neutral { background: rgba(148, 163, 184, 0.12); color: #cbd5e1; border-color: rgba(148, 163, 184, 0.3); }
+    .verdict-sell { background: rgba(248, 113, 113, 0.12); color: #f87171; border-color: rgba(248, 113, 113, 0.35); }
+    .verdict-strong-sell { background: rgba(220, 38, 38, 0.2); color: #fca5a5; border-color: rgba(220, 38, 38, 0.45); }
+    .strategy-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #2563eb, #10b981);
+    }
+  </style>
+</head>
+<body class="font-sans text-slate-200 antialiased">
+  <!-- Finnhub limits status bar -->
+  <div id="finnhub-status-bar" class="text-[11px] sm:text-xs">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-slate-400">
+      <span class="font-semibold text-slate-300 shrink-0">Finnhub</span>
+      <span id="bar-ws" class="inline-flex items-center gap-1.5">
+        <span class="live-dot" id="bar-ws-dot"></span>
+        <span id="bar-ws-text">WS: Disconnected</span>
+      </span>
+      <span id="bar-rest" class="tabular-nums">REST: 0/60 per min</span>
+      <span id="bar-warn" class="hidden font-medium"></span>
+      <button type="button" id="btn-ws-reconnect"
+        class="ml-auto sm:ml-0 px-2.5 py-1 rounded-lg border border-surface-600 bg-surface-800 text-slate-300 hover:border-emerald-500/40 hover:text-emerald-300 transition-colors text-[11px] font-semibold">
+        Reconnect WebSocket
+      </button>
+    </div>
+  </div>
+
+  <!-- Top navigation -->
+  <nav id="app-nav" class="sticky top-[2.15rem] sm:top-9 z-40 border-b backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="font-extrabold text-sm sm:text-base tracking-tight truncate" style="color: var(--text)">
+          Multi-Investor <span style="color: var(--accent2)">Suite</span>
+        </span>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="theme-picker" id="theme-picker" title="Theme" aria-label="Theme picker">
+          <button type="button" class="theme-dot active" data-theme-set="midnight" style="background: linear-gradient(135deg,#2563eb,#10b981)" title="Midnight"></button>
+          <button type="button" class="theme-dot" data-theme-set="aurora" style="background: linear-gradient(135deg,#7c3aed,#22d3ee)" title="Aurora"></button>
+          <button type="button" class="theme-dot" data-theme-set="ember" style="background: linear-gradient(135deg,#f97316,#ef4444)" title="Ember"></button>
+          <button type="button" class="theme-dot" data-theme-set="ocean" style="background: linear-gradient(135deg,#06b6d4,#34d399)" title="Ocean"></button>
+          <button type="button" class="theme-dot" data-theme-set="noir" style="background: linear-gradient(135deg,#52525b,#a3e635)" title="Noir"></button>
+          <button type="button" class="theme-dot" data-theme-set="rose" style="background: linear-gradient(135deg,#f472b6,#c084fc)" title="Rose"></button>
+          <button type="button" class="theme-dot" data-theme-set="paper" style="background: linear-gradient(135deg,#e7e5e4,#2563eb)" title="Paper light"></button>
+        </div>
+        <div class="flex flex-wrap gap-1" role="tablist">
+          <button type="button" class="nav-tab active text-xs sm:text-sm px-2 sm:px-3" data-view="picks" id="nav-picks">Top Picks</button>
+          <button type="button" class="nav-tab text-xs sm:text-sm px-2 sm:px-3" data-view="daytrade" id="nav-daytrade">Day Trading</button>
+          <button type="button" class="nav-tab text-xs sm:text-sm px-2 sm:px-3" data-view="watchlist" id="nav-watch">Watchlist</button>
+          <button type="button" class="nav-tab text-xs sm:text-sm px-2 sm:px-3" data-view="portfolio" id="nav-portfolio">Portfolio</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div id="toast-root" aria-live="polite"></div>
+  <div id="global-busy" aria-live="polite" aria-busy="true">
+    <div class="busy-card">
+      <span class="spinner"></span>
+      <span id="global-busy-text">Loading…</span>
+    </div>
+  </div>
+
+  <!-- ════════ VIEW: Top Picks ════════ -->
+  <div id="view-picks" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
+    <header class="mb-5 sm:mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4">
+        <div>
+          <div id="live-badge" class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-slate-500/10 text-slate-400 border border-slate-500/20 mb-3">
+            <span class="live-dot" id="live-dot"></span>
+            <span id="live-badge-text">Offline · потрібен Finnhub API key</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
+            Multi-Investor
+            <span class="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">Top Picks</span>
+          </h1>
+          <p class="mt-2 text-slate-400 max-w-2xl text-sm">
+            Live Finnhub · Analyze · Grok · Day Trading
+          </p>
+        </div>
+        <div class="sm:text-right text-xs text-slate-500 flex sm:flex-col flex-wrap gap-x-4 gap-y-1 items-start sm:items-end">
+          <div id="universe-count">0 stocks</div>
+          <div id="last-update" class="text-slate-600">Дані ще не завантажені</div>
+          <button type="button" id="open-analyzer-btn"
+            class="text-xs font-medium text-blue-300 hover:text-blue-200 transition-colors">
+            Open Stock Analyzer →
+          </button>
+          <button type="button" data-view="daytrade"
+            class="text-xs font-medium text-emerald-300 hover:text-emerald-200 transition-colors go-daytrade">
+            Day Trading Analyzer →
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- API -->
+    <section class="glass rounded-2xl p-5 sm:p-6 mb-6 border border-emerald-500/15">
+      <div class="flex flex-col lg:flex-row lg:items-start gap-5">
+        <div class="flex-1">
+          <h2 class="text-base font-bold text-white mb-1">Безкоштовні live-дані (Finnhub)</h2>
+          <p class="text-xs text-slate-400 leading-relaxed mb-3">
+            Free tier: 60 req/min, WebSocket ≤50 symbols.
+            <a class="text-blue-400 hover:underline" href="https://finnhub.io/register" target="_blank" rel="noopener">Отримати API key</a>
+          </p>
+          <div class="flex flex-col gap-2">
+            <input id="api-key" type="password" autocomplete="off" placeholder="Встав Finnhub API key"
+              class="w-full px-3 py-2.5 rounded-xl bg-surface-900 border border-surface-600 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 font-mono" />
+            <div class="flex flex-wrap gap-2">
+              <button type="button" id="connect-btn" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white">Connect live data</button>
+              <button type="button" id="refresh-btn" class="px-3 py-2.5 rounded-xl text-sm font-medium border border-surface-600 bg-surface-800 text-slate-300">Refresh</button>
+              <button type="button" id="disconnect-btn" class="px-3 py-2.5 rounded-xl text-sm font-medium border border-surface-600 bg-surface-800 text-slate-400">Disconnect</button>
+            </div>
+          </div>
+          <p id="api-status" class="text-xs text-slate-500 mt-2">Ключ зберігається лише в localStorage цього браузера.</p>
+        </div>
+        <div class="lg:w-64 shrink-0 rounded-xl bg-surface-900/80 border border-white/5 p-4 text-xs text-slate-400 space-y-2">
+          <div class="font-semibold text-slate-300">Статус стріму</div>
+          <div class="flex justify-between gap-2"><span>REST quotes</span><span id="stat-rest" class="text-slate-500">—</span></div>
+          <div class="flex justify-between gap-2"><span>WebSocket</span><span id="stat-ws" class="text-slate-500">—</span></div>
+          <div class="flex justify-between gap-2"><span>Fundamentals</span><span id="stat-fund" class="text-slate-500">—</span></div>
+          <div class="flex justify-between gap-2"><span>Ticks received</span><span id="stat-ticks" class="tabular-nums text-slate-300">0</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Controls -->
+    <section class="glass rounded-2xl p-5 sm:p-6 shadow-glow mb-6">
+      <div class="grid gap-6 lg:grid-cols-2">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">Investment Horizon</label>
+          <div class="flex flex-wrap gap-2" id="horizon-group">
+            <button type="button" data-horizon="day" class="horizon-btn active px-4 py-2.5 rounded-xl text-sm font-medium border border-surface-600 bg-surface-800 text-slate-300">Day Trading</button>
+            <button type="button" data-horizon="10d" class="horizon-btn px-4 py-2.5 rounded-xl text-sm font-medium border border-surface-600 bg-surface-800 text-slate-300">10 Days</button>
+            <button type="button" data-horizon="1m" class="horizon-btn px-4 py-2.5 rounded-xl text-sm font-medium border border-surface-600 bg-surface-800 text-slate-300">1 Month</button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3" for="max-price">Max Share Price (USD)</label>
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">$</span>
+              <input id="max-price" type="number" min="0" step="0.01" placeholder="Без ліміту"
+                class="w-full max-w-[11rem] pl-7 pr-3 py-2.5 rounded-xl bg-surface-900 border border-surface-600 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40" />
+            </div>
+            <button type="button" id="clear-max-price" class="px-3 py-2.5 rounded-xl text-xs font-medium border border-surface-600 bg-surface-800 text-slate-400">Без ліміту</button>
+          </div>
+        </div>
+        <div class="lg:col-span-2 space-y-3">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Investor Style</label>
+            <div class="flex flex-wrap gap-2" id="styles-group">
+              <label class="style-chip cursor-pointer"><input type="checkbox" name="style" value="buffett" class="sr-only" checked /><span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm border border-surface-600 bg-surface-800 text-slate-400">Warren Buffett</span></label>
+              <label class="style-chip cursor-pointer"><input type="checkbox" name="style" value="wood" class="sr-only" /><span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm border border-surface-600 bg-surface-800 text-slate-400">Cathie Wood</span></label>
+              <label class="style-chip cursor-pointer"><input type="checkbox" name="style" value="lynch" class="sr-only" /><span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm border border-surface-600 bg-surface-800 text-slate-400">Peter Lynch</span></label>
+              <label class="style-chip cursor-pointer"><input type="checkbox" name="style" value="balanced" class="sr-only" /><span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm border border-surface-600 bg-surface-800 text-slate-400">Balanced</span></label>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              Day Trading Strategies
+              <span class="font-normal normal-case text-slate-500 ml-1">(для горизонту Day Trading)</span>
+            </label>
+            <div class="flex flex-wrap gap-2">
+              <label class="style-chip cursor-pointer"><input type="checkbox" name="style" value="momentum" class="sr-only" /><span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm border border-surface-600 bg-surface-800 text-slate-400">Momentum</span></label>
+              <label class="style-chip cursor-pointer"><input type="checkbox" name="style" value="scalping" class="sr-only" /><span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm border border-surface-600 bg-surface-800 text-slate-400">Scalping</span></label>
+              <label class="style-chip cursor-pointer"><input type="checkbox" name="style" value="breakout" class="sr-only" /><span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm border border-surface-600 bg-surface-800 text-slate-400">Breakout</span></label>
+              <label class="style-chip cursor-pointer"><input type="checkbox" name="style" value="meanrev" class="sr-only" /><span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm border border-surface-600 bg-surface-800 text-slate-400">Mean Reversion</span></label>
+              <label class="style-chip cursor-pointer"><input type="checkbox" name="style" value="gapgo" class="sr-only" /><span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm border border-surface-600 bg-surface-800 text-slate-400">Gap &amp; Go</span></label>
+              <label class="style-chip cursor-pointer"><input type="checkbox" name="style" value="vwap" class="sr-only" /><span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm border border-surface-600 bg-surface-800 text-slate-400">VWAP Bounce</span></label>
+              <label class="style-chip cursor-pointer"><input type="checkbox" name="style" value="orb" class="sr-only" /><span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm border border-surface-600 bg-surface-800 text-slate-400">Opening Range</span></label>
+              <label class="style-chip cursor-pointer"><input type="checkbox" name="style" value="highbeta" class="sr-only" /><span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm border border-surface-600 bg-surface-800 text-slate-400">High Beta / Vol</span></label>
+              <label class="style-chip cursor-pointer"><input type="checkbox" name="style" value="daymix" class="sr-only" /><span class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm border border-surface-600 bg-surface-800 text-slate-400">Day Mix</span></label>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-2">Можна комбінувати кілька стратегій — score усереднюється. Для day trading обирай горизонт <strong class="text-slate-400">Day Trading</strong>.</p>
+          </div>
+        </div>
+        <div class="lg:col-span-2">
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 sm:mb-3">Top size</label>
+          <div class="flex flex-wrap gap-2" id="topn-group">
+            <button type="button" data-topn="10" class="topn-btn active px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border border-surface-600 bg-surface-800 text-slate-300">Top 10</button>
+            <button type="button" data-topn="20" class="topn-btn px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border border-surface-600 bg-surface-800 text-slate-300">Top 20</button>
+            <button type="button" data-topn="50" class="topn-btn px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border border-surface-600 bg-surface-800 text-slate-300">Top 50</button>
+          </div>
+        </div>
+      </div>
+      <div class="mt-5 sm:mt-6 flex flex-col sm:flex-row sm:items-center gap-3">
+        <button id="generate-btn" type="button"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 shadow-lg shadow-blue-900/40 disabled:opacity-60">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          Generate Top Picks
+        </button>
+        <p id="status-msg" class="text-sm text-slate-500 text-center sm:text-left">Спочатку підключи Finnhub, потім Generate.</p>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section class="glass rounded-2xl shadow-glow mb-6 overflow-hidden relative">
+      <div id="generate-loading" class="absolute inset-0 z-10 bg-[#0b1220]/75 backdrop-blur-[2px] items-center justify-center flex-col gap-3">
+        <div class="spinner spinner-lg"></div>
+        <p class="text-sm text-slate-200 font-medium">Generating top picks...</p>
+        <p class="text-xs text-slate-500">Scoring universe · please wait</p>
+      </div>
+      <div class="px-4 sm:px-6 py-4 border-b border-white/5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-white" id="results-title">Top Picks</h2>
+          <p id="results-meta" class="text-xs text-slate-500 mt-0.5">Ще не згенеровано</p>
+        </div>
+        <div id="results-badge" class="hidden text-xs font-medium px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 w-fit"></div>
+      </div>
+      <div id="empty-state" class="px-4 sm:px-6 py-12 sm:py-16 text-center">
+        <p class="text-slate-400 text-sm">Підключи live-дані й натисни <span class="text-blue-300 font-medium">Generate Top Picks</span>.</p>
+      </div>
+      <!-- Mobile cards (< sm) -->
+      <div id="results-cards" class="hidden px-3 pb-4 space-y-3 sm:hidden"></div>
+      <!-- Table (sm+) -->
+      <div id="results-wrap" class="hidden overflow-x-auto scroll-thin">
+        <table class="w-full min-w-[960px] text-left">
+          <thead>
+            <tr class="text-[11px] uppercase tracking-wider text-slate-500 border-b border-white/5">
+              <th class="px-4 sm:px-6 py-3 font-semibold w-12">#</th>
+              <th class="px-3 py-3 font-semibold">Тікер</th>
+              <th class="px-3 py-3 font-semibold hidden md:table-cell">Компанія</th>
+              <th class="px-3 py-3 font-semibold th-sort" data-sort="price">Price <span class="sort-icon">↕</span></th>
+              <th class="px-3 py-3 font-semibold th-sort" data-sort="change">Change % <span class="sort-icon">↕</span></th>
+              <th class="px-3 py-3 font-semibold th-sort active" data-sort="score">Score <span class="sort-icon">↓</span></th>
+              <th class="px-3 py-3 font-semibold th-sort min-w-[120px]" data-sort="potential" title="Привабливість росту + ймовірність росту (евристика)">
+                Потенціал росту <span class="sort-icon">↕</span>
+              </th>
+              <th class="px-3 py-3 font-semibold hidden lg:table-cell">Пояснення</th>
+              <th class="px-3 py-3 font-semibold min-w-[160px]">Рекомендація</th>
+              <th class="px-3 py-3 font-semibold hidden xl:table-cell">Горизонт</th>
+              <th class="px-4 sm:px-6 py-3 font-semibold">Дії</th>
+            </tr>
+          </thead>
+          <tbody id="results-body"></tbody>
+        </table>
+      </div>
+      <p class="px-4 sm:px-6 py-2.5 text-[10px] sm:text-[11px] text-slate-600 border-t border-white/5 leading-relaxed">
+        <strong class="text-slate-500">Потенціал росту:</strong>
+        <em>Привабл.</em> — наскільки компанія виглядає привабливою для заробітку на рості бізнесу;
+        <em>Імов. росту</em> — евристична ймовірність, що ріст продовжиться.
+        Це не гарантія і не фінансова порада. Наведи курсор на комірку — короткий опис.
+      </p>
+    </section>
+
+    <div class="grid gap-6 lg:grid-cols-5">
+      <section class="lg:col-span-3 glass rounded-2xl p-5 sm:p-6 shadow-glow-green">
+        <h2 class="text-lg font-bold text-white mb-1">Додати тікер</h2>
+        <p class="text-xs text-slate-500 mb-4">US-символ підтягнеться з Finnhub.</p>
+        <form id="add-stock-form" class="flex flex-col sm:flex-row gap-2">
+          <input id="ticker" name="ticker" required maxlength="10" placeholder="TICKER"
+            class="sm:w-40 px-3 py-2.5 rounded-xl bg-surface-900 border border-surface-600 text-sm text-white uppercase font-mono" />
+          <button type="submit" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white">Додати + завантажити</button>
+          <span id="form-msg" class="text-xs text-slate-500 self-center"></span>
+        </form>
+      </section>
+      <section class="lg:col-span-2 glass rounded-2xl p-5 sm:p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-white">Live Universe</h2>
+          <button id="reset-universe" type="button" class="text-xs text-slate-500 hover:text-blue-300">Reset list</button>
+        </div>
+        <ul id="universe-list" class="space-y-2 max-h-[420px] overflow-y-auto scroll-thin pr-1"></ul>
+      </section>
+    </div>
+
+    <footer class="mt-10 pb-6 text-center text-xs text-slate-600 space-y-2">
+      <div>
+        <button type="button" id="btn-clear-cache"
+          class="px-3 py-1.5 rounded-lg border border-surface-600 bg-surface-800 text-slate-400 hover:text-amber-300 hover:border-amber-500/30 text-[11px] font-semibold transition-colors">
+          Clear Cache
+        </button>
+      </div>
+      <div>Multi-Investor · Top Picks · Watchlist · Portfolio · Not financial advice</div>
+    </footer>
+  </div>
+
+  <!-- ════════ VIEW: Watchlist ════════ -->
+  <div id="view-watchlist" class="hidden max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
+    <header class="mb-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-300 border border-blue-500/20 mb-3">
+        Watchlist · localStorage
+      </div>
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Мій Watchlist</h1>
+          <p class="text-sm text-slate-400 mt-1">Live-ціни + <strong class="text-slate-300">Score цікавості</strong> для розгляду. Список у localStorage.</p>
+        </div>
+        <div class="text-xs text-slate-500" id="wl-count">0 tickers</div>
+      </div>
+    </header>
+
+    <section class="glass rounded-2xl p-4 sm:p-5 mb-5 flex flex-col sm:flex-row gap-3 sm:items-end">
+      <form id="wl-add-form" class="flex flex-col sm:flex-row gap-2 flex-1">
+        <div class="flex-1">
+          <label class="block text-[10px] uppercase text-slate-500 mb-1" for="wl-add-ticker">Add ticker</label>
+          <input id="wl-add-ticker" maxlength="10" placeholder="e.g. SOFI"
+            class="w-full sm:w-40 px-3 py-2.5 rounded-xl bg-surface-900 border border-surface-600 text-sm text-white uppercase font-mono" />
+        </div>
+        <button type="submit" class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white">Add to Watch</button>
+      </form>
+      <div>
+        <label class="block text-[10px] uppercase text-slate-500 mb-1" for="wl-sort">Sort</label>
+        <select id="wl-sort" class="px-3 py-2.5 rounded-xl bg-surface-900 border border-surface-600 text-sm text-slate-200">
+          <option value="interest_desc">Interest score high→low</option>
+          <option value="interest_asc">Interest score low→high</option>
+          <option value="ticker_asc">Ticker A–Z</option>
+          <option value="ticker_desc">Ticker Z–A</option>
+          <option value="price_desc">Price high→low</option>
+          <option value="price_asc">Price low→high</option>
+          <option value="change_desc">Change % high→low</option>
+          <option value="change_asc">Change % low→high</option>
+        </select>
+      </div>
+    </section>
+
+    <div id="wl-empty" class="glass rounded-2xl p-10 text-center text-sm text-slate-500">
+      Watchlist порожній. Додай тікер тут або кнопкою <strong class="text-slate-400">+ Watch</strong> у Top Picks / Analyze.
+    </div>
+    <div id="wl-list" class="space-y-3"></div>
+  </div>
+
+  <!-- ════════ VIEW: Portfolio ════════ -->
+  <div id="view-portfolio" class="hidden max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
+    <header class="mb-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/25 mb-3">
+        Portfolio · localStorage · live P&amp;L
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Мій Портфель</h1>
+      <p class="text-sm text-slate-400 mt-1">P&amp;L, рекомендації змін, стратегія на позицію (SL / коли продавати) + Grok.</p>
+    </header>
+
+    <section class="glass rounded-2xl p-4 sm:p-5 mb-5" id="pf-summary"></section>
+
+    <!-- Portfolio-level recommendations -->
+    <section class="glass rounded-2xl p-4 sm:p-5 mb-5 border border-emerald-500/15">
+      <h2 class="text-sm font-bold text-white mb-2">Рекомендації по портфелю</h2>
+      <p class="text-[11px] text-slate-500 mb-3">Локальна евристика (не фін. порада). Оновлюється разом із позиціями.</p>
+      <ul id="pf-recs" class="space-y-2 text-sm text-slate-300"></ul>
+    </section>
+
+    <!-- Grok portfolio agent -->
+    <section class="grok-hero rounded-2xl p-4 sm:p-5 mb-5">
+      <h2 class="text-base font-extrabold text-white mb-1">Grok Portfolio Strategy</h2>
+      <p class="text-xs text-slate-300/90 mb-3">
+        1) Generate prompt → 2) Copy → Grok → 3) Paste reply → 4) <strong class="text-emerald-300">Save &amp; process</strong> —
+        тоді на картках оновляться <strong class="text-white">Action / SL / TP1 / TP2</strong> (бейдж «from Grok»).
+      </p>
+      <div class="flex flex-wrap gap-2 mb-3">
+        <button type="button" id="pf-grok-gen" class="px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-blue-600 hover:from-emerald-400 hover:to-blue-500">
+          Generate Grok Portfolio Prompt
+        </button>
+        <button type="button" id="pf-grok-copy" class="px-4 py-2.5 rounded-xl text-xs font-semibold border border-emerald-500/30 text-emerald-200 hover:bg-emerald-500/10">Copy Prompt</button>
+        <button type="button" id="pf-grok-open" class="px-4 py-2.5 rounded-xl text-xs font-semibold border border-blue-500/40 bg-blue-600/20 text-blue-200">Open Grok Chat</button>
+      </div>
+      <textarea id="pf-grok-prompt" readonly rows="8" placeholder="Промпт з’явиться тут…"
+        class="grok-prompt-area w-full px-3 py-3 rounded-xl bg-black/40 border border-emerald-500/25 text-[12px] text-slate-200 mb-3 resize-y"></textarea>
+      <label class="block text-xs font-semibold text-slate-400 mb-1.5" for="pf-grok-response">Відповідь Grok (встав сюди)</label>
+      <textarea id="pf-grok-response" rows="8" placeholder="Paste Grok’s portfolio advice here…"
+        class="w-full px-3 py-3 rounded-xl bg-surface-900 border border-surface-600 text-xs text-slate-200 mb-2 resize-y focus:outline-none focus:ring-2 focus:ring-emerald-500/30"></textarea>
+      <div class="flex flex-wrap gap-2 mb-3">
+        <button type="button" id="pf-grok-save" class="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white">Save &amp; process Grok reply</button>
+        <button type="button" id="pf-grok-clear" class="px-4 py-2 rounded-xl text-xs font-semibold border border-surface-600 text-slate-400">Clear saved reply</button>
+        <span id="pf-grok-msg" class="text-xs text-slate-500 self-center"></span>
+      </div>
+      <div id="pf-grok-parsed" class="hidden rounded-xl bg-surface-900/80 border border-white/5 p-3 text-xs text-slate-300 space-y-2"></div>
+    </section>
+
+    <section class="glass rounded-2xl p-4 sm:p-5 mb-5">
+      <h2 class="text-sm font-bold text-white mb-3">Додати позицію</h2>
+      <form id="pf-form" class="grid gap-3 sm:grid-cols-4">
+        <div>
+          <label class="block text-[10px] uppercase text-slate-500 mb-1" for="pf-ticker">Ticker</label>
+          <input id="pf-ticker" required maxlength="10" placeholder="AAPL"
+            class="w-full px-3 py-2.5 rounded-xl bg-surface-900 border border-surface-600 text-sm text-white uppercase font-mono" />
+        </div>
+        <div>
+          <label class="block text-[10px] uppercase text-slate-500 mb-1" for="pf-shares">Shares</label>
+          <input id="pf-shares" required type="number" min="0.0001" step="any" placeholder="10"
+            class="w-full px-3 py-2.5 rounded-xl bg-surface-900 border border-surface-600 text-sm text-white" />
+        </div>
+        <div>
+          <label class="block text-[10px] uppercase text-slate-500 mb-1" for="pf-avg">Avg buy price ($)</label>
+          <input id="pf-avg" required type="number" min="0.0001" step="any" placeholder="150.00"
+            class="w-full px-3 py-2.5 rounded-xl bg-surface-900 border border-surface-600 text-sm text-white" />
+        </div>
+        <div class="flex items-end">
+          <button type="submit" class="w-full px-4 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white">Add position</button>
+        </div>
+      </form>
+    </section>
+
+    <div id="pf-empty" class="glass rounded-2xl p-10 text-center text-sm text-slate-500 hidden">
+      Немає позицій. Додай першу вище.
+    </div>
+    <div id="pf-list" class="space-y-3"></div>
+  </div>
+
+  <!-- ════════ VIEW: Day Trading Chart Analyzer ════════ -->
+  <div id="view-daytrade" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <header class="mb-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/25 mb-3">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        Day Trading · lightweight-charts · Yahoo candles (free)
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+        Day Trading
+        <span class="bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">Chart Analyzer</span>
+      </h1>
+      <p class="mt-2 text-slate-400 max-w-2xl text-sm">
+        Інтерактивний графік (zoom / crosshair) + технічний аналіз + Grok prompt.
+        <strong class="text-slate-300">Свічки:</strong> Yahoo Finance (безкоштовно) —
+        Finnhub Free <em>не дає</em> endpoint <code class="text-slate-500">/stock/candle</code> (403).
+        Quote/WS як і раніше з Finnhub key (Top Picks).
+      </p>
+    </header>
+
+    <!-- Controls -->
+    <section class="glass rounded-2xl p-5 sm:p-6 shadow-glow mb-6">
+      <div class="flex flex-col lg:flex-row lg:items-end gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5" for="dt-ticker">Ticker</label>
+          <input id="dt-ticker" maxlength="10" placeholder="SOFI" value="SOFI"
+            class="w-full sm:w-40 px-3 py-2.5 rounded-xl bg-surface-900 border border-surface-600 text-sm text-white uppercase font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500/40" />
+        </div>
+        <div class="flex-1">
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Timeframe</label>
+          <div class="flex flex-wrap gap-1.5" id="dt-tf-group">
+            <button type="button" class="tf-btn" data-tf="1">1m</button>
+            <button type="button" class="tf-btn active" data-tf="5">5m</button>
+            <button type="button" class="tf-btn" data-tf="15">15m</button>
+            <button type="button" class="tf-btn" data-tf="30">30m</button>
+            <button type="button" class="tf-btn" data-tf="60">1H</button>
+            <button type="button" class="tf-btn" data-tf="240">4H</button>
+            <button type="button" class="tf-btn" data-tf="D">Daily</button>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" id="dt-load-btn"
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white
+                   bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-500 hover:to-blue-500
+                   shadow-lg shadow-emerald-900/30 disabled:opacity-60">
+            Load Chart + Analyze
+          </button>
+          <button type="button" id="dt-save-btn"
+            class="px-4 py-3 rounded-xl text-sm font-medium border border-surface-600 bg-surface-800 text-slate-300 hover:border-emerald-500/40 disabled:opacity-50"
+            disabled>Save analysis</button>
+        </div>
+      </div>
+      <p id="dt-status" class="text-xs text-slate-500 mt-3">
+        Графік <strong class="text-emerald-400/90">не потребує</strong> Finnhub.
+        Запускай через <strong class="text-emerald-400/90">start.bat</strong>
+        → <code class="text-slate-400">http://127.0.0.1:8765/#daytrade</code>
+        (Yahoo candles). Finnhub key — лише для Top Picks / live quote (опційно).
+      </p>
+      <p id="dt-file-warn" class="hidden mt-2 text-xs text-amber-300 bg-amber-500/10 border border-amber-500/25 rounded-xl px-3 py-2">
+        Зараз відкрито як file:// — графік не завантажиться. Закрий вкладку і запусти <strong>start.bat</strong> у папці проєкту.
+      </p>
+    </section>
+
+    <div class="grid gap-6 xl:grid-cols-5">
+      <!-- Chart -->
+      <section class="xl:col-span-3 glass rounded-2xl overflow-hidden shadow-glow">
+        <div class="px-4 sm:px-5 py-3 border-b border-white/5 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-sm font-bold text-white">
+              <span id="dt-chart-title" class="font-mono text-emerald-300">—</span>
+              <span class="text-slate-500 font-normal text-xs ml-2" id="dt-chart-sub">No data</span>
+            </h2>
+          </div>
+          <div class="flex items-center gap-3 text-xs tabular-nums">
+            <span id="dt-live-price" class="font-semibold text-emerald-400">—</span>
+            <span id="dt-live-chg" class="text-slate-400">—</span>
+            <span id="dt-ohlc" class="text-slate-500 hidden sm:inline">OHLC —</span>
+          </div>
+        </div>
+        <div id="dt-chart-wrap" style="background: var(--bg1)">
+          <div id="dt-chart" class="w-full h-full"></div>
+          <div id="dt-chart-empty" class="absolute inset-0 flex items-center justify-center text-sm text-slate-500 pointer-events-none">
+            Обери тікер і натисни Load Chart + Analyze
+          </div>
+        </div>
+        <div class="px-4 py-2 border-t border-white/5 text-[11px] text-slate-500 flex flex-wrap gap-x-4 gap-y-1">
+          <span>Scroll = zoom · Drag = pan · Crosshair on hover</span>
+          <span id="dt-bar-count">0 bars</span>
+        </div>
+      </section>
+
+      <!-- Analysis panel -->
+      <section class="xl:col-span-2 space-y-4">
+        <div class="glass rounded-2xl p-5 shadow-glow-green">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <h2 class="text-base font-bold text-white">Day Trading Verdict</h2>
+            <span id="dt-verdict" class="hidden text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-lg border">—</span>
+          </div>
+          <p id="dt-verdict-text" class="text-sm text-slate-300 leading-relaxed">Завантаж графік для аналізу.</p>
+          <div id="dt-conclusions" class="mt-3 space-y-2 text-xs text-slate-400"></div>
+          <div class="grid grid-cols-2 gap-2 mt-4" id="dt-levels"></div>
+          <div id="dt-plan-explain" class="mt-3 text-xs text-slate-400 leading-relaxed space-y-1.5"></div>
+        </div>
+
+        <div class="glass rounded-2xl p-5">
+          <h2 class="text-sm font-bold text-white mb-1">Indicators snapshot</h2>
+          <p class="text-[11px] text-slate-500 mb-3">Натисни індикатор, щоб побачити пояснення.</p>
+          <div class="grid grid-cols-2 gap-2 text-sm" id="dt-indicators">
+            <div class="metric-chip text-slate-500 text-xs col-span-2">—</div>
+          </div>
+          <div id="dt-indicator-explain" class="hidden mt-3 text-xs text-slate-300 leading-relaxed rounded-xl bg-surface-900/80 border border-white/5 p-3"></div>
+        </div>
+
+        <div class="glass rounded-2xl p-5">
+          <div class="flex items-center justify-between gap-2 mb-1">
+            <h2 class="text-sm font-bold text-white">Strategies</h2>
+            <span class="text-[10px] text-slate-500">клікни «Пояснення»</span>
+          </div>
+          <p class="text-[11px] text-slate-500 mb-3">Оцінка 0–100: наскільки setup підходить стратегії зараз.</p>
+          <div id="dt-strategies" class="space-y-2 text-sm text-slate-400">—</div>
+        </div>
+
+        <div class="glass rounded-2xl p-5">
+          <h2 class="text-sm font-bold text-white mb-2">Patterns & structure</h2>
+          <ul id="dt-patterns" class="space-y-2 text-xs text-slate-400">—</ul>
+        </div>
+
+        <div class="glass rounded-2xl p-5">
+          <h2 class="text-sm font-bold text-white mb-2">Що робити далі</h2>
+          <ol id="dt-next-steps" class="list-decimal list-inside space-y-1.5 text-xs text-slate-400 leading-relaxed">
+            <li>Завантаж графік, щоб отримати план.</li>
+          </ol>
+          <p class="text-[10px] text-slate-600 mt-3">Освітній аналіз · не фінансова порада</p>
+        </div>
+
+        <div class="grok-hero rounded-2xl p-5">
+          <h2 class="text-base font-extrabold text-white mb-1">Generate Full Grok Analysis</h2>
+          <p class="text-xs text-slate-300/90 mb-3">Скопіюй промпт → встав у Grok → стратегія day trade</p>
+          <button type="button" id="dt-grok-btn" disabled
+            class="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl text-sm font-bold text-white
+                   bg-gradient-to-r from-emerald-500 to-blue-600 hover:from-emerald-400 hover:to-blue-500
+                   shadow-lg shadow-emerald-900/30 disabled:opacity-50 disabled:cursor-not-allowed">
+            Generate Full Grok Analysis
+          </button>
+          <div id="dt-grok-wrap" class="hidden mt-3 space-y-2">
+            <textarea id="dt-grok-prompt" readonly rows="14"
+              class="grok-prompt-area w-full px-3 py-3 rounded-xl bg-black/40 border border-emerald-500/25 text-[12px] text-slate-200 leading-relaxed resize-y scroll-thin"></textarea>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" id="dt-copy-btn" class="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white">Copy Prompt</button>
+              <button type="button" id="dt-open-grok-btn" class="px-4 py-2 rounded-xl text-xs font-semibold border border-blue-500/40 bg-blue-600/20 text-blue-200">Open Grok Chat</button>
+              <span id="dt-copy-msg" class="text-xs text-emerald-400 self-center hidden">Скопійовано!</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-sm font-bold text-white">Saved analyses</h2>
+            <button type="button" id="dt-clear-saved" class="text-[11px] text-slate-500 hover:text-red-300">Clear all</button>
+          </div>
+          <ul id="dt-saved-list" class="space-y-2 max-h-48 overflow-y-auto scroll-thin text-xs text-slate-400">
+            <li class="text-slate-600">Порожньо</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ═══ Stock Analyzer Panel ═══ -->
+  <div id="analyzer-overlay" aria-hidden="true">
+    <div id="analyzer-panel" role="dialog" aria-modal="true" aria-labelledby="az-title">
+      <!-- Header -->
+      <div class="shrink-0 px-5 sm:px-6 py-4 border-b border-white/10 flex items-start gap-3 bg-surface-900/80">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-3 flex-wrap">
+            <img id="az-logo" src="" alt="" class="hidden w-10 h-10 rounded-lg bg-surface-800 object-contain border border-white/10" />
+            <div class="min-w-0">
+              <h2 id="az-title" class="text-xl font-extrabold text-white tracking-tight">
+                <span id="az-ticker" class="font-mono text-blue-300">—</span>
+                <span class="text-slate-500 font-normal mx-1">·</span>
+                <span id="az-name" class="text-white/90 font-semibold text-base sm:text-lg">Stock Analyzer</span>
+              </h2>
+              <div class="flex items-center gap-3 mt-1 flex-wrap">
+                <span id="az-price" class="text-lg font-bold tabular-nums text-emerald-400" data-price-ticker="">—</span>
+                <span id="az-chg" class="text-sm font-medium tabular-nums text-slate-400" data-chg-ticker="">—</span>
+                <span class="text-[10px] uppercase tracking-wide text-emerald-500/80">live</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" id="az-watch-btn" data-watch-ticker=""
+            class="px-2.5 py-2 rounded-xl text-[11px] font-semibold border border-surface-600 text-slate-300 hover:text-amber-300 hover:border-amber-500/30">
+            + Watch
+          </button>
+          <button type="button" id="az-close" class="w-10 h-10 rounded-xl border border-white/10 bg-surface-800 text-slate-300 hover:text-white hover:border-white/20 transition-colors" aria-label="Close">✕</button>
+        </div>
+      </div>
+
+      <!-- Analyze another -->
+      <div class="shrink-0 px-5 sm:px-6 py-3 border-b border-white/5 flex flex-wrap gap-2 items-center bg-surface-950/40">
+        <span class="text-xs text-slate-500">Analyze another:</span>
+        <input id="az-manual-ticker" maxlength="10" placeholder="TICKER"
+          class="w-28 px-3 py-1.5 rounded-lg bg-surface-900 border border-surface-600 text-sm text-white uppercase font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/40" />
+        <button type="button" id="az-manual-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white">Analyze</button>
+        <span id="az-error" class="text-xs text-red-400 hidden"></span>
+      </div>
+
+      <!-- Body -->
+      <div id="az-body" class="flex-1 overflow-y-auto scroll-thin px-5 sm:px-6 py-5 space-y-5">
+        <!-- Loader -->
+        <div id="az-loader" class="hidden py-20 flex flex-col items-center justify-center gap-3">
+          <div class="spinner spinner-lg"></div>
+          <p class="text-sm text-slate-400" id="az-loader-text">Завантаження аналізу…</p>
+        </div>
+
+        <div id="az-content" class="hidden space-y-5">
+          <!-- E. Grok-Powered Deep Agent (5.4) — primary block -->
+          <section id="az-grok-section" class="grok-hero rounded-2xl p-5 sm:p-6">
+            <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+              <div>
+                <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 border border-emerald-500/25 mb-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Stage 5.4 · Grok-Powered Deep Agent
+                </div>
+                <h3 class="text-lg sm:text-xl font-extrabold text-white tracking-tight">
+                  Grok Deep Analysis
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-300/90 mt-1.5 max-w-md leading-relaxed">
+                  Скопіюй промпт → встав у Grok → отримай стратегію
+                </p>
+              </div>
+              <div id="az-grok-context" class="text-[11px] text-right text-slate-400 space-y-0.5">
+                <div>Horizon: <span id="az-grok-horizon" class="text-emerald-300 font-medium">—</span></div>
+                <div>Style: <span id="az-grok-styles" class="text-blue-300 font-medium">—</span></div>
+              </div>
+            </div>
+
+            <button type="button" id="az-grok-btn"
+              class="w-full inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl text-base font-bold text-white
+                     bg-gradient-to-r from-emerald-500 via-emerald-600 to-blue-600
+                     hover:from-emerald-400 hover:via-emerald-500 hover:to-blue-500
+                     shadow-xl shadow-emerald-900/40 transition-all active:scale-[0.99]
+                     border border-emerald-400/30">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Generate AI Strategy with Grok
+            </button>
+
+            <div id="az-grok-wrap" class="hidden mt-4 space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <label for="az-grok-prompt" class="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  Ready-to-copy prompt
+                </label>
+                <span id="az-prompt-fresh" class="text-[10px] text-emerald-400/90 hidden">Updated for current style / horizon</span>
+              </div>
+              <textarea id="az-grok-prompt" readonly rows="16"
+                class="grok-prompt-area w-full px-4 py-3.5 rounded-xl bg-black/40 border border-emerald-500/25 text-[12px] sm:text-[13px] text-slate-200 leading-relaxed focus:outline-none focus:ring-2 focus:ring-emerald-500/40 resize-y scroll-thin"></textarea>
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" id="az-copy-btn"
+                  class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold
+                         bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/30 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                  Copy Prompt
+                </button>
+                <button type="button" id="az-open-grok-btn"
+                  class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold
+                         border border-blue-500/40 bg-blue-600/20 hover:bg-blue-600/35 text-blue-200 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                  Open Grok Chat
+                </button>
+                <span id="az-copy-msg" class="text-xs text-emerald-400 hidden">Скопійовано в буфер!</span>
+              </div>
+              <p class="text-[11px] text-slate-500 leading-relaxed">
+                Підказка: <span class="text-slate-400">Скопіюй промпт → встав у Grok → отримай стратегію</span>.
+                Промпт автоматично оновлюється, якщо змінюєш горизонт або стиль інвестора на головній панелі.
+              </p>
+            </div>
+          </section>
+
+          <!-- A. Overview -->
+          <section class="analyzer-card p-4 sm:p-5">
+            <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Company Overview
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm" id="az-overview"></div>
+          </section>
+
+          <!-- B. Key Metrics -->
+          <section class="analyzer-card p-4 sm:p-5">
+            <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Key Metrics
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="az-metrics"></div>
+          </section>
+
+          <!-- C. News + Sentiment -->
+          <section class="analyzer-card p-4 sm:p-5">
+            <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Recent News + Sentiment
+            </h3>
+            <div id="az-sentiment" class="mb-4"></div>
+            <div id="az-news" class="space-y-3"></div>
+          </section>
+
+          <!-- D. Technical -->
+          <section class="analyzer-card p-4 sm:p-5">
+            <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Basic Technical Analysis
+            </h3>
+            <p class="text-[11px] text-slate-500 mb-3">Попередні рівні (не фінансова порада). Support/Resistance з daily candles ~10 днів.</p>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="az-tech"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── Config ───────────────────────────────────────────────────────
+    const FINNHUB_REST = 'https://finnhub.io/api/v1';
+    const FINNHUB_WS = 'wss://ws.finnhub.io';
+    const STORAGE_KEY = 'mitp_finnhub_key';
+    const STORAGE_TICKERS = 'mitp_tickers';
+    const REST_GAP_MS = 1100;
+    const POLL_MS = 60_000;
+
+    const DEFAULT_TICKERS = [
+      'NVDA', 'TSLA', 'AAPL', 'MSFT', 'AMZN', 'GOOGL', 'META', 'AMD',
+      'PLTR', 'COIN', 'SOFI', 'NIO', 'SNAP', 'F', 'INTC', 'BAC',
+      'PFE', 'T', 'UAL', 'RIVN', 'MARA', 'HOOD', 'AAL', 'WBD',
+    ];
+
+    const STYLE_META = {
+      buffett: { label: 'Warren Buffett', short: 'Value Investing', holdHint: { day: '1–3 sessions', '10d': '2–4 weeks', '1m': '3–12 months' } },
+      wood: { label: 'Cathie Wood', short: 'Disruptive Innovation', holdHint: { day: 'Intraday momentum', '10d': '1–3 weeks', '1m': '1–6 months' } },
+      lynch: { label: 'Peter Lynch', short: 'GARP', holdHint: { day: '1–2 sessions', '10d': '2–3 weeks', '1m': '2–9 months' } },
+      balanced: { label: 'Balanced Mix', short: 'Balanced', holdHint: { day: 'Session-scale', '10d': '1–2 weeks', '1m': '1–3 months' } },
+      // Day trading strategies
+      momentum: { label: 'Momentum', short: 'Trend ride', holdHint: { day: 'Intraday / overnight', '10d': '3–10 days', '1m': '2–6 weeks' } },
+      scalping: { label: 'Scalping', short: 'Micro moves', holdHint: { day: 'Seconds–minutes', '10d': 'Not ideal', '1m': 'Not ideal' } },
+      breakout: { label: 'Breakout', short: 'Range break', holdHint: { day: '1–3 sessions after break', '10d': '3–7 days', '1m': '1–3 weeks' } },
+      meanrev: { label: 'Mean Reversion', short: 'Fade extremes', holdHint: { day: 'Intraday bounce', '10d': '2–5 days', '1m': '1–2 weeks' } },
+      gapgo: { label: 'Gap & Go', short: 'Gap continuation', holdHint: { day: 'Open drive / first hour', '10d': '1–3 days', '1m': 'Not ideal' } },
+      vwap: { label: 'VWAP Bounce', short: 'Institutional avg', holdHint: { day: 'Intraday holds of VWAP', '10d': '2–5 days', '1m': 'Not ideal' } },
+      orb: { label: 'Opening Range', short: 'ORB breakout', holdHint: { day: 'First 15–60 min range', '10d': '1–3 days', '1m': 'Not ideal' } },
+      highbeta: { label: 'High Beta / Vol', short: 'Volatile movers', holdHint: { day: 'Session swings', '10d': '3–10 days', '1m': '2–4 weeks' } },
+      daymix: { label: 'Day Mix', short: 'All DT strategies', holdHint: { day: 'Flexible session', '10d': '3–7 days', '1m': '1–3 weeks' } },
+    };
+    const HORIZON_LABELS = { day: 'Day Trading', '10d': '10 Days', '1m': '1 Month' };
+
+    const INNOVATION_INDUSTRY = {
+      Technology: 88, Semiconductors: 95, Software: 86, Internet: 90,
+      Biotechnology: 92, 'Health Technology': 80, Automotive: 78,
+      Financials: 55, Banks: 48, Telecommunications: 50,
+      Media: 70, Retail: 60, Pharmaceuticals: 65,
+    };
+
+    const POS_WORDS = ['growth', 'beat', 'beats', 'upgrade', 'upgraded', 'profit', 'profits', 'record', 'surge', 'rally', 'bullish', 'outperform', 'strong', 'gain', 'gains', 'soar', 'soars', 'breakthrough', 'expansion', 'positive', 'raises', 'raised', 'buy', 'success', 'win', 'wins', 'high', 'higher', 'jump', 'jumps'];
+    const NEG_WORDS = ['loss', 'losses', 'miss', 'misses', 'missed', 'downgrade', 'downgraded', 'lawsuit', 'sue', 'sued', 'fraud', 'cut', 'cuts', 'weak', 'fall', 'falls', 'drop', 'drops', 'bearish', 'underperform', 'warning', 'probe', 'investigation', 'decline', 'slump', 'plunge', 'bankruptcy', 'layoffs', 'risk', 'delay', 'delays', 'negative', 'sell', 'crash'];
+
+    // ─── State ────────────────────────────────────────────────────────
+    let stocks = [];
+    let selectedHorizon = 'day';
+    let apiKey = localStorage.getItem(STORAGE_KEY) || '';
+    let ws = null;
+    let pollTimer = null;
+    let restQueue = Promise.resolve();
+    let ticksReceived = 0;
+    let lastResultsTickers = [];
+    let connected = false;
+    /** Full scored list before top-N slice (for re-sort / re-limit) */
+    let lastScoredAll = [];
+    let lastResultsMeta = { styles: [], maxPrice: null, filteredOut: 0 };
+    let topNLimit = 10;
+    let sortKey = 'score'; // score | price | change | potential
+    let sortDir = 'desc'; // asc | desc
+    /** @type {null | object} */
+    let analyzerData = null;
+    let analyzerTicker = null;
+    /** Timestamps of REST calls (ms) for sliding 60s window */
+    let restCallTimes = [];
+    let wsStatus = 'Disconnected'; // Connected | Disconnected | Reconnecting
+    let wsReconnectAttempts = 0;
+    let wsManualClose = false;
+    let wsReconnectTimer = null;
+    const REST_LIMIT = 60;
+    const WS_MAX_RECONNECT = 3;
+
+    // ─── Helpers ──────────────────────────────────────────────────────
+    function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+
+    function showToast(message, type = 'ok', ms = 3200) {
+      const root = document.getElementById('toast-root');
+      if (!root) return;
+      const el = document.createElement('div');
+      el.className = `toast ${type === 'error' || type === 'err' ? 'err' : type === 'warn' ? 'warn' : 'ok'}`;
+      el.textContent = message;
+      root.appendChild(el);
+      setTimeout(() => {
+        el.classList.add('out');
+        setTimeout(() => el.remove(), 250);
+      }, ms);
+    }
+
+    function showGlobalBusy(text) {
+      const el = document.getElementById('global-busy');
+      const t = document.getElementById('global-busy-text');
+      if (t && text) t.textContent = text;
+      el?.classList.add('show');
+    }
+    function hideGlobalBusy() {
+      document.getElementById('global-busy')?.classList.remove('show');
+    }
+
+    function recordRestCall() {
+      const now = Date.now();
+      restCallTimes.push(now);
+      // keep last 2 minutes
+      restCallTimes = restCallTimes.filter((t) => now - t < 120000);
+      updateLimitBar();
+    }
+    function restCallsLastMinute() {
+      const now = Date.now();
+      return restCallTimes.filter((t) => now - t < 60000).length;
+    }
+    function updateLimitBar() {
+      const n = restCallsLastMinute();
+      const restEl = document.getElementById('bar-rest');
+      const warnEl = document.getElementById('bar-warn');
+      const bar = document.getElementById('finnhub-status-bar');
+      if (restEl) restEl.textContent = `REST: ${n}/${REST_LIMIT} per min`;
+
+      bar?.classList.remove('warn', 'danger');
+      if (warnEl) {
+        warnEl.classList.add('hidden');
+        warnEl.textContent = '';
+        warnEl.classList.remove('text-amber-300', 'text-red-300');
+      }
+      if (n >= REST_LIMIT) {
+        bar?.classList.add('danger');
+        if (warnEl) {
+          warnEl.classList.remove('hidden');
+          warnEl.classList.add('text-red-300');
+          warnEl.textContent = 'Rate limit reached — wait 30–60s';
+        }
+      } else if (n >= 45) {
+        bar?.classList.add('warn');
+        if (warnEl) {
+          warnEl.classList.remove('hidden');
+          warnEl.classList.add('text-amber-300');
+          warnEl.textContent = n >= 55 ? 'Almost at limit' : 'Approaching limit';
+        }
+      }
+      updateWsBar();
+    }
+    function updateWsBar() {
+      const text = document.getElementById('bar-ws-text');
+      const dot = document.getElementById('bar-ws-dot');
+      if (text) text.textContent = `WS: ${wsStatus}`;
+      if (dot) {
+        dot.className = 'live-dot';
+        if (wsStatus === 'Connected') dot.classList.add('on');
+        else if (wsStatus === 'Reconnecting') dot.classList.add('warn');
+        else if (wsStatus === 'Disconnected') { /* grey */ }
+        else dot.classList.add('err');
+      }
+      const st = document.getElementById('stat-ws');
+      if (st) st.textContent = wsStatus.toLowerCase();
+    }
+    // refresh REST counter every 5s
+    setInterval(updateLimitBar, 5000);
+    function num(v, fallback = 0) {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : fallback;
+    }
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function formatPrice(price) {
+      if (!Number.isFinite(price) || price <= 0) return '—';
+      return `$${price.toFixed(price < 10 ? 3 : 2)}`;
+    }
+    function formatPct(p) {
+      if (!Number.isFinite(p)) return '—';
+      const sign = p > 0 ? '+' : '';
+      return `${sign}${p.toFixed(2)}%`;
+    }
+    function formatCap(m) {
+      // Finnhub marketCapitalization is usually in millions
+      if (!Number.isFinite(m) || m <= 0) return '—';
+      if (m >= 1e6) return `$${(m / 1e6).toFixed(2)}T`;
+      if (m >= 1e3) return `$${(m / 1e3).toFixed(2)}B`;
+      return `$${m.toFixed(1)}M`;
+    }
+    function formatShares(s) {
+      if (!Number.isFinite(s) || s <= 0) return '—';
+      if (s >= 1e3) return `${(s / 1e3).toFixed(2)}B`;
+      return `${s.toFixed(2)}M`;
+    }
+    function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
+    function dateISO(d) {
+      return d.toISOString().slice(0, 10);
+    }
+
+    function emptyStock(ticker) {
+      return {
+        ticker, name: ticker, price: 0, prevClose: 0, dayChangePct: 0,
+        dayHigh: 0, dayLow: 0, open: 0,
+        pe: 0, epsGrowth: 0, revGrowth: 0, rs: 50, roe: 0,
+        innovation: 50, debtEquity: 0.5, volatility: 40,
+        industry: '', live: false, hasQuote: false, hasMetrics: false,
+        week52High: 0, week52Low: 0, marketCap: 0,
+      };
+    }
+
+    function loadTickerList() {
+      try {
+        const raw = localStorage.getItem(STORAGE_TICKERS);
+        if (raw) {
+          const arr = JSON.parse(raw);
+          if (Array.isArray(arr) && arr.length) return [...new Set(arr.map((t) => String(t).toUpperCase()))];
+        }
+      } catch (_) {}
+      return DEFAULT_TICKERS.slice();
+    }
+    function saveTickerList() {
+      localStorage.setItem(STORAGE_TICKERS, JSON.stringify(stocks.map((s) => s.ticker)));
+    }
+    function initStocksFromTickers(tickers) {
+      stocks = tickers.map((t) => emptyStock(t));
+    }
+
+    // ─── Rate-limited Finnhub REST ────────────────────────────────────
+    function enqueueRest(fn) {
+      const run = restQueue.then(fn, fn);
+      restQueue = run.then(() => sleep(REST_GAP_MS)).catch(() => sleep(REST_GAP_MS));
+      return run;
+    }
+
+    async function finnhubGet(path, params = {}) {
+      if (!apiKey) throw new Error('Немає API key — Connect live data');
+      const url = new URL(`${FINNHUB_REST}${path}`);
+      Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+      url.searchParams.set('token', apiKey);
+      recordRestCall();
+      const res = await fetch(url.toString());
+      if (res.status === 401) {
+        const msg = 'Invalid Finnhub API Key';
+        showToast(msg, 'err', 5000);
+        throw new Error(msg);
+      }
+      if (res.status === 403) {
+        if (String(path).includes('candle')) {
+          throw new Error('Finnhub Free не дає candles (403). Day Trading графік береться з Yahoo.');
+        }
+        throw new Error('Finnhub 403: доступ до цього endpoint заборонено на free-плані.');
+      }
+      if (res.status === 429) {
+        const msg = 'Finnhub rate limit reached. Please wait 30–60 seconds and try again.';
+        showToast(msg, 'err', 6000);
+        updateLimitBar();
+        throw new Error(msg);
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status} (${path})`);
+      return res.json();
+    }
+
+    function applyQuote(stock, q) {
+      const price = num(q.c, 0);
+      if (price <= 0) return false;
+      const prev = num(q.pc, price);
+      const dayPct = num(q.dp, prev ? ((price - prev) / prev) * 100 : 0);
+      const high = num(q.h, price);
+      const low = num(q.l, price);
+      const rangePct = price > 0 ? ((high - low) / price) * 100 : 0;
+      stock.price = price;
+      stock.prevClose = prev;
+      stock.dayChangePct = dayPct;
+      stock.dayHigh = high;
+      stock.dayLow = low;
+      stock.open = num(q.o, price);
+      stock.rs = clamp(50 + dayPct * 8, 5, 99);
+      stock.volatility = clamp(rangePct * 12 + Math.abs(dayPct) * 2, 5, 95);
+      stock.hasQuote = true;
+      stock.live = true;
+      // short-lived quote cache
+      try {
+        if (window.MITPPages?.Cache) {
+          const prev = window.MITPPages.Cache.loadQuotes();
+          const map = prev?.map ? { ...prev.map } : {};
+          map[stock.ticker] = {
+            price: stock.price,
+            dayChangePct: stock.dayChangePct,
+            name: stock.name,
+          };
+          window.MITPPages.Cache.saveQuotes(map);
+        }
+        if (window.MITPPages?.onPricesUpdated) window.MITPPages.onPricesUpdated();
+      } catch (_) {}
+      return true;
+    }
+
+    function applyProfile(stock, p) {
+      if (p && p.name) stock.name = p.name;
+      if (p && p.finnhubIndustry) {
+        stock.industry = p.finnhubIndustry;
+        stock.innovation = innovationFromIndustry(p.finnhubIndustry, stock);
+      }
+      if (p && p.marketCapitalization) stock.marketCap = num(p.marketCapitalization);
+    }
+
+    function applyMetrics(stock, payload) {
+      const m = payload && payload.metric ? payload.metric : {};
+      const pe = num(m.peBasicExclExtraTTM, NaN) || num(m.peTTM, NaN) || num(m.peNormalizedAnnual, NaN) || 0;
+      stock.pe = pe > 0 && pe < 500 ? pe : 0;
+      stock.roe = num(m.roeTTM, num(m.roeRfy, 0));
+      stock.epsGrowth = num(m.epsGrowthTTMYoy, NaN) || num(m.epsGrowthQuarterlyYoy, NaN) || num(m.epsGrowth3Y, 0);
+      stock.revGrowth = num(m.revenueGrowthTTMYoy, NaN) || num(m.revenueGrowthQuarterlyYoy, NaN) || num(m.revenueGrowth3Y, 0);
+      stock.debtEquity = num(m['totalDebt/totalEquityAnnual'], NaN) || num(m['totalDebt/totalEquityQuarterly'], NaN) || num(m.longTermDebtEquityAnnual, 0.5);
+      stock.week52High = num(m['52WeekHigh'], 0);
+      stock.week52Low = num(m['52WeekLow'], 0);
+      stock.innovation = innovationFromIndustry(stock.industry, stock);
+      stock.hasMetrics = true;
+    }
+
+    function innovationFromIndustry(industry, stock) {
+      let base = 55;
+      if (industry) {
+        for (const [k, v] of Object.entries(INNOVATION_INDUSTRY)) {
+          if (industry.toLowerCase().includes(k.toLowerCase())) { base = v; break; }
+        }
+      }
+      const g = Math.max(num(stock.revGrowth), num(stock.epsGrowth));
+      return clamp(base + g * 0.25, 10, 99);
+    }
+
+    async function fetchQuoteFor(stock) {
+      return enqueueRest(async () => {
+        const q = await finnhubGet('/quote', { symbol: stock.ticker });
+        applyQuote(stock, q);
+        return q;
+      });
+    }
+    async function fetchProfileFor(stock) {
+      return enqueueRest(async () => {
+        const p = await finnhubGet('/stock/profile2', { symbol: stock.ticker });
+        applyProfile(stock, p);
+        return p;
+      });
+    }
+    async function fetchMetricsFor(stock) {
+      return enqueueRest(async () => {
+        const m = await finnhubGet('/stock/metric', { symbol: stock.ticker, metric: 'all' });
+        applyMetrics(stock, m);
+        return m;
+      });
+    }
+
+    async function loadAllData({ fundamentals = true } = {}) {
+      showGlobalBusy('Connecting to live data...');
+      setLiveBadge('loading', 'Connecting to live data...');
+      document.getElementById('stat-rest').textContent = 'loading…';
+      document.getElementById('api-status').textContent = 'Loading quotes (rate-limited)…';
+      document.getElementById('api-status').className = 'text-xs text-blue-300 mt-2';
+      let quoteOk = 0, quoteFail = 0;
+      for (const s of stocks) {
+        try {
+          await fetchQuoteFor(s);
+          if (s.hasQuote) quoteOk++; else quoteFail++;
+        } catch (e) {
+          quoteFail++;
+          document.getElementById('api-status').textContent = e.message;
+          document.getElementById('api-status').className = 'text-xs text-amber-400 mt-2';
+          if (/Invalid Finnhub|rate limit|API key|401|429/i.test(String(e.message))) {
+            showToast(e.message, 'err');
+            break;
+          }
+        }
+        renderUniverse();
+        updateResultsPricesIfOpen();
+        updateAnalyzerLivePrice();
+        showGlobalBusy(`Loading quotes… ${quoteOk + quoteFail}/${stocks.length}`);
+      }
+      document.getElementById('stat-rest').textContent = `${quoteOk} ok · ${quoteFail} fail`;
+      touchLastUpdate();
+      if (quoteOk === 0) {
+        setLiveBadge('err', 'Failed to load quotes');
+        connected = false;
+        hideGlobalBusy();
+        showToast('Failed to load live quotes', 'err');
+        return false;
+      }
+      if (fundamentals) {
+        document.getElementById('stat-fund').textContent = 'loading…';
+        showGlobalBusy('Loading fundamentals…');
+        let fundOk = 0;
+        for (const s of stocks) {
+          try {
+            await fetchProfileFor(s);
+            await fetchMetricsFor(s);
+            fundOk++;
+          } catch (_) {}
+          renderUniverse();
+        }
+        document.getElementById('stat-fund').textContent = `${fundOk}/${stocks.length}`;
+      }
+      connected = true;
+      setLiveBadge('on', 'Live data connected (Finnhub free)');
+      document.getElementById('api-status').textContent = `OK · ${quoteOk} quotes · connecting WebSocket…`;
+      document.getElementById('api-status').className = 'text-xs text-emerald-400 mt-2';
+      showGlobalBusy('Connecting to live data...');
+      connectWebSocket({ isReconnect: false });
+      startPolling();
+      // WS open handler hides global busy
+      setTimeout(() => hideGlobalBusy(), 4000);
+      return true;
+    }
+
+    function connectWebSocket(opts = {}) {
+      const { isReconnect = false } = opts;
+      if (!apiKey) {
+        wsStatus = 'Disconnected';
+        updateWsBar();
+        return;
+      }
+      // clear pending reconnect if manual connect
+      if (wsReconnectTimer) {
+        clearTimeout(wsReconnectTimer);
+        wsReconnectTimer = null;
+      }
+      disconnectWebSocket(false, { silent: true });
+      wsManualClose = false;
+      wsStatus = isReconnect ? 'Reconnecting' : 'Reconnecting';
+      updateWsBar();
+      if (!isReconnect) showGlobalBusy('Connecting to live data...');
+
+      try {
+        ws = new WebSocket(`${FINNHUB_WS}?token=${encodeURIComponent(apiKey)}`);
+      } catch (_) {
+        wsStatus = 'Disconnected';
+        updateWsBar();
+        hideGlobalBusy();
+        showToast('WebSocket failed to open', 'err');
+        return;
+      }
+
+      ws.onopen = () => {
+        wsReconnectAttempts = 0;
+        wsStatus = 'Connected';
+        updateWsBar();
+        hideGlobalBusy();
+        const list = stocks.slice(0, 50);
+        list.forEach((s) => {
+          try { ws.send(JSON.stringify({ type: 'subscribe', symbol: s.ticker })); } catch (_) {}
+        });
+        if (analyzerTicker && !list.find((s) => s.ticker === analyzerTicker)) {
+          try { ws.send(JSON.stringify({ type: 'subscribe', symbol: analyzerTicker })); } catch (_) {}
+        }
+        setLiveBadge('on', `Live · WS ${list.length} symbols`);
+        if (isReconnect) showToast('WebSocket reconnected', 'ok');
+        else showToast('Live data connected', 'ok');
+      };
+
+      ws.onmessage = (ev) => {
+        try {
+          const msg = JSON.parse(ev.data);
+          if (msg.type === 'ping') return;
+          if (msg.type === 'error') {
+            wsStatus = 'Error';
+            updateWsBar();
+            showToast(msg.msg || 'WebSocket error', 'warn');
+            return;
+          }
+          if (msg.type === 'trade' && Array.isArray(msg.data)) {
+            msg.data.forEach((t) => {
+              let stock = stocks.find((s) => s.ticker === t.s);
+              if (!stock && analyzerTicker === t.s && analyzerData) {
+                const price = num(t.p, 0);
+                if (price > 0) {
+                  const prev = analyzerData.stock?.price || price;
+                  if (analyzerData.stock) {
+                    analyzerData.stock.price = price;
+                    if (analyzerData.stock.prevClose > 0) {
+                      analyzerData.stock.dayChangePct = ((price - analyzerData.stock.prevClose) / analyzerData.stock.prevClose) * 100;
+                    }
+                  }
+                  flashPrice(t.s, price >= prev);
+                  updatePriceInDom(t.s, analyzerData.stock);
+                  updateAnalyzerLivePrice();
+                }
+                return;
+              }
+              if (!stock) return;
+              const prev = stock.price;
+              const price = num(t.p, 0);
+              if (price <= 0) return;
+              stock.price = price;
+              stock.live = true;
+              stock.hasQuote = true;
+              if (stock.prevClose > 0) {
+                stock.dayChangePct = ((price - stock.prevClose) / stock.prevClose) * 100;
+                stock.rs = clamp(50 + stock.dayChangePct * 8, 5, 99);
+              }
+              ticksReceived++;
+              document.getElementById('stat-ticks').textContent = String(ticksReceived);
+              flashPrice(stock.ticker, price >= prev);
+              updatePriceInDom(stock.ticker, stock);
+              if (analyzerTicker === stock.ticker) updateAnalyzerLivePrice();
+              touchLastUpdate();
+              try {
+                if (window.MITPPages?.Cache) {
+                  const prevQ = window.MITPPages.Cache.loadQuotes();
+                  const map = prevQ?.map ? { ...prevQ.map } : {};
+                  map[stock.ticker] = { price: stock.price, dayChangePct: stock.dayChangePct, name: stock.name };
+                  window.MITPPages.Cache.saveQuotes(map);
+                }
+                if (window.MITPPages?.onPricesUpdated) window.MITPPages.onPricesUpdated();
+              } catch (_) {}
+            });
+          }
+        } catch (_) {}
+      };
+
+      ws.onerror = () => {
+        setLiveBadge('warn', 'WS error · REST polling active');
+      };
+
+      ws.onclose = () => {
+        ws = null;
+        if (wsManualClose) {
+          wsStatus = 'Disconnected';
+          updateWsBar();
+          return;
+        }
+        // Auto-reconnect up to 3 times
+        if (connected && apiKey && wsReconnectAttempts < WS_MAX_RECONNECT) {
+          wsReconnectAttempts += 1;
+          wsStatus = 'Reconnecting';
+          updateWsBar();
+          setLiveBadge('warn', `WS reconnect ${wsReconnectAttempts}/${WS_MAX_RECONNECT}…`);
+          showToast(`WebSocket disconnected · reconnect ${wsReconnectAttempts}/${WS_MAX_RECONNECT}`, 'warn');
+          const delay = 1200 * wsReconnectAttempts;
+          wsReconnectTimer = setTimeout(() => connectWebSocket({ isReconnect: true }), delay);
+        } else {
+          wsStatus = 'Disconnected';
+          updateWsBar();
+          if (connected) {
+            setLiveBadge('warn', 'WS closed · REST polling');
+            showToast('WebSocket disconnected', 'warn');
+          }
+        }
+      };
+    }
+
+    function disconnectWebSocket(updateUi = true, opts = {}) {
+      const { silent = false } = opts;
+      wsManualClose = true;
+      if (wsReconnectTimer) {
+        clearTimeout(wsReconnectTimer);
+        wsReconnectTimer = null;
+      }
+      if (ws) {
+        try { ws.close(); } catch (_) {}
+        ws = null;
+      }
+      if (updateUi) {
+        wsStatus = 'Disconnected';
+        updateWsBar();
+      }
+      if (!silent) hideGlobalBusy();
+    }
+
+    function manualReconnectWs() {
+      if (!apiKey) {
+        showToast('Connect Finnhub API key first', 'warn');
+        return;
+      }
+      wsReconnectAttempts = 0;
+      connected = true;
+      showToast('Reconnecting WebSocket…', 'ok', 2000);
+      connectWebSocket({ isReconnect: true });
+    }
+    function startPolling() {
+      stopPolling();
+      pollTimer = setInterval(async () => {
+        if (!apiKey || !connected) return;
+        for (const s of stocks) {
+          try {
+            await fetchQuoteFor(s);
+            updatePriceInDom(s.ticker, s);
+          } catch (_) {}
+        }
+        renderUniverse();
+        updateResultsPricesIfOpen();
+        updateAnalyzerLivePrice();
+        touchLastUpdate();
+      }, POLL_MS);
+    }
+    function stopPolling() {
+      if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    }
+
+    function setLiveBadge(mode, text) {
+      const badge = document.getElementById('live-badge');
+      const dot = document.getElementById('live-dot');
+      const label = document.getElementById('live-badge-text');
+      label.textContent = text;
+      dot.className = 'live-dot';
+      badge.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border mb-3 ';
+      if (mode === 'on') { dot.classList.add('on'); badge.className += 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25'; }
+      else if (mode === 'err') { dot.classList.add('err'); badge.className += 'bg-red-500/10 text-red-300 border-red-500/25'; }
+      else if (mode === 'warn' || mode === 'loading') { dot.classList.add('warn'); badge.className += 'bg-amber-500/10 text-amber-200 border-amber-500/25'; }
+      else badge.className += 'bg-slate-500/10 text-slate-400 border-slate-500/20';
+    }
+    function touchLastUpdate() {
+      document.getElementById('last-update').textContent = `Оновлено ${new Date().toLocaleTimeString()}`;
+    }
+    function flashPrice(ticker, up) {
+      document.querySelectorAll(`[data-price-ticker="${ticker}"]`).forEach((el) => {
+        el.classList.remove('price-flash-up', 'price-flash-down');
+        void el.offsetWidth;
+        el.classList.add(up ? 'price-flash-up' : 'price-flash-down');
+      });
+    }
+    function updatePriceInDom(ticker, stock) {
+      if (!stock) return;
+      document.querySelectorAll(`[data-price-ticker="${ticker}"]`).forEach((el) => {
+        el.textContent = formatPrice(stock.price);
+      });
+      document.querySelectorAll(`[data-chg-ticker="${ticker}"]`).forEach((el) => {
+        el.textContent = formatPct(stock.dayChangePct);
+        el.classList.remove('text-emerald-400', 'text-red-400', 'text-slate-400');
+        el.classList.add(stock.dayChangePct > 0 ? 'text-emerald-400' : stock.dayChangePct < 0 ? 'text-red-400' : 'text-slate-400');
+      });
+    }
+    function updateResultsPricesIfOpen() {
+      lastResultsTickers.forEach((t) => {
+        const s = stocks.find((x) => x.ticker === t);
+        if (s) updatePriceInDom(t, s);
+      });
+    }
+
+    // ─── Scoring ──────────────────────────────────────────────────────
+    function scorePE(pe) {
+      if (pe <= 0) return 30;
+      if (pe < 12) return 95; if (pe < 18) return 85; if (pe < 25) return 70;
+      if (pe < 40) return 50; if (pe < 60) return 30; return 15;
+    }
+    function scoreGrowth(g) { return clamp(30 + g * 1.2, 0, 100); }
+    function scoreRoe(roe) { return clamp(roe * 1.8, 0, 100); }
+    function scoreDebt(de) {
+      if (de <= 0.3) return 95; if (de <= 0.6) return 80; if (de <= 1) return 60;
+      if (de <= 1.5) return 40; return 20;
+    }
+    function scoreRs(rs) { return clamp(rs, 0, 100); }
+    function scoreInnovation(inn) { return clamp(inn, 0, 100); }
+    function scoreVolatilityForDay(vol) {
+      return clamp(100 - Math.abs(vol - 45) * 1.4, 0, 100);
+    }
+    function pegScore(pe, epsGrowth) {
+      if (epsGrowth <= 0) return 20;
+      const peg = pe / epsGrowth;
+      if (peg < 0.8) return 95; if (peg < 1.2) return 85; if (peg < 1.8) return 70;
+      if (peg < 2.5) return 50; return 30;
+    }
+    function scoreBuffett(s) {
+      return scorePE(s.pe) * 0.3 + scoreRoe(s.roe) * 0.3 + scoreDebt(s.debtEquity) * 0.2 +
+        clamp(scoreGrowth(s.epsGrowth) * 0.7 + 30, 0, 100) * 0.2;
+    }
+    function scoreWood(s) {
+      return scoreInnovation(s.innovation) * 0.4 + scoreGrowth(s.revGrowth) * 0.25 +
+        scoreGrowth(s.epsGrowth) * 0.2 + scoreRs(s.rs) * 0.15;
+    }
+    function scoreLynch(s) {
+      return pegScore(s.pe, s.epsGrowth) * 0.35 + scoreGrowth(s.epsGrowth) * 0.3 +
+        scoreGrowth(s.revGrowth) * 0.2 + scoreRoe(s.roe) * 0.15;
+    }
+    function scoreMomentum(s) {
+      // Strong RS + positive day move + enough vol to trade
+      const chg = num(s.dayChangePct, 0);
+      const dayBoost = chg > 0 ? clamp(50 + chg * 6, 40, 95) : clamp(45 + chg * 4, 10, 55);
+      return scoreRs(s.rs) * 0.4 + dayBoost * 0.25 +
+        scoreGrowth(s.epsGrowth) * 0.1 + scoreInnovation(s.innovation) * 0.1 +
+        clamp(s.volatility * 0.85, 0, 100) * 0.15;
+    }
+    function scoreScalping(s) {
+      // Prefer liquid mid-vol, not extreme spikes; RS not dead
+      const vol = num(s.volatility, 40);
+      const chg = Math.abs(num(s.dayChangePct, 0));
+      const volSweet = clamp(100 - Math.abs(vol - 42) * 1.6, 10, 100);
+      const notChaos = chg < 8 ? 75 : chg < 12 ? 50 : 25;
+      return volSweet * 0.35 + scoreRs(s.rs) * 0.25 + notChaos * 0.25 +
+        (s.price > 0 && s.price < 80 ? 70 : 50) * 0.15;
+    }
+    function scoreBreakout(s) {
+      // Near strength + volume proxy (vol) + positive day = breakout candidate
+      const chg = num(s.dayChangePct, 0);
+      const nearHigh = (s.week52High > 0 && s.price > 0)
+        ? clamp(100 - Math.abs(1 - s.price / s.week52High) * 220, 20, 95)
+        : scoreRs(s.rs);
+      const volPush = num(s.volatility, 40) > 35 && chg > 1 ? 80 : chg > 0.5 ? 60 : 40;
+      return scoreRs(s.rs) * 0.35 + nearHigh * 0.25 + volPush * 0.25 +
+        clamp(30 + chg * 5, 10, 90) * 0.15;
+    }
+    function scoreMeanRev(s) {
+      // Fade extremes: big day move + not necessarily high RS forever
+      const chg = num(s.dayChangePct, 0);
+      const extreme = Math.abs(chg) >= 4 ? clamp(55 + Math.abs(chg) * 5, 55, 95) : 35 + Math.abs(chg) * 4;
+      // prefer not hyper-growth overvalued for fade
+      const val = scorePE(s.pe);
+      return extreme * 0.4 + val * 0.2 + scoreVolatilityForDay(s.volatility) * 0.2 +
+        (chg < 0 ? 70 : 45) * 0.2; // dips more interesting for bounce mean-rev long bias
+    }
+    function scoreGapGo(s) {
+      // Proxy: large day gap/move + RS + vol
+      const chg = Math.abs(num(s.dayChangePct, 0));
+      const gapProxy = chg >= 3 ? clamp(50 + chg * 6, 50, 98) : 30 + chg * 5;
+      return gapProxy * 0.4 + scoreRs(s.rs) * 0.3 + clamp(s.volatility * 0.95, 0, 100) * 0.2 +
+        scoreInnovation(s.innovation) * 0.1;
+    }
+    function scoreVwap(s) {
+      // Institutional-style: quality + moderate vol + RS not collapsing
+      const chg = num(s.dayChangePct, 0);
+      // "near fair" day: not extreme dump/spike
+      const nearFair = Math.abs(chg) < 2.5 ? 85 : Math.abs(chg) < 5 ? 60 : 35;
+      return nearFair * 0.3 + scoreRs(s.rs) * 0.3 + scoreRoe(s.roe) * 0.15 +
+        scoreVolatilityForDay(s.volatility) * 0.15 + scoreDebt(s.debtEquity) * 0.1;
+    }
+    function scoreOrb(s) {
+      // Opening range break: needs range + early momentum proxy
+      const chg = num(s.dayChangePct, 0);
+      const rangeProxy = (s.dayHigh > 0 && s.dayLow > 0 && s.price > 0)
+        ? clamp(((s.dayHigh - s.dayLow) / s.price) * 100 * 12, 20, 95)
+        : clamp(s.volatility * 1.1, 20, 90);
+      const direction = Math.abs(chg) > 0.8 ? 75 : 45;
+      return rangeProxy * 0.35 + scoreRs(s.rs) * 0.3 + direction * 0.2 +
+        clamp(s.volatility * 0.9, 0, 100) * 0.15;
+    }
+    function scoreHighBeta(s) {
+      // High volatility + RS + speculative growth
+      return clamp(s.volatility * 1.15, 0, 100) * 0.4 + scoreRs(s.rs) * 0.25 +
+        scoreInnovation(s.innovation) * 0.2 + scoreGrowth(s.epsGrowth) * 0.15;
+    }
+    function scoreDayMix(s) {
+      return (
+        scoreMomentum(s) + scoreScalping(s) + scoreBreakout(s) +
+        scoreMeanRev(s) + scoreGapGo(s) + scoreVwap(s) + scoreOrb(s) + scoreHighBeta(s)
+      ) / 8;
+    }
+    function scoreBalanced(s) {
+      return (scoreBuffett(s) + scoreWood(s) + scoreLynch(s) + scoreMomentum(s)) / 4;
+    }
+    const SCORERS = {
+      buffett: scoreBuffett,
+      wood: scoreWood,
+      lynch: scoreLynch,
+      balanced: scoreBalanced,
+      momentum: scoreMomentum,
+      scalping: scoreScalping,
+      breakout: scoreBreakout,
+      meanrev: scoreMeanRev,
+      gapgo: scoreGapGo,
+      vwap: scoreVwap,
+      orb: scoreOrb,
+      highbeta: scoreHighBeta,
+      daymix: scoreDayMix,
+    };
+
+    const DAY_STYLES = new Set(['momentum', 'scalping', 'breakout', 'meanrev', 'gapgo', 'vwap', 'orb', 'highbeta', 'daymix']);
+
+    function applyHorizonBias(baseScore, stock, horizon, styles) {
+      let score = baseScore;
+      const rs = scoreRs(stock.rs);
+      const volFit = scoreVolatilityForDay(stock.volatility);
+      const fund = (scorePE(stock.pe) + scoreRoe(stock.roe) + scoreDebt(stock.debtEquity)) / 3;
+      const hasDayStyle = styles.some((st) => DAY_STYLES.has(st));
+      if (horizon === 'day') {
+        score = hasDayStyle
+          ? score * 0.5 + rs * 0.3 + volFit * 0.2
+          : score * 0.55 + rs * 0.3 + volFit * 0.15;
+      } else if (horizon === '10d') score = score * 0.7 + rs * 0.2 + fund * 0.1;
+      else score = score * 0.8 + fund * 0.12 + scoreGrowth(stock.epsGrowth) * 0.08;
+
+      if (styles.includes('momentum') && horizon === 'day') score += 3;
+      if (styles.includes('breakout') && horizon === 'day') score += 2;
+      if (styles.includes('scalping') && horizon === 'day') score += 2;
+      if (styles.includes('gapgo') && horizon === 'day') score += 2;
+      if (styles.includes('orb') && horizon === 'day') score += 2;
+      if (styles.includes('buffett') && horizon === '1m') score += 3;
+      if (styles.includes('wood') && (horizon === '10d' || horizon === '1m')) score += 2;
+      // Penalize pure day styles on long horizon slightly
+      if (horizon === '1m' && hasDayStyle && !styles.includes('buffett') && !styles.includes('lynch')) score -= 2;
+      return clamp(score, 0, 100);
+    }
+    function getSelectedStyles() {
+      return [...document.querySelectorAll('input[name="style"]:checked')]
+        .map((el) => el.value)
+        .filter((v) => SCORERS[v]);
+    }
+    function getMaxPrice() {
+      const raw = document.getElementById('max-price').value;
+      if (raw === '' || raw === null) return null;
+      const n = Number(raw);
+      return Number.isFinite(n) && n >= 0 ? n : null;
+    }
+    function dominantStyleContribution(stock, styles) {
+      if (!styles.length) return { style: 'balanced', part: 0 };
+      let best = { style: styles[0], part: -1 };
+      for (const st of styles) {
+        const part = SCORERS[st](stock);
+        if (part > best.part) best = { style: st, part };
+      }
+      return best;
+    }
+    function buildExplanation(stock, styles, horizon, finalScore) {
+      const dom = dominantStyleContribution(stock, styles);
+      const meta = STYLE_META[dom.style];
+      const styleNames = styles.map((s) => STYLE_META[s].label).join(', ');
+      let reason = '';
+      if (dom.style === 'buffett') reason = `value (P/E ${stock.pe ? stock.pe.toFixed(1) : 'n/a'}, ROE ${stock.roe.toFixed(1)}%)`;
+      else if (dom.style === 'wood') reason = `innovation ~${Math.round(stock.innovation)} · rev g ${stock.revGrowth.toFixed(1)}%`;
+      else if (dom.style === 'lynch') reason = `GARP EPS g ${stock.epsGrowth.toFixed(1)}%`;
+      else if (dom.style === 'momentum') reason = `momentum RS ~${Math.round(stock.rs)} · day ${formatPct(stock.dayChangePct)}`;
+      else if (dom.style === 'scalping') reason = `scalping vol ~${Math.round(stock.volatility)} · liquid mid-range · day ${formatPct(stock.dayChangePct)}`;
+      else if (dom.style === 'breakout') reason = `breakout RS ~${Math.round(stock.rs)} · day ${formatPct(stock.dayChangePct)} · near strength`;
+      else if (dom.style === 'meanrev') reason = `mean-reversion day move ${formatPct(stock.dayChangePct)} · fade extreme`;
+      else if (dom.style === 'gapgo') reason = `gap&go |Δday| ${Math.abs(num(stock.dayChangePct)).toFixed(1)}% · RS ${Math.round(stock.rs)}`;
+      else if (dom.style === 'vwap') reason = `VWAP-style quality · RS ${Math.round(stock.rs)} · calm day ${formatPct(stock.dayChangePct)}`;
+      else if (dom.style === 'orb') reason = `opening-range proxy range/vol · day ${formatPct(stock.dayChangePct)}`;
+      else if (dom.style === 'highbeta') reason = `high-beta vol ~${Math.round(stock.volatility)} · RS ${Math.round(stock.rs)}`;
+      else if (dom.style === 'daymix') reason = `day-mix blend · RS ${Math.round(stock.rs)} · vol ${Math.round(stock.volatility)}`;
+      else reason = `balance RS ${Math.round(stock.rs)}, P/E ${stock.pe ? stock.pe.toFixed(1) : 'n/a'}`;
+      return `За стилем ${meta.label}: score ${Math.round(finalScore)}/100 — ${reason}. Live ${formatPrice(stock.price)}.` +
+        (styles.length > 1 ? ` Стилі: ${styleNames}.` : '');
+    }
+    function recommendedHold(styles, horizon) {
+      if (!styles.length) return HORIZON_LABELS[horizon];
+      if (styles.length === 1) return STYLE_META[styles[0]].holdHint[horizon];
+      return `${HORIZON_LABELS[horizon]} (multi-style)`;
+    }
+    function scoreStock(stock, styles, horizon) {
+      if (!styles.length) {
+        return {
+          score: 0,
+          explanation: 'Оберіть стиль.',
+          hold: HORIZON_LABELS[horizon],
+          advice: {
+            action: 'WAIT',
+            label: 'Зачекай',
+            badgeClass: 'rec-wait',
+            why: 'Немає обраного стилю для рішення.',
+            whyNotNow: 'Спочатку обери стиль інвестора.',
+            when: 'Після вибору стилю та Generate.',
+          },
+        };
+      }
+      let composite = 0;
+      for (const st of styles) composite += SCORERS[st](stock);
+      composite /= styles.length;
+      const final = applyHorizonBias(composite, stock, horizon, styles);
+      const score = Math.round(final * 10) / 10;
+      return {
+        score,
+        explanation: buildExplanation(stock, styles, horizon, final),
+        hold: recommendedHold(styles, horizon),
+        advice: buildInvestmentAdvice(stock, styles, horizon, score),
+      };
+    }
+
+    /**
+     * Local rule-based recommendation: Buy / Wait / Avoid
+     * Educational heuristic — not financial advice.
+     */
+    function buildInvestmentAdvice(stock, styles, horizon, score) {
+      const chg = num(stock.dayChangePct, 0);
+      const pe = num(stock.pe, 0);
+      const rs = num(stock.rs, 50);
+      const vol = num(stock.volatility, 40);
+      const roe = num(stock.roe, 0);
+      const debt = num(stock.debtEquity, 0.5);
+      const price = num(stock.price, 0);
+      const wantsValue = styles.includes('buffett') || styles.includes('lynch');
+      const wantsMom = styles.includes('momentum') || styles.includes('wood') ||
+        styles.includes('breakout') || styles.includes('gapgo') || styles.includes('highbeta') ||
+        styles.includes('orb') || styles.includes('daymix');
+      const wantsScalp = styles.includes('scalping');
+      const wantsMeanRev = styles.includes('meanrev');
+      const isDay = horizon === 'day';
+      const isMonth = horizon === '1m';
+
+      const flags = []; // reasons against NOW
+      const pros = [];  // reasons for action
+      let action = 'WAIT';
+      let when = '';
+      let confidence = 'середня';
+
+      // ── Base from score ──
+      if (score >= 72) {
+        action = 'BUY';
+        pros.push(`високий composite score ${score.toFixed(1)}/100 під твій стиль`);
+      } else if (score >= 55) {
+        action = 'WAIT';
+        flags.push(`середній score ${score.toFixed(1)} — сигнал не досить сильний для входу «з плеча»`);
+      } else {
+        action = 'AVOID';
+        flags.push(`низький score ${score.toFixed(1)} — погана відповідність стилю / метрикам`);
+      }
+
+      // ── Day move extremes ──
+      if (chg >= 6) {
+        flags.push(`різкий стрибок сьогодні (${formatPct(chg)}) — ризик купити на емоції / локальній вершині`);
+        if (action === 'BUY') action = 'WAIT';
+        when = when || 'Після охолодження 1–3 сесії або відкату 2–4% від today’s high';
+      } else if (chg >= 3 && isDay) {
+        flags.push(`сильний денний рух +${chg.toFixed(1)}% — для day-trading краще не ганятися за ціною`);
+        if (action === 'BUY' && wantsMom) {
+          pros.push('momentum/breakout-стиль допускає continuation після сили');
+        } else if (action === 'BUY' && wantsMeanRev) {
+          action = 'WAIT';
+          flags.push('mean reversion: не лови spike — чекай відкат');
+          when = when || 'Fade після виснаження імпульсу / rejection candle';
+        } else if (action === 'BUY' && wantsScalp) {
+          action = 'WAIT';
+          when = when || 'Scalp лише на pullback до мікро-рівня, не market chase';
+        } else if (action === 'BUY') {
+          action = 'WAIT';
+          when = when || 'На першому pullback до VWAP / intraday support';
+        }
+      } else if (chg <= -6) {
+        flags.push(`глибокий просів сьогодні (${formatPct(chg)}) — можливий panic або breakdown`);
+        if (wantsValue && score >= 60) {
+          pros.push('для value/GARP dip може дати кращу ціну входу');
+          if (action === 'AVOID' && score >= 55) action = 'WAIT';
+          when = when || 'Якщо тримає support і не ламає day low — розглянь частковий вхід';
+        } else {
+          if (action === 'BUY') action = 'WAIT';
+          when = when || 'Дочекайся стабілізації (менша волатильність, close вище mid-range дня)';
+        }
+      } else if (chg <= -2.5 && wantsValue) {
+        pros.push(`помірний відкат ${formatPct(chg)} — типова зона інтересу для value`);
+      } else if (chg > 0 && chg < 2 && score >= 68) {
+        pros.push('спокійний positive day — комфортніше для входу, ніж на spike');
+      }
+
+      // ── Valuation ──
+      if (pe > 55 && wantsValue) {
+        flags.push(`високий P/E ≈ ${pe.toFixed(1)} суперечить value/GARP — зараз «дорого» за мультиплікатором`);
+        if (action === 'BUY') action = 'WAIT';
+        when = when || 'Після compression мультиплікатора (earnings + pullback) або зростання EPS, що «виправдає» P/E';
+      } else if (pe > 0 && pe < 18 && wantsValue) {
+        pros.push(`помірний P/E ≈ ${pe.toFixed(1)} підтримує value-тезу`);
+      } else if (pe > 80) {
+        flags.push(`екстремальний P/E ≈ ${pe.toFixed(1)} — ціна сильно залежить від очікувань growth`);
+        if (!wantsMom && action === 'BUY') action = 'WAIT';
+      }
+
+      // ── Quality ──
+      if (roe < 5 && wantsValue && isMonth) {
+        flags.push(`слабкий ROE (${roe.toFixed(1)}%) — якість бізнесу під питанням на 1M+`);
+        if (action === 'BUY') action = 'WAIT';
+      }
+      if (debt > 2 && wantsValue) {
+        flags.push(`високий D/E ≈ ${debt.toFixed(2)} — leverage-ризик`);
+      }
+
+      // ── Momentum / RS ──
+      if (wantsMom && rs < 40) {
+        flags.push(`слабкий relative strength (~${Math.round(rs)}) — momentum зараз не на твоєму боці`);
+        if (action === 'BUY') action = 'WAIT';
+        when = when || 'Коли RS зміцниться (ціна вище short MA / day change стабільно >0)';
+      } else if (wantsMom && rs >= 70 && chg > 0) {
+        pros.push(`сильний RS (~${Math.round(rs)}) узгоджується з momentum`);
+      }
+
+      // ── Volatility vs horizon ──
+      if (vol >= 70 && isMonth) {
+        flags.push(`висока волатильність (~${Math.round(vol)}) для місячного горизонту — важче тримати`);
+        if (action === 'BUY') {
+          /* keep buy but note sizing */
+          pros.push('якщо купуєш — менший size і ширший stop');
+        }
+      }
+      if (vol >= 75 && isDay && score < 75) {
+        flags.push('хаотична волатильність — edge для day-trade сумнівний');
+        if (action === 'BUY') action = 'WAIT';
+        when = when || 'У спокійнішій сесії (звуження range) або після clear level break + retest';
+      }
+
+      // ── 52w context if available ──
+      if (stock.week52High > 0 && price > 0) {
+        const nearHigh = price / stock.week52High;
+        if (nearHigh > 0.97 && chg > 1.5) {
+          flags.push('ціна біля 52-week high після росту — мало «margin of safety» для нового входу');
+          if (action === 'BUY' && !wantsMom) {
+            action = 'WAIT';
+            when = when || 'На відкаті 3–8% від 52W high або після consolidation';
+          }
+        }
+        if (stock.week52Low > 0) {
+          const fromLow = (price - stock.week52Low) / stock.week52Low;
+          if (fromLow < 0.08 && score >= 60 && wantsValue) {
+            pros.push('близько до 52W low — потенційна зона value-інтересу (перевір, чи не value trap)');
+          }
+        }
+      }
+
+      // ── Final when / why strings ──
+      if (action === 'BUY') {
+        confidence = score >= 80 ? 'вища' : 'середня';
+        when = when || (isDay
+          ? 'Вхід актуальний на поточних рівнях / на мікро-відкаті в сесії'
+          : isMonth
+            ? 'Можна набирати позицію траншами на 1–4 тижні'
+            : 'Вхід у найближчі 1–3 сесії при утриманні support');
+      } else if (action === 'WAIT') {
+        confidence = 'середня';
+        if (!when) {
+          if (score >= 65) when = 'Дочекайся кращої ціни (відкат до support) або підтвердження тренду (higher low)';
+          else if (chg < -3) when = 'Після стабілізації ціни (2–5 сесій без нових мінімумів)';
+          else when = 'Коли score/setup покращиться: спокійніший день + кращий R:R до resistance';
+        }
+      } else {
+        confidence = score < 40 ? 'вища (проти входу)' : 'середня';
+        when = when || 'Не пріоритет зараз. Повернись після зміни метрик (earnings, score >65) або значного repricing';
+      }
+
+      const whyNow = action === 'BUY'
+        ? (pros.length ? pros.slice(0, 2).join('; ') : 'Профіль відповідає стилю і горизонту.')
+        : '';
+
+      const whyNotNow = action !== 'BUY'
+        ? (flags.length ? flags.slice(0, 2).join('; ') : 'Немає чіткого edge для входу саме зараз.')
+        : (flags.length ? `Обережно: ${flags[0]}` : '');
+
+      const labelMap = { BUY: 'Інвестувати', WAIT: 'Зачекай', AVOID: 'Не зараз' };
+      const badgeClass = action === 'BUY' ? 'rec-buy' : action === 'WAIT' ? 'rec-wait' : 'rec-avoid';
+
+      // Compact multi-line text for table
+      let detail = '';
+      if (action === 'BUY') {
+        detail = `Чому так: ${whyNow}.`;
+        if (whyNotNow) detail += ` ${whyNotNow}.`;
+        detail += ` Коли/як: ${when}.`;
+      } else if (action === 'WAIT') {
+        detail = `Чому не зараз: ${whyNotNow}. Коли: ${when}.`;
+        if (pros.length) detail += ` Плюс пізніше: ${pros[0]}.`;
+      } else {
+        detail = `Чому уникати: ${whyNotNow}. Коли переглянути: ${when}.`;
+      }
+      detail += ` (впевненість: ${confidence}; не фін. порада)`;
+
+      return {
+        action,
+        label: labelMap[action],
+        badgeClass,
+        why: whyNow || whyNotNow,
+        whyNotNow,
+        when,
+        pros,
+        flags,
+        confidence,
+        detail,
+      };
+    }
+
+    // ─── UI universe / results ────────────────────────────────────────
+    function updateUniverseCount() {
+      const live = stocks.filter((s) => s.hasQuote).length;
+      document.getElementById('universe-count').textContent = `${stocks.length} tickers · ${live} with live price`;
+    }
+    function renderUniverse() {
+      const list = document.getElementById('universe-list');
+      list.innerHTML = stocks.map((s) => {
+        const chgClass = s.dayChangePct > 0 ? 'text-emerald-400' : s.dayChangePct < 0 ? 'text-red-400' : 'text-slate-500';
+        return `
+        <li class="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl bg-surface-900/80 border border-white/5 group">
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-mono font-bold text-blue-300 text-sm">${escapeHtml(s.ticker)}</span>
+              <span class="text-xs font-semibold tabular-nums text-emerald-400/90" data-price-ticker="${escapeHtml(s.ticker)}">${formatPrice(s.price)}</span>
+              <span class="text-[11px] tabular-nums ${chgClass}" data-chg-ticker="${escapeHtml(s.ticker)}">${s.hasQuote ? formatPct(s.dayChangePct) : '…'}</span>
+              <button type="button" data-analyze="${escapeHtml(s.ticker)}" class="text-[10px] text-blue-400 hover:text-blue-300">Analyze</button>
+            </div>
+            <div class="text-xs text-slate-500 truncate">${escapeHtml(s.name)}</div>
+          </div>
+          <button type="button" data-remove="${escapeHtml(s.ticker)}" class="shrink-0 opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 text-xs px-2 py-1">✕</button>
+        </li>`;
+      }).join('');
+      list.querySelectorAll('[data-remove]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const t = btn.getAttribute('data-remove');
+          stocks = stocks.filter((s) => s.ticker !== t);
+          saveTickerList();
+          if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'unsubscribe', symbol: t }));
+          renderUniverse();
+        });
+      });
+      list.querySelectorAll('[data-analyze]').forEach((btn) => {
+        btn.addEventListener('click', () => openAnalyzer(btn.getAttribute('data-analyze')));
+      });
+      updateUniverseCount();
+    }
+
+    function scoreColor(score) {
+      if (score >= 80) return 'text-emerald-400';
+      if (score >= 65) return 'text-blue-300';
+      if (score >= 50) return 'text-cyan-300';
+      return 'text-slate-400';
+    }
+
+    /**
+     * Growth outlook heuristic (educational, NOT a forecast or guarantee).
+     * - attractiveness 0–100: how appealing for growth / "money from growth"
+     * - probability 0–100: rough chance growth continues (quality + momentum + valuation stress)
+     * - potential: composite for sorting (0–100)
+     */
+    function estimateGrowthOutlook(stock, score) {
+      const epsG = num(stock.epsGrowth, 0);
+      const revG = num(stock.revGrowth, 0);
+      const growth = Math.max(epsG, revG);
+      const pe = num(stock.pe, 0);
+      const roe = num(stock.roe, 0);
+      const rs = num(stock.rs, 50);
+      const inn = num(stock.innovation, 50);
+      const chg = num(stock.dayChangePct, 0);
+      const debt = num(stock.debtEquity, 0.5);
+      const sc = num(score, 50);
+
+      // --- Attractiveness: "може дати великий дохід якщо виросте" ---
+      // Strong growth + innovation + style fit (score) = higher appeal
+      let attractiveness =
+        clamp(growth * 1.1, 0, 40) +          // reported growth
+        clamp(inn * 0.25, 0, 25) +            // innovation / sector bias
+        clamp(sc * 0.25, 0, 25) +             // fit to your strategy
+        clamp(roe * 0.15, 0, 12);             // quality of business
+
+      // Cheap growth (PEG-ish) boosts attractiveness
+      if (pe > 0 && growth > 5) {
+        const peg = pe / growth;
+        if (peg < 1) attractiveness += 10;
+        else if (peg < 1.5) attractiveness += 6;
+        else if (peg < 2.5) attractiveness += 2;
+        else if (peg > 4) attractiveness -= 8;
+      } else if (pe > 60 && growth < 10) {
+        attractiveness -= 10; // expensive without growth
+      }
+
+      // Momentum hint for "making money sooner"
+      if (rs >= 70) attractiveness += 5;
+      if (chg > 2 && chg < 8) attractiveness += 3;
+      if (chg > 12) attractiveness -= 4; // already extended
+
+      attractiveness = clamp(Math.round(attractiveness), 5, 98);
+
+      // --- Probability of continued growth ---
+      // Quality + not-too-crazy valuation + healthy RS, penalize debt & crashes
+      let probability =
+        35 +
+        clamp(growth * 0.6, 0, 25) +
+        clamp(roe * 0.25, -5, 15) +
+        clamp((rs - 50) * 0.25, -10, 12) +
+        clamp(sc * 0.15, 0, 15);
+
+      if (pe > 0 && pe < 25 && growth > 8) probability += 8;
+      if (pe > 80) probability -= 12;
+      if (pe > 50 && growth < 12) probability -= 8;
+      if (debt > 1.5) probability -= 8;
+      if (debt > 2.5) probability -= 6;
+      if (chg < -6) probability -= 10;
+      if (roe < 0) probability -= 12;
+      if (growth <= 0 && epsG <= 0) probability -= 15;
+
+      probability = clamp(Math.round(probability), 8, 92);
+
+      // Composite for table sort: weight attractiveness + probability
+      const potential = Math.round(attractiveness * 0.55 + probability * 0.45);
+
+      let tier = 'Середній';
+      if (potential >= 72 && probability >= 60) tier = 'Високий';
+      else if (potential >= 58) tier = 'Вище середнього';
+      else if (potential < 42) tier = 'Низький';
+
+      // Illustrative upside band (NOT a target price) — scales with attractiveness
+      const upsideLow = Math.round(clamp(attractiveness * 0.08, 2, 12));
+      const upsideHigh = Math.round(clamp(attractiveness * 0.22 + probability * 0.05, 5, 35));
+
+      const summary =
+        `${tier} потенціал росту. Привабливість для доходу від росту: ${attractiveness}/100. ` +
+        `Ймовірність, що ріст продовжиться (евристика): ${probability}%. ` +
+        `Умовний діапазон «цікавості» ~${upsideLow}–${upsideHigh}% (не прогноз).`;
+
+      return {
+        attractiveness,
+        probability,
+        potential,
+        tier,
+        upsideLow,
+        upsideHigh,
+        summary,
+      };
+    }
+
+    /** @deprecated use estimateGrowthOutlook — kept for sort fallbacks */
+    function estimatePotential(stock, score) {
+      return estimateGrowthOutlook(stock, score).potential;
+    }
+
+    function sortValue(row, key) {
+      if (key === 'price') return num(row.price, 0);
+      if (key === 'change') return num(row.dayChangePct, 0);
+      if (key === 'potential') return num(row.potential, num(row.growthAttractiveness, 0));
+      return num(row.score, 0);
+    }
+
+    function applySortAndLimit(rows) {
+      const sorted = rows.slice().sort((a, b) => {
+        const av = sortValue(a, sortKey);
+        const bv = sortValue(b, sortKey);
+        if (av === bv) return b.score - a.score;
+        return sortDir === 'asc' ? av - bv : bv - av;
+      });
+      return sorted.slice(0, topNLimit);
+    }
+
+    function updateSortHeaderUI() {
+      document.querySelectorAll('.th-sort').forEach((th) => {
+        const key = th.dataset.sort;
+        const icon = th.querySelector('.sort-icon');
+        const active = key === sortKey;
+        th.classList.toggle('active', active);
+        if (icon) icon.textContent = active ? (sortDir === 'asc' ? '↑' : '↓') : '↕';
+      });
+    }
+
+    function generatePicks() {
+      const styles = getSelectedStyles();
+      const maxPrice = getMaxPrice();
+      const btn = document.getElementById('generate-btn');
+      const status = document.getElementById('status-msg');
+      const loading = document.getElementById('generate-loading');
+      if (!styles.length) {
+        status.textContent = 'Обери принаймні один стиль.';
+        status.className = 'text-sm text-amber-400';
+        showToast('Select at least one investor style', 'warn');
+        return;
+      }
+      const withPrice = stocks.filter((s) => s.hasQuote && s.price > 0);
+      if (!withPrice.length) {
+        status.textContent = 'Немає live-цін. Підключи Finnhub.';
+        status.className = 'text-sm text-amber-400';
+        showToast('No live prices — Connect Finnhub first', 'warn');
+        return;
+      }
+      const eligible = maxPrice === null ? withPrice.slice() : withPrice.filter((s) => s.price <= maxPrice);
+      if (!eligible.length) {
+        status.textContent = `Немає акцій з live-ціною ≤ $${maxPrice.toFixed(2)}.`;
+        status.className = 'text-sm text-amber-400';
+        showToast('No stocks under max price filter', 'warn');
+        return;
+      }
+      const cacheKey = window.MITPPages?.Cache?.picksKey(selectedHorizon, styles, maxPrice);
+      const stale = cacheKey && window.MITPPages?.Cache?.getStale(cacheKey);
+      // Instant paint from cache
+      if (stale?.data?.scored?.length) {
+        lastScoredAll = stale.data.scored;
+        lastResultsMeta = stale.data.meta || { styles, maxPrice, filteredOut: 0 };
+        sortKey = 'score';
+        sortDir = 'desc';
+        updateSortHeaderUI();
+        const ranked = applySortAndLimit(lastScoredAll);
+        renderResults(ranked, styles, maxPrice, lastResultsMeta.filteredOut || 0);
+        lastResultsTickers = ranked.map((r) => r.ticker);
+        if (!stale.expired) {
+          status.textContent = `From cache · ${ranked.length} picks · Top ${topNLimit}`;
+          status.className = 'text-sm text-cyan-300';
+          showToast('Loaded Top Picks from cache', 'ok');
+          return;
+        }
+        status.textContent = 'Showing cache · refreshing…';
+        status.className = 'text-sm text-slate-400';
+        showToast('Cached picks shown · updating…', 'ok', 2000);
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Generating…`;
+      loading?.classList.add('show');
+      showGlobalBusy('Generating top picks...');
+      status.textContent = 'Generating top picks...';
+      status.className = 'text-sm text-slate-400';
+
+      setTimeout(() => {
+        try {
+          lastScoredAll = eligible.map((s) => {
+            const scored = { ...s, ...scoreStock(s, styles, selectedHorizon) };
+            const g = estimateGrowthOutlook(scored, scored.score);
+            scored.potential = g.potential;
+            scored.growthAttractiveness = g.attractiveness;
+            scored.growthProbability = g.probability;
+            scored.growthTier = g.tier;
+            scored.growthSummary = g.summary;
+            scored.upsideLow = g.upsideLow;
+            scored.upsideHigh = g.upsideHigh;
+            return scored;
+          });
+          lastResultsMeta = {
+            styles,
+            maxPrice,
+            filteredOut: withPrice.length - eligible.length,
+          };
+          if (cacheKey && window.MITPPages?.Cache) {
+            window.MITPPages.Cache.set(cacheKey, {
+              scored: lastScoredAll,
+              meta: lastResultsMeta,
+            }, window.MITPPages.TTL_PICKS || 8 * 60 * 1000);
+          }
+          sortKey = 'score';
+          sortDir = 'desc';
+          updateSortHeaderUI();
+          const ranked = applySortAndLimit(lastScoredAll);
+          renderResults(ranked, styles, maxPrice, lastResultsMeta.filteredOut);
+          lastResultsTickers = ranked.map((r) => r.ticker);
+          status.textContent = `Done · ${ranked.length} picks · Top ${topNLimit} · live`;
+          status.className = 'text-sm text-emerald-400';
+          showToast(`Top ${ranked.length} picks ready`, 'ok');
+        } catch (e) {
+          status.textContent = e.message || 'Generate failed';
+          status.className = 'text-sm text-red-400';
+          showToast(e.message || 'Generate failed', 'err');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg> Generate Top Picks`;
+          loading?.classList.remove('show');
+          hideGlobalBusy();
+        }
+      }, 320);
+    }
+
+    function reRenderFromCache() {
+      if (!lastScoredAll.length) return;
+      const ranked = applySortAndLimit(lastScoredAll);
+      renderResults(
+        ranked,
+        lastResultsMeta.styles,
+        lastResultsMeta.maxPrice,
+        lastResultsMeta.filteredOut
+      );
+      lastResultsTickers = ranked.map((r) => r.ticker);
+    }
+
+    function renderResults(ranked, styles, maxPrice, filteredOut) {
+      document.getElementById('empty-state').classList.add('hidden');
+      document.getElementById('results-wrap').classList.remove('hidden');
+      const cards = document.getElementById('results-cards');
+      if (cards) {
+        cards.classList.remove('hidden');
+        cards.classList.add('sm:hidden');
+      }
+
+      const title = document.getElementById('results-title');
+      if (title) title.textContent = `Top ${Math.min(topNLimit, ranked.length)} Picks`;
+
+      const styleLabels = (styles || []).map((s) => STYLE_META[s]?.label || s).join(' · ');
+      const priceLabel = maxPrice === null ? 'будь-яка ціна' : `max $${Number(maxPrice).toFixed(2)}`;
+      document.getElementById('results-meta').textContent =
+        `${styleLabels} · ${HORIZON_LABELS[selectedHorizon]} · ${priceLabel} · sort: ${sortKey} ${sortDir}${filteredOut > 0 ? ` · −${filteredOut}` : ''} · ${new Date().toLocaleTimeString()}`;
+      const badge = document.getElementById('results-badge');
+      badge.classList.remove('hidden');
+      badge.textContent = `${ranked.length} rows · best score ${ranked[0]?.score?.toFixed?.(1) ?? '—'}`;
+
+      const growthCell = (s) => {
+        const g = s.growthAttractiveness != null
+          ? s
+          : (() => {
+              const o = estimateGrowthOutlook(s, s.score);
+              return {
+                growthAttractiveness: o.attractiveness,
+                growthProbability: o.probability,
+                growthTier: o.tier,
+                growthSummary: o.summary,
+                upsideLow: o.upsideLow,
+                upsideHigh: o.upsideHigh,
+                potential: o.potential,
+              };
+            })();
+        const att = num(g.growthAttractiveness, 0);
+        const prob = num(g.growthProbability, 0);
+        const tier = g.growthTier || '—';
+        const tierColor =
+          tier === 'Високий' ? 'text-emerald-400' :
+          tier === 'Вище середнього' ? 'text-cyan-300' :
+          tier === 'Низький' ? 'text-slate-500' : 'text-amber-300';
+        return { att, prob, tier, tierColor, summary: g.growthSummary || '', low: g.upsideLow, high: g.upsideHigh };
+      };
+
+      // Table rows
+      document.getElementById('results-body').innerHTML = ranked.map((s, i) => {
+        const barW = clamp(s.score, 0, 100);
+        const chgClass = s.dayChangePct > 0 ? 'text-emerald-400' : s.dayChangePct < 0 ? 'text-red-400' : 'text-slate-400';
+        const adv = s.advice || { label: '—', badgeClass: 'rec-wait', detail: 'Немає рекомендації.' };
+        const gr = growthCell(s);
+        return `
+        <tr class="table-row border-b border-white/[0.04] fade-in" style="animation-delay:${Math.min(i, 12) * 30}ms">
+          <td class="px-4 sm:px-6 py-3 sm:py-4 text-slate-500 font-mono text-sm">${i + 1}</td>
+          <td class="px-3 py-3 sm:py-4"><span class="inline-flex px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/20 font-mono font-bold text-blue-300 text-sm">${escapeHtml(s.ticker)}</span></td>
+          <td class="px-3 py-3 sm:py-4 text-sm text-slate-200 font-medium hidden md:table-cell max-w-[140px] truncate">${escapeHtml(s.name)}</td>
+          <td class="px-3 py-3 sm:py-4 text-sm font-semibold tabular-nums text-emerald-400/90" data-price-ticker="${escapeHtml(s.ticker)}">${formatPrice(s.price)}</td>
+          <td class="px-3 py-3 sm:py-4 text-xs tabular-nums font-medium ${chgClass}" data-chg-ticker="${escapeHtml(s.ticker)}">${formatPct(s.dayChangePct)}</td>
+          <td class="px-3 py-3 sm:py-4">
+            <div class="flex items-center gap-2">
+              <span class="font-bold tabular-nums ${scoreColor(s.score)}">${s.score.toFixed(1)}</span>
+              <div class="flex-1 h-1.5 rounded-full bg-surface-700 overflow-hidden min-w-[36px] max-w-[64px]">
+                <div class="score-bar h-full rounded-full" style="width:${barW}%"></div>
+              </div>
+            </div>
+          </td>
+          <td class="px-3 py-3 sm:py-4" title="${escapeHtml(gr.summary)}">
+            <div class="text-[10px] font-semibold ${gr.tierColor} mb-0.5">${escapeHtml(gr.tier)}</div>
+            <div class="text-[11px] text-slate-300 leading-snug">
+              Привабл. <span class="font-bold text-cyan-300">${gr.att}</span>/100
+            </div>
+            <div class="text-[11px] text-slate-300 leading-snug">
+              Імов. росту <span class="font-bold text-emerald-300">${gr.prob}%</span>
+            </div>
+            <div class="text-[10px] text-slate-500 mt-0.5">орієнтир ~${gr.low}–${gr.high}%</div>
+          </td>
+          <td class="px-3 py-3 sm:py-4 text-xs text-slate-400 leading-relaxed max-w-xs hidden lg:table-cell">${escapeHtml(s.explanation)}</td>
+          <td class="px-3 py-3 sm:py-4 max-w-[200px]">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wide ${adv.badgeClass}">${escapeHtml(adv.label)}</span>
+            <p class="text-[10px] text-slate-500 leading-snug mt-1 line-clamp-3">${escapeHtml(adv.detail)}</p>
+          </td>
+          <td class="px-3 py-3 sm:py-4 hidden xl:table-cell"><span class="inline-flex text-[10px] font-medium px-2 py-1 rounded-lg bg-surface-700 text-emerald-300/90 border border-emerald-500/15 whitespace-nowrap">${escapeHtml(s.hold)}</span></td>
+          <td class="px-4 sm:px-6 py-3 sm:py-4">
+            <div class="flex flex-col gap-1.5">
+              <button type="button" data-analyze="${escapeHtml(s.ticker)}"
+                class="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600/90 hover:bg-blue-500 text-white transition-colors">
+                Analyze
+              </button>
+              <button type="button" data-watch-ticker="${escapeHtml(s.ticker)}"
+                class="inline-flex items-center justify-center px-2 py-1 rounded-lg text-[10px] font-semibold border border-surface-600 text-slate-400 hover:text-amber-300 hover:border-amber-500/30">
+                + Watch
+              </button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+
+      // Mobile cards
+      if (cards) {
+        cards.innerHTML = ranked.map((s, i) => {
+          const chgClass = s.dayChangePct > 0 ? 'text-emerald-400' : s.dayChangePct < 0 ? 'text-red-400' : 'text-slate-400';
+          const adv = s.advice || { label: '—', badgeClass: 'rec-wait', detail: '' };
+          const gr = growthCell(s);
+          return `
+          <article class="pick-card fade-in" style="animation-delay:${Math.min(i, 10) * 30}ms">
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-slate-500 font-mono text-xs">#${i + 1}</span>
+                  <span class="font-mono font-bold text-blue-300">${escapeHtml(s.ticker)}</span>
+                  <span class="inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${adv.badgeClass}">${escapeHtml(adv.label)}</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5 truncate max-w-[220px]">${escapeHtml(s.name)}</p>
+              </div>
+              <div class="flex flex-col gap-1.5 shrink-0">
+                <button type="button" data-analyze="${escapeHtml(s.ticker)}"
+                  class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white">Analyze</button>
+                <button type="button" data-watch-ticker="${escapeHtml(s.ticker)}"
+                  class="px-2 py-1 rounded-lg text-[10px] font-semibold border border-surface-600 text-slate-400">+ Watch</button>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div class="rounded-lg bg-surface-900/80 border border-white/5 px-2.5 py-2">
+                <div class="text-slate-500 text-[10px]">Price</div>
+                <div class="font-semibold text-emerald-400 tabular-nums" data-price-ticker="${escapeHtml(s.ticker)}">${formatPrice(s.price)}</div>
+              </div>
+              <div class="rounded-lg bg-surface-900/80 border border-white/5 px-2.5 py-2">
+                <div class="text-slate-500 text-[10px]">Change %</div>
+                <div class="font-semibold tabular-nums ${chgClass}" data-chg-ticker="${escapeHtml(s.ticker)}">${formatPct(s.dayChangePct)}</div>
+              </div>
+              <div class="rounded-lg bg-surface-900/80 border border-white/5 px-2.5 py-2">
+                <div class="text-slate-500 text-[10px]">Score (під стиль)</div>
+                <div class="font-semibold tabular-nums ${scoreColor(s.score)}">${s.score.toFixed(1)}</div>
+              </div>
+              <div class="rounded-lg bg-surface-900/80 border border-white/5 px-2.5 py-2">
+                <div class="text-slate-500 text-[10px]">Потенціал росту</div>
+                <div class="font-semibold ${gr.tierColor} text-[11px]">${escapeHtml(gr.tier)}</div>
+              </div>
+            </div>
+            <div class="mt-2 rounded-lg bg-cyan-500/5 border border-cyan-500/15 px-2.5 py-2 text-[11px] text-slate-300 space-y-0.5">
+              <div>Привабливість для доходу від росту: <strong class="text-cyan-300">${gr.att}/100</strong></div>
+              <div>Ймовірність росту: <strong class="text-emerald-300">${gr.prob}%</strong></div>
+              <div class="text-slate-500">Умовний орієнтир ~${gr.low}–${gr.high}% (не прогноз ціни)</div>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-2 leading-relaxed line-clamp-3">${escapeHtml(s.explanation)}</p>
+            <p class="text-[10px] text-slate-600 mt-1 line-clamp-2">${escapeHtml(adv.detail || '')}</p>
+          </article>`;
+        }).join('');
+      }
+
+      document.querySelectorAll('[data-analyze]').forEach((btn) => {
+        // avoid double-binding on universe list: only results containers
+      });
+      document.querySelectorAll('#results-body [data-analyze], #results-cards [data-analyze]').forEach((btn) => {
+        btn.addEventListener('click', () => openAnalyzer(btn.getAttribute('data-analyze')));
+      });
+      if (window.MITPPages?.updateWatchBadges) window.MITPPages.updateWatchBadges();
+    }
+
+    // ─── Stock Analyzer (5.2 + 5.3) ───────────────────────────────────
+    function openAnalyzerOverlay() {
+      document.getElementById('analyzer-overlay').classList.add('open');
+      document.getElementById('analyzer-overlay').setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+    }
+    function closeAnalyzer() {
+      document.getElementById('analyzer-overlay').classList.remove('open');
+      document.getElementById('analyzer-overlay').setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+    }
+
+    function setAnalyzerLoading(on, text) {
+      document.getElementById('az-loader').classList.toggle('hidden', !on);
+      document.getElementById('az-loader').classList.toggle('flex', on);
+      document.getElementById('az-content').classList.toggle('hidden', on);
+      if (text) document.getElementById('az-loader-text').textContent = text;
+    }
+
+    function showAzError(msg) {
+      const el = document.getElementById('az-error');
+      if (!msg) { el.classList.add('hidden'); el.textContent = ''; return; }
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+
+    function metricHtml(label, value) {
+      return `<div class="metric-chip"><div class="text-[10px] uppercase tracking-wide text-slate-500 mb-0.5">${escapeHtml(label)}</div><div class="text-sm font-semibold text-slate-100 break-all">${value}</div></div>`;
+    }
+
+    function classifyNewsSentiment(text) {
+      const t = (text || '').toLowerCase();
+      let pos = 0, neg = 0;
+      for (const w of POS_WORDS) if (t.includes(w)) pos++;
+      for (const w of NEG_WORDS) if (t.includes(w)) neg++;
+      if (pos > neg) return 'pos';
+      if (neg > pos) return 'neg';
+      return 'neu';
+    }
+
+    function computeTechnical(quote, candles, stock) {
+      let support = stock.dayLow || stock.price;
+      let resistance = stock.dayHigh || stock.price;
+      let fromCandles = false;
+
+      if (candles && candles.s === 'ok' && Array.isArray(candles.l) && candles.l.length) {
+        const lows = candles.l.filter((x) => Number.isFinite(x));
+        const highs = candles.h.filter((x) => Number.isFinite(x));
+        if (lows.length) support = Math.min(...lows);
+        if (highs.length) resistance = Math.max(...highs);
+        fromCandles = true;
+      } else {
+        // fallback: day range + slight buffer from prev close
+        support = Math.min(stock.dayLow || stock.price, stock.prevClose || stock.price) * 0.995;
+        resistance = Math.max(stock.dayHigh || stock.price, stock.prevClose || stock.price) * 1.005;
+      }
+
+      const chg = stock.dayChangePct;
+      let trend = 'Sideways';
+      if (chg > 1.2) trend = 'Bullish';
+      else if (chg < -1.2) trend = 'Bearish';
+      else if (stock.price > stock.prevClose * 1.003) trend = 'Bullish';
+      else if (stock.price < stock.prevClose * 0.997) trend = 'Bearish';
+
+      const entry = support * 1.005;
+      const stopLoss = support * 0.985;
+      const takeProfit = resistance * 0.995;
+
+      return { support, resistance, trend, entry, stopLoss, takeProfit, fromCandles };
+    }
+
+    async function fetchAnalyzerBundle(ticker) {
+      const to = new Date();
+      const from = new Date();
+      from.setDate(from.getDate() - 14);
+      const candleFrom = Math.floor(Date.now() / 1000) - 12 * 24 * 3600;
+      const candleTo = Math.floor(Date.now() / 1000);
+
+      setAnalyzerLoading(true, 'Loading company data...');
+      const quote = await enqueueRest(() => finnhubGet('/quote', { symbol: ticker }));
+      const profile = await enqueueRest(() => finnhubGet('/stock/profile2', { symbol: ticker }));
+      let metrics = null;
+      try {
+        setAnalyzerLoading(true, 'Loading company data...');
+        metrics = await enqueueRest(() => finnhubGet('/stock/metric', { symbol: ticker, metric: 'all' }));
+      } catch (_) { metrics = null; }
+
+      let news = [];
+      try {
+        setAnalyzerLoading(true, 'Loading news & sentiment...');
+        news = await enqueueRest(() => finnhubGet('/company-news', {
+          symbol: ticker,
+          from: dateISO(from),
+          to: dateISO(to),
+        }));
+        if (!Array.isArray(news)) news = [];
+      } catch (e) {
+        news = [];
+        if (/rate limit|429/i.test(String(e.message))) throw e;
+      }
+
+      let candles = null;
+      try {
+        setAnalyzerLoading(true, 'Loading technical analysis...');
+        candles = await enqueueRest(() => finnhubGet('/stock/candle', {
+          symbol: ticker,
+          resolution: 'D',
+          from: String(candleFrom),
+          to: String(candleTo),
+        }));
+      } catch (_) {
+        candles = null;
+      }
+
+      setAnalyzerLoading(true, 'Building analysis...');
+      return { quote, profile, metrics, news, candles };
+    }
+
+    async function openAnalyzer(ticker) {
+      ticker = String(ticker || '').trim().toUpperCase();
+      if (!ticker) return;
+      if (!apiKey) {
+        showToast('Connect Finnhub API key first (Top Picks)', 'warn');
+        return;
+      }
+
+      analyzerTicker = ticker;
+      openAnalyzerOverlay();
+      showAzError('');
+      document.getElementById('az-grok-wrap').classList.add('hidden');
+      document.getElementById('az-grok-prompt').value = '';
+      document.getElementById('az-prompt-fresh')?.classList.add('hidden');
+      setAnalyzerLoading(true, 'Loading company data...');
+
+      document.getElementById('az-ticker').textContent = ticker;
+      document.getElementById('az-name').textContent = 'Loading…';
+      document.getElementById('az-price').setAttribute('data-price-ticker', ticker);
+      document.getElementById('az-chg').setAttribute('data-chg-ticker', ticker);
+      document.getElementById('az-logo').classList.add('hidden');
+      const azWatch = document.getElementById('az-watch-btn');
+      if (azWatch) {
+        azWatch.setAttribute('data-watch-ticker', ticker);
+        if (window.MITPPages?.updateWatchBadges) window.MITPPages.updateWatchBadges();
+      }
+
+      // Seed from universe if present
+      let stock = stocks.find((s) => s.ticker === ticker);
+      if (stock && stock.hasQuote) {
+        document.getElementById('az-price').textContent = formatPrice(stock.price);
+        document.getElementById('az-chg').textContent = formatPct(stock.dayChangePct);
+        document.getElementById('az-name').textContent = stock.name;
+      }
+
+      const aKey = window.MITPPages?.Cache?.analyzeKey(ticker);
+      const cached = aKey && window.MITPPages?.Cache?.getStale(aKey);
+      let usedCache = false;
+      if (cached?.data?.analyzerData) {
+        analyzerData = cached.data.analyzerData;
+        // refresh live price into cached stock
+        if (stock?.hasQuote && analyzerData.stock) {
+          analyzerData.stock.price = stock.price;
+          analyzerData.stock.dayChangePct = stock.dayChangePct;
+        }
+        renderAnalyzer(analyzerData);
+        setAnalyzerLoading(false);
+        usedCache = true;
+        showToast(cached.expired ? 'Cached analysis · refreshing…' : `Cached analysis: ${ticker}`, 'ok', 2200);
+        if (!cached.expired) {
+          // still soft-refresh in background later
+        }
+      }
+
+      const buildFromBundle = (bundle) => {
+        if (!stock) stock = emptyStock(ticker);
+        applyQuote(stock, bundle.quote || {});
+        applyProfile(stock, bundle.profile || {});
+        if (bundle.metrics) applyMetrics(stock, bundle.metrics);
+
+        const existing = stocks.find((s) => s.ticker === ticker);
+        if (existing) {
+          Object.assign(existing, {
+            name: stock.name, price: stock.price, prevClose: stock.prevClose,
+            dayChangePct: stock.dayChangePct, dayHigh: stock.dayHigh, dayLow: stock.dayLow,
+            pe: stock.pe, roe: stock.roe, industry: stock.industry,
+            week52High: stock.week52High, week52Low: stock.week52Low,
+            marketCap: stock.marketCap, hasQuote: stock.hasQuote,
+          });
+          renderUniverse();
+        }
+
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          try { ws.send(JSON.stringify({ type: 'subscribe', symbol: ticker })); } catch (_) {}
+        }
+
+        const newsRaw = (bundle.news || [])
+          .filter((n) => n && (n.headline || n.summary))
+          .sort((a, b) => (b.datetime || 0) - (a.datetime || 0))
+          .slice(0, 8);
+
+        const newsTagged = newsRaw.map((n) => {
+          const text = `${n.headline || ''} ${n.summary || ''}`;
+          return { ...n, sentiment: classifyNewsSentiment(text) };
+        });
+
+        let pos = 0, neg = 0, neu = 0;
+        newsTagged.forEach((n) => {
+          if (n.sentiment === 'pos') pos++;
+          else if (n.sentiment === 'neg') neg++;
+          else neu++;
+        });
+        const total = pos + neg + neu || 1;
+        let overall = 'Neutral';
+        let overallPct = Math.round((neu / total) * 100);
+        if (pos > neg && pos >= neu) { overall = 'Positive'; overallPct = Math.round((pos / total) * 100); }
+        else if (neg > pos && neg >= neu) { overall = 'Negative'; overallPct = Math.round((neg / total) * 100); }
+
+        const tech = computeTechnical(bundle.quote, bundle.candles, stock);
+        const m = bundle.metrics?.metric || {};
+
+        analyzerData = {
+          stock: { ...stock },
+          profile: bundle.profile || {},
+          quote: bundle.quote || {},
+          metrics: m,
+          news: newsTagged,
+          sentiment: { pos, neg, neu, overall, overallPct, total: pos + neg + neu },
+          tech,
+          styles: getSelectedStyles(),
+          horizon: selectedHorizon,
+        };
+
+        if (aKey && window.MITPPages?.Cache) {
+          window.MITPPages.Cache.set(aKey, { analyzerData }, window.MITPPages.TTL_ANALYZE || 8 * 60 * 1000);
+        }
+
+        renderAnalyzer(analyzerData);
+        setAnalyzerLoading(false);
+      };
+
+      try {
+        if (usedCache && cached && !cached.expired) {
+          // background refresh without blocking UI
+          fetchAnalyzerBundle(ticker).then(buildFromBundle).catch(() => {});
+          return;
+        }
+        const bundle = await fetchAnalyzerBundle(ticker);
+        buildFromBundle(bundle);
+        showToast(`Analysis ready: ${ticker}`, 'ok');
+      } catch (e) {
+        if (usedCache) {
+          // keep cache view
+          showToast('Refresh failed · showing cache', 'warn');
+          return;
+        }
+        setAnalyzerLoading(false);
+        document.getElementById('az-content').classList.add('hidden');
+        const msg = e.message || 'Load failed';
+        showAzError(msg);
+        showToast(msg, 'err', 5000);
+        document.getElementById('az-loader').classList.remove('hidden');
+        document.getElementById('az-loader').classList.add('flex');
+        document.getElementById('az-loader-text').textContent = msg;
+        document.getElementById('az-loader-text').className = 'text-sm text-red-400 text-center max-w-sm';
+      }
+    }
+
+    function renderAnalyzer(data) {
+      const { stock, profile, metrics: m, news, sentiment, tech } = data;
+
+      document.getElementById('az-ticker').textContent = stock.ticker;
+      document.getElementById('az-name').textContent = stock.name || profile.name || stock.ticker;
+      document.getElementById('az-price').textContent = formatPrice(stock.price);
+      document.getElementById('az-price').setAttribute('data-price-ticker', stock.ticker);
+      const chgEl = document.getElementById('az-chg');
+      chgEl.textContent = formatPct(stock.dayChangePct);
+      chgEl.setAttribute('data-chg-ticker', stock.ticker);
+      chgEl.className = 'text-sm font-medium tabular-nums ' +
+        (stock.dayChangePct > 0 ? 'text-emerald-400' : stock.dayChangePct < 0 ? 'text-red-400' : 'text-slate-400');
+
+      const logo = document.getElementById('az-logo');
+      if (profile.logo) {
+        logo.src = profile.logo;
+        logo.alt = stock.ticker;
+        logo.classList.remove('hidden');
+      } else logo.classList.add('hidden');
+
+      // A. Overview
+      const web = profile.weburl || profile.website || '';
+      document.getElementById('az-overview').innerHTML = [
+        metricHtml('Industry', escapeHtml(profile.finnhubIndustry || stock.industry || '—')),
+        metricHtml('Market Cap', escapeHtml(formatCap(num(profile.marketCapitalization, stock.marketCap)))),
+        metricHtml('Shares Out.', escapeHtml(formatShares(num(profile.shareOutstanding)))),
+        metricHtml('Country', escapeHtml(profile.country || '—')),
+        metricHtml('Exchange', escapeHtml(profile.exchange || '—')),
+        metricHtml('Website', web
+          ? `<a href="${escapeHtml(web)}" target="_blank" rel="noopener" class="text-blue-400 hover:underline text-xs">${escapeHtml(web.replace(/^https?:\/\//, '').slice(0, 28))}</a>`
+          : '—'),
+      ].join('');
+
+      // B. Metrics
+      const pe = stock.pe || num(m.peBasicExclExtraTTM) || num(m.peTTM) || 0;
+      const w52h = stock.week52High || num(m['52WeekHigh']);
+      const w52l = stock.week52Low || num(m['52WeekLow']);
+      document.getElementById('az-metrics').innerHTML = [
+        metricHtml('Price', escapeHtml(formatPrice(stock.price))),
+        metricHtml('Day High', escapeHtml(formatPrice(stock.dayHigh))),
+        metricHtml('Day Low', escapeHtml(formatPrice(stock.dayLow))),
+        metricHtml('Prev Close', escapeHtml(formatPrice(stock.prevClose))),
+        metricHtml('P/E (TTM)', pe ? escapeHtml(pe.toFixed(2)) : '—'),
+        metricHtml('Market Cap', escapeHtml(formatCap(num(profile.marketCapitalization, stock.marketCap)))),
+        metricHtml('52W High', escapeHtml(formatPrice(w52h))),
+        metricHtml('52W Low', escapeHtml(formatPrice(w52l))),
+        metricHtml('ROE', stock.roe ? escapeHtml(stock.roe.toFixed(1) + '%') : '—'),
+      ].join('');
+
+      // C. Sentiment + news
+      const sentColor = sentiment.overall === 'Positive' ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10'
+        : sentiment.overall === 'Negative' ? 'text-red-400 border-red-500/30 bg-red-500/10'
+        : 'text-slate-300 border-slate-500/30 bg-slate-500/10';
+      document.getElementById('az-sentiment').innerHTML = `
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="inline-flex items-center px-3 py-1.5 rounded-xl border text-sm font-bold ${sentColor}">
+            ${escapeHtml(sentiment.overall)} · ${sentiment.overallPct}%
+          </span>
+          <span class="text-xs text-slate-500">
+            <span class="text-emerald-400">+${sentiment.pos}</span> /
+            <span class="text-slate-400">${sentiment.neu} neu</span> /
+            <span class="text-red-400">−${sentiment.neg}</span>
+            · keyword sentiment · last 14 days
+          </span>
+        </div>`;
+
+      if (!news.length) {
+        document.getElementById('az-news').innerHTML = '<p class="text-sm text-slate-500">Новин не знайдено (або ліміт API / немає coverage).</p>';
+      } else {
+        document.getElementById('az-news').innerHTML = news.map((n) => {
+          const dt = n.datetime ? new Date(n.datetime * 1000).toLocaleString() : '—';
+          const badge = n.sentiment === 'pos' ? 'pos' : n.sentiment === 'neg' ? 'neg' : 'neu';
+          const label = n.sentiment === 'pos' ? 'Positive' : n.sentiment === 'neg' ? 'Negative' : 'Neutral';
+          const summary = (n.summary || '').slice(0, 180);
+          const href = n.url ? escapeHtml(n.url) : '#';
+          return `
+            <article class="news-item ${badge}">
+              <div class="flex items-start justify-between gap-2">
+                <a href="${href}" target="_blank" rel="noopener" class="text-sm font-medium text-slate-200 hover:text-blue-300 leading-snug">${escapeHtml(n.headline || 'Untitled')}</a>
+                <span class="shrink-0 text-[10px] uppercase tracking-wide text-slate-500">${label}</span>
+              </div>
+              <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(dt)}${n.source ? ' · ' + escapeHtml(n.source) : ''}</div>
+              ${summary ? `<p class="text-xs text-slate-400 mt-1 leading-relaxed">${escapeHtml(summary)}${(n.summary || '').length > 180 ? '…' : ''}</p>` : ''}
+            </article>`;
+        }).join('');
+      }
+
+      // D. Technical
+      const trendColor = tech.trend === 'Bullish' ? 'text-emerald-400' : tech.trend === 'Bearish' ? 'text-red-400' : 'text-amber-300';
+      document.getElementById('az-tech').innerHTML = [
+        metricHtml('Trend', `<span class="${trendColor}">${escapeHtml(tech.trend)}</span>`),
+        metricHtml('Support', escapeHtml(formatPrice(tech.support))),
+        metricHtml('Resistance', escapeHtml(formatPrice(tech.resistance))),
+        metricHtml('Entry zone', escapeHtml(formatPrice(tech.entry))),
+        metricHtml('Stop Loss', `<span class="text-red-300">${escapeHtml(formatPrice(tech.stopLoss))}</span>`),
+        metricHtml('Take Profit', `<span class="text-emerald-300">${escapeHtml(formatPrice(tech.takeProfit))}</span>`),
+      ].join('') + `
+        <p class="col-span-2 sm:col-span-3 text-[11px] text-slate-500 mt-1">
+          Джерело рівнів: ${tech.fromCandles ? 'daily candles (~10 днів)' : 'day high/low + prev close (candles недоступні на free / помилка)'}.
+          Це спрощені орієнтири, не торгові сигнали.
+        </p>`;
+
+      document.getElementById('az-content').classList.remove('hidden');
+      document.getElementById('az-loader-text').className = 'text-sm text-slate-400';
+      updateGrokContextLabels();
+      // Keep prompt in sync if user already generated it
+      const wrap = document.getElementById('az-grok-wrap');
+      if (wrap && !wrap.classList.contains('hidden')) {
+        showGrokPrompt({ scroll: false });
+      }
+    }
+
+    function updateAnalyzerLivePrice() {
+      if (!analyzerTicker || !analyzerData?.stock) return;
+      const uni = stocks.find((s) => s.ticker === analyzerTicker);
+      if (uni && uni.hasQuote) {
+        analyzerData.stock.price = uni.price;
+        analyzerData.stock.dayChangePct = uni.dayChangePct;
+      }
+      updatePriceInDom(analyzerTicker, analyzerData.stock);
+    }
+
+    function syncAnalyzerContextFromUI() {
+      if (!analyzerData) return;
+      analyzerData.styles = getSelectedStyles();
+      analyzerData.horizon = selectedHorizon;
+      // Prefer freshest live price from universe
+      if (analyzerData.stock) {
+        const uni = stocks.find((s) => s.ticker === analyzerData.stock.ticker);
+        if (uni && uni.hasQuote) {
+          analyzerData.stock.price = uni.price;
+          analyzerData.stock.dayChangePct = uni.dayChangePct;
+          if (uni.dayHigh) analyzerData.stock.dayHigh = uni.dayHigh;
+          if (uni.dayLow) analyzerData.stock.dayLow = uni.dayLow;
+          if (uni.prevClose) analyzerData.stock.prevClose = uni.prevClose;
+        }
+      }
+      updateGrokContextLabels();
+    }
+
+    function updateGrokContextLabels() {
+      const styles = analyzerData ? analyzerData.styles : getSelectedStyles();
+      const horizon = analyzerData ? analyzerData.horizon : selectedHorizon;
+      const styleLabels = (styles || []).map((s) => STYLE_META[s]?.label || s).join(', ') || '—';
+      const hEl = document.getElementById('az-grok-horizon');
+      const sEl = document.getElementById('az-grok-styles');
+      if (hEl) hEl.textContent = HORIZON_LABELS[horizon] || horizon || '—';
+      if (sEl) sEl.textContent = styleLabels;
+    }
+
+    function buildGrokPrompt(data) {
+      const { stock, profile, news, sentiment, tech, styles, horizon } = data;
+      const ticker = stock.ticker;
+      const company = stock.name || profile?.name || ticker;
+      const styleLabels = (styles || []).map((s) => {
+        const m = STYLE_META[s];
+        return m ? `${m.label} (${m.short})` : s;
+      }).join(', ') || 'Not specified';
+      const horizonLabel = HORIZON_LABELS[horizon] || horizon || 'Not specified';
+      const pe = stock.pe ? Number(stock.pe).toFixed(2) : 'n/a';
+      const roe = stock.roe ? `${Number(stock.roe).toFixed(1)}%` : 'n/a';
+      const epsG = Number.isFinite(stock.epsGrowth) ? `${Number(stock.epsGrowth).toFixed(1)}%` : 'n/a';
+      const revG = Number.isFinite(stock.revGrowth) ? `${Number(stock.revGrowth).toFixed(1)}%` : 'n/a';
+      const mcap = profile?.marketCapitalization != null
+        ? formatCap(num(profile.marketCapitalization))
+        : (stock.marketCap ? formatCap(stock.marketCap) : 'n/a');
+
+      const newsLines = (news || []).slice(0, 6).map((n, i) => {
+        const d = n.datetime ? new Date(n.datetime * 1000).toISOString().slice(0, 10) : '?';
+        const tag = n.sentiment === 'pos' ? 'Positive' : n.sentiment === 'neg' ? 'Negative' : 'Neutral';
+        return `  ${i + 1}. [${d}] [${tag}] ${n.headline || 'Untitled'}`;
+      }).join('\n') || '  (немає заголовків за останні ~14 днів)';
+
+      const sent = sentiment || { overall: 'Neutral', overallPct: 0, pos: 0, neu: 0, neg: 0 };
+      const t = tech || {};
+
+      return `Ти — професійний трейдер і аналітик. Проаналізуй акцію ${ticker} і дай:
+1. Потенціал росту вгору у % на обраний горизонт
+2. Рекомендовану зону покупки
+3. Точний Stop Loss (з поясненням)
+4. Take Profit 1 і Take Profit 2
+5. Стратегію (де купувати, де продавати, як управляти позицією)
+6. Ризик-менеджмент (скільки % портфеля ризикувати)
+7. Короткий висновок: Buy / Wait / Avoid + чому
+
+Будь конкретним і використовуй цифри.
+
+---
+
+## Контекст угоди (з Multi-Investor Top Picks Generator)
+
+### Акція
+- Тікер: ${ticker}
+- Компанія: ${company}
+- Індустрія: ${profile?.finnhubIndustry || stock.industry || 'n/a'}
+- Біржа: ${profile?.exchange || 'n/a'}
+- Країна: ${profile?.country || 'n/a'}
+- Market cap: ${mcap}
+
+### Live-ціна (Finnhub)
+- Поточна ціна: ${formatPrice(stock.price)}
+- Зміна за день: ${formatPct(stock.dayChangePct)}
+- Day high / low: ${formatPrice(stock.dayHigh)} / ${formatPrice(stock.dayLow)}
+- Previous close: ${formatPrice(stock.prevClose)}
+
+### Обраний горизонт
+- ${horizonLabel}
+
+### Стиль інвестора
+- ${styleLabels}
+
+### Ключові метрики
+- P/E (TTM): ${pe}
+- ROE: ${roe}
+- EPS growth (approx): ${epsG}
+- Revenue growth (approx): ${revG}
+- 52-week high / low: ${formatPrice(stock.week52High)} / ${formatPrice(stock.week52Low)}
+- Debt/Equity (approx): ${Number.isFinite(stock.debtEquity) ? Number(stock.debtEquity).toFixed(2) : 'n/a'}
+
+### Sentiment новин (keyword heuristic, ~14 днів)
+- Загальний: ${sent.overall} (${sent.overallPct}%)
+- Розподіл: Positive ${sent.pos} / Neutral ${sent.neu} / Negative ${sent.neg}
+- Останні заголовки:
+${newsLines}
+
+### Базові технічні рівні (app, попередні)
+- Trend: ${t.trend || 'n/a'}
+- Support: ${formatPrice(t.support)}
+- Resistance: ${formatPrice(t.resistance)}
+- App entry zone (біля support): ${formatPrice(t.entry)}
+- App stop (нижче support): ${formatPrice(t.stopLoss)}
+- App TP (біля resistance): ${formatPrice(t.takeProfit)}
+
+---
+
+## Формат відповіді
+Відповідай українською. Використовуй чіткі заголовки 1–7 як у завданні вище.
+Усі ціни в USD, % з 1 знаком після коми де доречно.
+Вкажи, що це освітній аналіз, не індивідуальна фінансова порада.`;
+    }
+
+    function showGrokPrompt(opts = {}) {
+      if (!analyzerData) return;
+      syncAnalyzerContextFromUI();
+      const prompt = buildGrokPrompt(analyzerData);
+      const ta = document.getElementById('az-grok-prompt');
+      const wrap = document.getElementById('az-grok-wrap');
+      ta.value = prompt;
+      wrap.classList.remove('hidden');
+      if (opts.markFresh) {
+        const badge = document.getElementById('az-prompt-fresh');
+        badge.classList.remove('hidden');
+        clearTimeout(showGrokPrompt._freshTimer);
+        showGrokPrompt._freshTimer = setTimeout(() => badge.classList.add('hidden'), 2500);
+      }
+      if (opts.scroll !== false) {
+        ta.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function refreshGrokPromptIfVisible() {
+      if (!analyzerData) return;
+      updateGrokContextLabels();
+      const wrap = document.getElementById('az-grok-wrap');
+      if (!wrap || wrap.classList.contains('hidden')) {
+        // still refresh context labels + stored styles
+        syncAnalyzerContextFromUI();
+        return;
+      }
+      showGrokPrompt({ markFresh: true, scroll: false });
+    }
+
+    // ─── Connect / events ─────────────────────────────────────────────
+    async function connectLive() {
+      const input = document.getElementById('api-key');
+      const key = (input.value || apiKey || '').trim();
+      if (!key) {
+        document.getElementById('api-status').textContent = 'Paste Finnhub API key.';
+        document.getElementById('api-status').className = 'text-xs text-amber-400 mt-2';
+        showToast('Paste Finnhub API key first', 'warn');
+        return;
+      }
+      apiKey = key;
+      localStorage.setItem(STORAGE_KEY, apiKey);
+      input.value = apiKey;
+      const btn = document.getElementById('connect-btn');
+      btn.disabled = true;
+      btn.textContent = 'Connecting…';
+      showGlobalBusy('Connecting to live data...');
+      try {
+        await enqueueRest(() => finnhubGet('/quote', { symbol: 'AAPL' }));
+        await loadAllData({ fundamentals: true });
+      } catch (e) {
+        const msg = e.message || 'Connection failed';
+        setLiveBadge('err', msg);
+        document.getElementById('api-status').textContent = msg;
+        document.getElementById('api-status').className = 'text-xs text-red-400 mt-2';
+        connected = false;
+        hideGlobalBusy();
+        showToast(msg, 'err', 5000);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Connect live data';
+      }
+    }
+
+    function disconnectLive() {
+      connected = false;
+      stopPolling();
+      disconnectWebSocket();
+      setLiveBadge('off', 'Offline · потрібен Finnhub API key');
+      document.getElementById('stat-rest').textContent = '—';
+      document.getElementById('stat-fund').textContent = '—';
+      document.getElementById('api-status').textContent = 'Disconnected.';
+      document.getElementById('api-status').className = 'text-xs text-slate-500 mt-2';
+      hideGlobalBusy();
+      showToast('Disconnected from live data', 'warn');
+    }
+
+    document.querySelectorAll('.horizon-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.horizon-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedHorizon = btn.dataset.horizon;
+        refreshGrokPromptIfVisible();
+      });
+    });
+    document.querySelectorAll('input[name="style"]').forEach((el) => {
+      el.addEventListener('change', () => refreshGrokPromptIfVisible());
+    });
+    document.getElementById('generate-btn').addEventListener('click', generatePicks);
+    document.getElementById('btn-ws-reconnect')?.addEventListener('click', manualReconnectWs);
+    updateLimitBar();
+    document.querySelectorAll('#topn-group .topn-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        topNLimit = Number(btn.dataset.topn) || 10;
+        document.querySelectorAll('#topn-group .topn-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (lastScoredAll.length) reRenderFromCache();
+        else {
+          const t = document.getElementById('results-title');
+          if (t && !lastScoredAll.length) t.textContent = `Top ${topNLimit} Picks`;
+        }
+      });
+    });
+    document.querySelectorAll('.th-sort').forEach((th) => {
+      th.addEventListener('click', () => {
+        const key = th.dataset.sort;
+        if (!key) return;
+        if (sortKey === key) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+        else {
+          sortKey = key;
+          sortDir = key === 'change' || key === 'price' ? 'desc' : 'desc';
+        }
+        updateSortHeaderUI();
+        if (lastScoredAll.length) reRenderFromCache();
+      });
+    });
+    updateSortHeaderUI();
+    document.getElementById('connect-btn').addEventListener('click', connectLive);
+    document.getElementById('refresh-btn').addEventListener('click', async () => {
+      if (!apiKey) return;
+      await loadAllData({ fundamentals: false });
+    });
+    document.getElementById('disconnect-btn').addEventListener('click', disconnectLive);
+    document.getElementById('clear-max-price').addEventListener('click', () => {
+      document.getElementById('max-price').value = '';
+    });
+
+    document.getElementById('add-stock-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const ticker = String(new FormData(e.target).get('ticker') || '').trim().toUpperCase();
+      const msg = document.getElementById('form-msg');
+      if (!ticker) return;
+      if (stocks.some((s) => s.ticker === ticker)) {
+        msg.textContent = `${ticker} уже в списку.`;
+        msg.className = 'text-xs text-amber-400 self-center';
+        return;
+      }
+      if (stocks.length >= 50) {
+        msg.textContent = 'Free WS: макс 50 тікерів.';
+        msg.className = 'text-xs text-amber-400 self-center';
+        return;
+      }
+      const stock = emptyStock(ticker);
+      stocks.push(stock);
+      saveTickerList();
+      renderUniverse();
+      e.target.reset();
+      if (!apiKey) {
+        msg.textContent = `Додано ${ticker}. Connect Finnhub.`;
+        msg.className = 'text-xs text-amber-400 self-center';
+        return;
+      }
+      try {
+        await fetchQuoteFor(stock);
+        await fetchProfileFor(stock);
+        await fetchMetricsFor(stock);
+        if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'subscribe', symbol: ticker }));
+        renderUniverse();
+        msg.textContent = stock.hasQuote ? `${ticker} live ${formatPrice(stock.price)}` : `${ticker}: немає quote`;
+        msg.className = stock.hasQuote ? 'text-xs text-emerald-400 self-center' : 'text-xs text-amber-400 self-center';
+      } catch (err) {
+        msg.textContent = err.message;
+        msg.className = 'text-xs text-red-400 self-center';
+      }
+    });
+
+    document.getElementById('reset-universe').addEventListener('click', async () => {
+      initStocksFromTickers(DEFAULT_TICKERS);
+      saveTickerList();
+      renderUniverse();
+      if (apiKey && connected) {
+        disconnectWebSocket(false);
+        await loadAllData({ fundamentals: true });
+      }
+    });
+
+    // Analyzer UI events
+    document.getElementById('az-close').addEventListener('click', closeAnalyzer);
+    document.getElementById('analyzer-overlay').addEventListener('click', (e) => {
+      if (e.target.id === 'analyzer-overlay') closeAnalyzer();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeAnalyzer();
+    });
+    document.getElementById('open-analyzer-btn').addEventListener('click', () => {
+      openAnalyzerOverlay();
+      if (!analyzerData) {
+        setAnalyzerLoading(false);
+        document.getElementById('az-content').classList.add('hidden');
+        document.getElementById('az-loader').classList.remove('hidden');
+        document.getElementById('az-loader').classList.add('flex');
+        document.getElementById('az-loader-text').textContent = 'Введи тікер нижче або натисни Analyze у таблиці.';
+        document.getElementById('az-loader-text').className = 'text-sm text-slate-400 text-center';
+        document.getElementById('az-ticker').textContent = '—';
+        document.getElementById('az-name').textContent = 'Stock Analyzer';
+      }
+    });
+    document.getElementById('az-manual-btn').addEventListener('click', () => {
+      const t = document.getElementById('az-manual-ticker').value.trim().toUpperCase();
+      if (t) openAnalyzer(t);
+    });
+    document.getElementById('az-manual-ticker').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('az-manual-btn').click();
+      }
+    });
+    document.getElementById('az-grok-btn').addEventListener('click', () => {
+      if (!analyzerData) {
+        showAzError('Спочатку завантаж аналіз акції (Analyze).');
+        return;
+      }
+      showAzError('');
+      showGrokPrompt({ scroll: true });
+    });
+    document.getElementById('az-copy-btn').addEventListener('click', async () => {
+      let text = document.getElementById('az-grok-prompt').value;
+      if (!text && analyzerData) {
+        showGrokPrompt({ scroll: false });
+        text = document.getElementById('az-grok-prompt').value;
+      }
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (_) {
+        document.getElementById('az-grok-prompt').select();
+        document.execCommand('copy');
+      }
+      const msg = document.getElementById('az-copy-msg');
+      msg.classList.remove('hidden');
+      setTimeout(() => msg.classList.add('hidden'), 2200);
+    });
+    document.getElementById('az-open-grok-btn').addEventListener('click', async () => {
+      let text = document.getElementById('az-grok-prompt').value;
+      if (!text && analyzerData) {
+        showGrokPrompt({ scroll: false });
+        text = document.getElementById('az-grok-prompt').value;
+      }
+      if (text) {
+        try { await navigator.clipboard.writeText(text); } catch (_) {}
+        const msg = document.getElementById('az-copy-msg');
+        msg.textContent = 'Промпт скопійовано — встав у Grok (Ctrl+V)';
+        msg.classList.remove('hidden');
+        setTimeout(() => {
+          msg.classList.add('hidden');
+          msg.textContent = 'Скопійовано в буфер!';
+        }, 3500);
+      }
+      // Official Grok web chat (user pastes prompt)
+      window.open('https://grok.com/', '_blank', 'noopener,noreferrer');
+    });
+
+    // Theme switcher
+    const THEME_KEY = 'mitp_theme_v1';
+    function applyTheme(name) {
+      const t = name || 'midnight';
+      document.documentElement.setAttribute('data-theme', t);
+      try { localStorage.setItem(THEME_KEY, t); } catch (_) {}
+      document.querySelectorAll('[data-theme-set]').forEach((btn) => {
+        btn.classList.toggle('active', btn.getAttribute('data-theme-set') === t);
+      });
+    }
+    document.querySelectorAll('[data-theme-set]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        applyTheme(btn.getAttribute('data-theme-set'));
+        showToast(`Theme: ${btn.getAttribute('data-theme-set')}`, 'ok', 1800);
+      });
+    });
+    applyTheme(localStorage.getItem(THEME_KEY) || 'midnight');
+
+    // View navigation
+    function switchView(view) {
+      const map = {
+        picks: 'view-picks',
+        daytrade: 'view-daytrade',
+        watchlist: 'view-watchlist',
+        portfolio: 'view-portfolio',
+      };
+      Object.entries(map).forEach(([key, id]) => {
+        document.getElementById(id)?.classList.toggle('hidden', key !== view);
+      });
+      document.querySelectorAll('.nav-tab').forEach((t) => {
+        t.classList.toggle('active', t.dataset.view === view);
+      });
+      if (view === 'daytrade' && window.DayTradingAnalyzer?.onShow) {
+        window.DayTradingAnalyzer.onShow();
+      }
+      if (window.MITPPages?.onShow) window.MITPPages.onShow(view);
+      const hash = view === 'picks' ? '#picks' : `#${view}`;
+      try { history.replaceState(null, '', hash); } catch (_) {}
+    }
+    document.querySelectorAll('[data-view]').forEach((el) => {
+      el.addEventListener('click', () => switchView(el.dataset.view));
+    });
+    const hash = (location.hash || '#picks').replace('#', '');
+    if (['daytrade', 'watchlist', 'portfolio'].includes(hash)) switchView(hash);
+
+    // Bridge for Day Trading + pages modules
+    window.MITP = {
+      getApiKey: () => apiKey,
+      finnhubGet,
+      enqueueRest,
+      formatPrice,
+      formatPct,
+      clamp,
+      num,
+      escapeHtml,
+      sleep,
+      showToast,
+      openAnalyzer,
+      getStock: (ticker) => stocks.find((s) => s.ticker === String(ticker).toUpperCase()),
+      getStocks: () => stocks,
+    };
+
+    // Init
+    initStocksFromTickers(loadTickerList());
+    renderUniverse();
+    if (apiKey) {
+      document.getElementById('api-key').value = apiKey;
+      document.getElementById('api-status').textContent = 'Знайдено збережений key — натисни Connect live data.';
+      document.getElementById('api-status').className = 'text-xs text-blue-300 mt-2';
+    }
+    // hydrate quotes after app-pages loads (see app-pages.js)
+    window.__mitpAfterPages = function hydrateQuotesFromCache() {
+      try {
+        const q = window.MITPPages?.Cache?.loadQuotes?.();
+        if (!q?.map) return;
+        stocks.forEach((s) => {
+          const c = q.map[s.ticker];
+          if (c && c.price > 0) {
+            s.price = c.price;
+            s.dayChangePct = c.dayChangePct || 0;
+            s.hasQuote = true;
+            if (c.name) s.name = c.name;
+          }
+        });
+        renderUniverse();
+      } catch (_) {}
+    };
+  </script>
+  <script src="app-pages.js"></script>
+  <script src="day-trading.js"></script>
+</body>
+</html>
