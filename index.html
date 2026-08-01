@@ -2,7 +2,10 @@
 <html lang="uk" data-theme="midnight">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
+  <meta name="theme-color" content="#070b14" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <title>Multi-Investor Top Picks Generator</title>
   <script>
     // Apply theme ASAP to avoid flash
@@ -626,47 +629,313 @@
     .strategy-bar {
       height: 6px;
       border-radius: 999px;
-      background: linear-gradient(90deg, #2563eb, #10b981);
+      background: var(--score-grad);
+    }
+
+    /* ── Mobile UX ───────────────────────────────────── */
+    html {
+      -webkit-text-size-adjust: 100%;
+      scroll-padding-top: 4.5rem;
+      scroll-padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+    }
+    button, .nav-tab, .style-chip span, .horizon-btn, .topn-btn, .tf-btn, a {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    @media (max-width: 767px) {
+      body {
+        padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+        padding-left: env(safe-area-inset-left, 0px);
+        padding-right: env(safe-area-inset-right, 0px);
+      }
+      /* Compact status bar */
+      #finnhub-status-bar .status-extra { display: none; }
+      #finnhub-status-bar {
+        font-size: 10px;
+      }
+      #finnhub-status-bar .status-inner {
+        padding-top: 0.35rem;
+        padding-bottom: 0.35rem;
+        gap: 0.5rem;
+      }
+      #btn-ws-reconnect {
+        padding: 0.35rem 0.5rem !important;
+        font-size: 10px !important;
+      }
+      /* Top nav: brand + themes only on mobile (tabs move to bottom) */
+      #app-nav {
+        position: sticky;
+        top: 0;
+        z-index: 44;
+      }
+      #app-nav .nav-desktop-tabs { display: none !important; }
+      #app-nav .nav-inner {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+      }
+      #app-nav .brand-title { font-size: 0.9rem; }
+      .theme-dot {
+        width: 1.35rem;
+        height: 1.35rem;
+      }
+      /* Bigger primary actions */
+      #generate-btn,
+      #connect-btn,
+      #dt-load-btn {
+        min-height: 48px;
+        font-size: 0.95rem !important;
+        border-radius: 0.9rem !important;
+      }
+      .horizon-btn, .topn-btn, .style-chip span, .tf-btn {
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+      }
+      .style-chip span {
+        font-size: 0.75rem !important;
+        padding: 0.45rem 0.7rem !important;
+      }
+      /* Glass panels tighter */
+      .glass {
+        border-radius: 0.9rem;
+      }
+      #view-picks, #view-daytrade, #view-watchlist, #view-portfolio {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        padding-top: 0.85rem;
+      }
+      /* Chart shorter on phone */
+      #dt-chart-wrap {
+        height: 280px !important;
+        min-height: 240px !important;
+      }
+      /* Analyzer: full screen, safe areas */
+      #analyzer-panel {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      #analyzer-panel > .shrink-0 {
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+      }
+      #az-body {
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        padding-left: 0.85rem !important;
+        padding-right: 0.85rem !important;
+      }
+      #az-close {
+        min-width: 44px;
+        min-height: 44px;
+      }
+      /* Toasts above bottom nav */
+      #toast-root {
+        top: auto;
+        bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+        right: 0.5rem;
+        left: 0.5rem;
+        max-width: none;
+      }
+      #global-busy {
+        padding-top: 30vh;
+      }
+      /* Sticky generate strip above bottom tabs */
+      .mobile-sticky-actions {
+        position: sticky;
+        bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+        z-index: 30;
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
+        margin-bottom: -0.25rem;
+        padding: 0.65rem 0.5rem 0.75rem;
+        background: linear-gradient(to top, var(--bg0) 72%, color-mix(in srgb, var(--bg0) 40%, transparent));
+        border-radius: 0.75rem 0.75rem 0 0;
+      }
+      .mobile-sticky-actions #generate-btn {
+        width: 100%;
+        box-shadow: 0 10px 28px var(--accent-soft) !important;
+      }
+      .mobile-sticky-actions #status-msg {
+        font-size: 0.7rem;
+        line-height: 1.3;
+      }
+      /* Wide table only on tablet+; cards on phone */
+      #results-wrap.results-ready {
+        display: none !important;
+      }
+      #results-cards.results-ready {
+        display: block !important;
+      }
+      /* Sort chips for mobile cards */
+      #mobile-sort-bar.results-ready {
+        display: flex !important;
+      }
+      /* Compact headers */
+      #view-picks header h1,
+      #view-daytrade header h1,
+      #view-watchlist header h1,
+      #view-portfolio header h1 {
+        font-size: 1.35rem !important;
+        line-height: 1.25;
+      }
+      #view-daytrade {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+        padding-top: 0.85rem !important;
+        padding-bottom: 1rem;
+      }
+      #view-daytrade header p {
+        font-size: 0.75rem;
+      }
+      #dt-load-btn {
+        width: 100%;
+      }
+      #dt-save-btn {
+        flex: 1;
+        min-height: 44px;
+      }
+      /* Meta line: allow wrap / truncate */
+      #results-meta {
+        font-size: 0.65rem;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .pick-card {
+        padding: 0.85rem;
+      }
+      .pick-card [data-analyze] {
+        min-height: 40px;
+        min-width: 5.5rem;
+      }
+      /* Inputs 16px+ to avoid iOS zoom */
+      input, select, textarea {
+        font-size: 16px !important;
+      }
+      /* Hide bottom tabs under analyzer / busy overlay */
+      body.modal-open #mobile-tabbar {
+        display: none !important;
+      }
+      body.modal-open {
+        padding-bottom: 0;
+      }
+    }
+    @media (min-width: 768px) {
+      #mobile-tabbar { display: none !important; }
+      .mobile-only { display: none !important; }
+      #mobile-sort-bar { display: none !important; }
+      #results-cards { display: none !important; }
+      #results-wrap.results-ready {
+        display: block !important;
+      }
+    }
+    #mobile-sort-bar {
+      display: none;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      padding: 0 0.75rem 0.65rem;
+    }
+    #mobile-sort-bar button {
+      min-height: 2rem;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      border: 1px solid var(--glass-border);
+      background: color-mix(in srgb, var(--bg1) 90%, transparent);
+      color: var(--muted);
+    }
+    #mobile-sort-bar button.active {
+      color: var(--text);
+      background: var(--accent-soft);
+      border-color: color-mix(in srgb, var(--accent2) 40%, transparent);
+    }
+    /* Bottom tab bar (phones) */
+    #mobile-tabbar {
+      display: none;
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 55;
+      padding: 0.35rem 0.4rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
+      background: var(--nav-bg);
+      border-top: 1px solid var(--glass-border);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.25);
+    }
+    @media (max-width: 767px) {
+      #mobile-tabbar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.15rem;
+      }
+    }
+    #mobile-tabbar button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.15rem;
+      min-height: 3.1rem;
+      border-radius: 0.75rem;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    #mobile-tabbar button .tab-ico {
+      font-size: 1.15rem;
+      line-height: 1;
+    }
+    #mobile-tabbar button.active {
+      color: var(--text);
+      background: var(--accent-soft);
+    }
+    #mobile-tabbar button.active .tab-ico {
+      filter: drop-shadow(0 0 6px var(--accent2-soft));
     }
   </style>
 </head>
 <body class="font-sans text-slate-200 antialiased">
   <!-- Finnhub limits status bar -->
   <div id="finnhub-status-bar" class="text-[11px] sm:text-xs">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-slate-400">
-      <span class="font-semibold text-slate-300 shrink-0">Finnhub</span>
+    <div class="status-inner max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-slate-400">
+      <span class="font-semibold shrink-0" style="color: var(--text)">API</span>
       <span id="bar-ws" class="inline-flex items-center gap-1.5">
         <span class="live-dot" id="bar-ws-dot"></span>
-        <span id="bar-ws-text">WS: Disconnected</span>
+        <span id="bar-ws-text">WS: Off</span>
       </span>
-      <span id="bar-rest" class="tabular-nums">REST: 0/60 per min</span>
+      <span id="bar-rest" class="tabular-nums status-extra">REST: 0/60</span>
       <span id="bar-warn" class="hidden font-medium"></span>
       <button type="button" id="btn-ws-reconnect"
         class="ml-auto sm:ml-0 px-2.5 py-1 rounded-lg border border-surface-600 bg-surface-800 text-slate-300 hover:border-emerald-500/40 hover:text-emerald-300 transition-colors text-[11px] font-semibold">
-        Reconnect WebSocket
+        Reconnect
       </button>
     </div>
   </div>
 
   <!-- Top navigation -->
   <nav id="app-nav" class="sticky top-[2.15rem] sm:top-9 z-40 border-b backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2">
+    <div class="nav-inner max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2">
       <div class="flex items-center gap-2 min-w-0">
-        <span class="font-extrabold text-sm sm:text-base tracking-tight truncate" style="color: var(--text)">
+        <span class="brand-title font-extrabold text-sm sm:text-base tracking-tight truncate" style="color: var(--text)">
           Multi-Investor <span style="color: var(--accent2)">Suite</span>
         </span>
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <div class="theme-picker" id="theme-picker" title="Theme" aria-label="Theme picker">
-          <button type="button" class="theme-dot active" data-theme-set="midnight" style="background: linear-gradient(135deg,#2563eb,#10b981)" title="Midnight"></button>
-          <button type="button" class="theme-dot" data-theme-set="aurora" style="background: linear-gradient(135deg,#7c3aed,#22d3ee)" title="Aurora"></button>
-          <button type="button" class="theme-dot" data-theme-set="ember" style="background: linear-gradient(135deg,#f97316,#ef4444)" title="Ember"></button>
-          <button type="button" class="theme-dot" data-theme-set="ocean" style="background: linear-gradient(135deg,#06b6d4,#34d399)" title="Ocean"></button>
-          <button type="button" class="theme-dot" data-theme-set="noir" style="background: linear-gradient(135deg,#52525b,#a3e635)" title="Noir"></button>
-          <button type="button" class="theme-dot" data-theme-set="rose" style="background: linear-gradient(135deg,#f472b6,#c084fc)" title="Rose"></button>
-          <button type="button" class="theme-dot" data-theme-set="paper" style="background: linear-gradient(135deg,#e7e5e4,#2563eb)" title="Paper light"></button>
+          <button type="button" class="theme-dot active" data-theme-set="midnight" style="background: linear-gradient(135deg,#2563eb,#10b981)" title="Midnight" aria-label="Midnight"></button>
+          <button type="button" class="theme-dot" data-theme-set="aurora" style="background: linear-gradient(135deg,#7c3aed,#22d3ee)" title="Aurora" aria-label="Aurora"></button>
+          <button type="button" class="theme-dot" data-theme-set="ember" style="background: linear-gradient(135deg,#f97316,#ef4444)" title="Ember" aria-label="Ember"></button>
+          <button type="button" class="theme-dot" data-theme-set="ocean" style="background: linear-gradient(135deg,#06b6d4,#34d399)" title="Ocean" aria-label="Ocean"></button>
+          <button type="button" class="theme-dot" data-theme-set="noir" style="background: linear-gradient(135deg,#52525b,#a3e635)" title="Noir" aria-label="Noir"></button>
+          <button type="button" class="theme-dot" data-theme-set="rose" style="background: linear-gradient(135deg,#f472b6,#c084fc)" title="Rose" aria-label="Rose"></button>
+          <button type="button" class="theme-dot" data-theme-set="paper" style="background: linear-gradient(135deg,#e7e5e4,#2563eb)" title="Paper light" aria-label="Paper"></button>
         </div>
-        <div class="flex flex-wrap gap-1" role="tablist">
+        <div class="nav-desktop-tabs flex flex-wrap gap-1" role="tablist">
           <button type="button" class="nav-tab active text-xs sm:text-sm px-2 sm:px-3" data-view="picks" id="nav-picks">Top Picks</button>
           <button type="button" class="nav-tab text-xs sm:text-sm px-2 sm:px-3" data-view="daytrade" id="nav-daytrade">Day Trading</button>
           <button type="button" class="nav-tab text-xs sm:text-sm px-2 sm:px-3" data-view="watchlist" id="nav-watch">Watchlist</button>
@@ -674,6 +943,26 @@
         </div>
       </div>
     </div>
+  </nav>
+
+  <!-- Mobile bottom tabs -->
+  <nav id="mobile-tabbar" aria-label="Main menu">
+    <button type="button" data-view="picks" class="active" id="mnav-picks">
+      <span class="tab-ico">📈</span>
+      <span>Picks</span>
+    </button>
+    <button type="button" data-view="daytrade" id="mnav-day">
+      <span class="tab-ico">🕯️</span>
+      <span>Day</span>
+    </button>
+    <button type="button" data-view="watchlist" id="mnav-watch">
+      <span class="tab-ico">⭐</span>
+      <span>Watch</span>
+    </button>
+    <button type="button" data-view="portfolio" id="mnav-port">
+      <span class="tab-ico">💼</span>
+      <span>Port</span>
+    </button>
   </nav>
 
   <div id="toast-root" aria-live="polite"></div>
@@ -806,7 +1095,7 @@
           </div>
         </div>
       </div>
-      <div class="mt-5 sm:mt-6 flex flex-col sm:flex-row sm:items-center gap-3">
+      <div class="mobile-sticky-actions mt-5 sm:mt-6 flex flex-col sm:flex-row sm:items-center gap-3">
         <button id="generate-btn" type="button"
           class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 shadow-lg shadow-blue-900/40 disabled:opacity-60">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
@@ -833,9 +1122,16 @@
       <div id="empty-state" class="px-4 sm:px-6 py-12 sm:py-16 text-center">
         <p class="text-slate-400 text-sm">Підключи live-дані й натисни <span class="text-blue-300 font-medium">Generate Top Picks</span>.</p>
       </div>
-      <!-- Mobile cards (< sm) -->
-      <div id="results-cards" class="hidden px-3 pb-4 space-y-3 sm:hidden"></div>
-      <!-- Table (sm+) -->
+      <!-- Mobile sort (phones) -->
+      <div id="mobile-sort-bar" class="hidden" aria-label="Sort results">
+        <button type="button" data-msort="score" class="active">Score</button>
+        <button type="button" data-msort="potential">Потенціал</button>
+        <button type="button" data-msort="change">Change %</button>
+        <button type="button" data-msort="price">Price</button>
+      </div>
+      <!-- Mobile cards (< 768px) -->
+      <div id="results-cards" class="hidden px-3 pb-4 space-y-3"></div>
+      <!-- Table (tablet+) -->
       <div id="results-wrap" class="hidden overflow-x-auto scroll-thin">
         <table class="w-full min-w-[960px] text-left">
           <thead>
@@ -1019,33 +1315,34 @@
   </div>
 
   <!-- ════════ VIEW: Day Trading Chart Analyzer ════════ -->
-  <div id="view-daytrade" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <header class="mb-6">
+  <div id="view-daytrade" class="hidden max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
+    <header class="mb-5 sm:mb-6">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/25 mb-3">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-        Day Trading · lightweight-charts · Yahoo candles (free)
+        Day Trading · Yahoo candles
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
         Day Trading
         <span class="bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">Chart Analyzer</span>
       </h1>
-      <p class="mt-2 text-slate-400 max-w-2xl text-sm">
-        Інтерактивний графік (zoom / crosshair) + технічний аналіз + Grok prompt.
-        <strong class="text-slate-300">Свічки:</strong> Yahoo Finance (безкоштовно) —
-        Finnhub Free <em>не дає</em> endpoint <code class="text-slate-500">/stock/candle</code> (403).
-        Quote/WS як і раніше з Finnhub key (Top Picks).
+      <p class="mt-2 text-slate-400 max-w-2xl text-sm leading-relaxed">
+        Графік + теханаліз + Grok.
+        <span class="hidden sm:inline">
+          <strong class="text-slate-300">Свічки:</strong> Yahoo Finance (безкоштовно) —
+          Finnhub Free не дає <code class="text-slate-500">/stock/candle</code>.
+        </span>
       </p>
     </header>
 
     <!-- Controls -->
-    <section class="glass rounded-2xl p-5 sm:p-6 shadow-glow mb-6">
+    <section class="glass rounded-2xl p-4 sm:p-6 shadow-glow mb-5 sm:mb-6">
       <div class="flex flex-col lg:flex-row lg:items-end gap-4">
-        <div>
+        <div class="w-full sm:w-auto">
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5" for="dt-ticker">Ticker</label>
           <input id="dt-ticker" maxlength="10" placeholder="SOFI" value="SOFI"
             class="w-full sm:w-40 px-3 py-2.5 rounded-xl bg-surface-900 border border-surface-600 text-sm text-white uppercase font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500/40" />
         </div>
-        <div class="flex-1">
+        <div class="flex-1 w-full">
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Timeframe</label>
           <div class="flex flex-wrap gap-1.5" id="dt-tf-group">
             <button type="button" class="tf-btn" data-tf="1">1m</button>
@@ -1057,15 +1354,15 @@
             <button type="button" class="tf-btn" data-tf="D">Daily</button>
           </div>
         </div>
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-col sm:flex-row flex-wrap gap-2 w-full lg:w-auto">
           <button type="button" id="dt-load-btn"
-            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white
                    bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-500 hover:to-blue-500
                    shadow-lg shadow-emerald-900/30 disabled:opacity-60">
             Load Chart + Analyze
           </button>
           <button type="button" id="dt-save-btn"
-            class="px-4 py-3 rounded-xl text-sm font-medium border border-surface-600 bg-surface-800 text-slate-300 hover:border-emerald-500/40 disabled:opacity-50"
+            class="w-full sm:w-auto px-4 py-3 rounded-xl text-sm font-medium border border-surface-600 bg-surface-800 text-slate-300 hover:border-emerald-500/40 disabled:opacity-50"
             disabled>Save analysis</button>
         </div>
       </div>
@@ -2545,6 +2842,17 @@
       return sorted.slice(0, topNLimit);
     }
 
+    function syncMobileSortBar() {
+      document.querySelectorAll('#mobile-sort-bar button[data-msort]').forEach((btn) => {
+        const key = btn.dataset.msort;
+        const active = key === sortKey;
+        btn.classList.toggle('active', active);
+        const base = btn.dataset.label || btn.textContent.replace(/\s*[↑↓↕]\s*$/, '').trim();
+        btn.dataset.label = base;
+        btn.textContent = active ? `${base} ${sortDir === 'asc' ? '↑' : '↓'}` : base;
+      });
+    }
+
     function updateSortHeaderUI() {
       document.querySelectorAll('.th-sort').forEach((th) => {
         const key = th.dataset.sort;
@@ -2553,6 +2861,7 @@
         th.classList.toggle('active', active);
         if (icon) icon.textContent = active ? (sortDir === 'asc' ? '↑' : '↓') : '↕';
       });
+      syncMobileSortBar();
     }
 
     function generatePicks() {
@@ -2645,6 +2954,9 @@
           status.textContent = `Done · ${ranked.length} picks · Top ${topNLimit} · live`;
           status.className = 'text-sm text-emerald-400';
           showToast(`Top ${ranked.length} picks ready`, 'ok');
+          try {
+            document.getElementById('results-title')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } catch (_) {}
         } catch (e) {
           status.textContent = e.message || 'Generate failed';
           status.className = 'text-sm text-red-400';
@@ -2672,12 +2984,20 @@
 
     function renderResults(ranked, styles, maxPrice, filteredOut) {
       document.getElementById('empty-state').classList.add('hidden');
-      document.getElementById('results-wrap').classList.remove('hidden');
+      const wrap = document.getElementById('results-wrap');
+      wrap.classList.remove('hidden');
+      wrap.classList.add('results-ready');
       const cards = document.getElementById('results-cards');
       if (cards) {
         cards.classList.remove('hidden');
-        cards.classList.add('sm:hidden');
+        cards.classList.add('results-ready');
       }
+      const msort = document.getElementById('mobile-sort-bar');
+      if (msort) {
+        msort.classList.remove('hidden');
+        msort.classList.add('results-ready');
+      }
+      syncMobileSortBar();
 
       const title = document.getElementById('results-title');
       if (title) title.textContent = `Top ${Math.min(topNLimit, ranked.length)} Picks`;
@@ -2776,19 +3096,19 @@
           return `
           <article class="pick-card fade-in" style="animation-delay:${Math.min(i, 10) * 30}ms">
             <div class="flex items-start justify-between gap-2 mb-2">
-              <div>
+              <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap">
                   <span class="text-slate-500 font-mono text-xs">#${i + 1}</span>
-                  <span class="font-mono font-bold text-blue-300">${escapeHtml(s.ticker)}</span>
+                  <span class="font-mono font-bold text-base text-blue-300">${escapeHtml(s.ticker)}</span>
                   <span class="inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${adv.badgeClass}">${escapeHtml(adv.label)}</span>
                 </div>
-                <p class="text-xs text-slate-500 mt-0.5 truncate max-w-[220px]">${escapeHtml(s.name)}</p>
+                <p class="text-xs text-slate-500 mt-0.5 truncate">${escapeHtml(s.name)}</p>
               </div>
               <div class="flex flex-col gap-1.5 shrink-0">
                 <button type="button" data-analyze="${escapeHtml(s.ticker)}"
-                  class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white">Analyze</button>
+                  class="px-3 py-2 rounded-xl text-xs font-semibold bg-blue-600 text-white min-h-[40px]">Analyze</button>
                 <button type="button" data-watch-ticker="${escapeHtml(s.ticker)}"
-                  class="px-2 py-1 rounded-lg text-[10px] font-semibold border border-surface-600 text-slate-400">+ Watch</button>
+                  class="px-2 py-1.5 rounded-xl text-[10px] font-semibold border border-surface-600 text-slate-400 min-h-[36px]">+ Watch</button>
               </div>
             </div>
             <div class="grid grid-cols-2 gap-2 text-xs">
@@ -3447,7 +3767,20 @@ ${newsLines}
         if (sortKey === key) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
         else {
           sortKey = key;
-          sortDir = key === 'change' || key === 'price' ? 'desc' : 'desc';
+          sortDir = 'desc';
+        }
+        updateSortHeaderUI();
+        if (lastScoredAll.length) reRenderFromCache();
+      });
+    });
+    document.querySelectorAll('#mobile-sort-bar button[data-msort]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.msort;
+        if (!key) return;
+        if (sortKey === key) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+        else {
+          sortKey = key;
+          sortDir = 'desc';
         }
         updateSortHeaderUI();
         if (lastScoredAll.length) reRenderFromCache();
@@ -3621,12 +3954,20 @@ ${newsLines}
       document.querySelectorAll('.nav-tab').forEach((t) => {
         t.classList.toggle('active', t.dataset.view === view);
       });
+      document.querySelectorAll('#mobile-tabbar button[data-view]').forEach((t) => {
+        t.classList.toggle('active', t.dataset.view === view);
+      });
       if (view === 'daytrade' && window.DayTradingAnalyzer?.onShow) {
         window.DayTradingAnalyzer.onShow();
       }
       if (window.MITPPages?.onShow) window.MITPPages.onShow(view);
       const hash = view === 'picks' ? '#picks' : `#${view}`;
       try { history.replaceState(null, '', hash); } catch (_) {}
+      try {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (_) {
+        window.scrollTo(0, 0);
+      }
     }
     document.querySelectorAll('[data-view]').forEach((el) => {
       el.addEventListener('click', () => switchView(el.dataset.view));
