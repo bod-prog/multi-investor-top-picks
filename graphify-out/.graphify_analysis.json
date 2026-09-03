@@ -1,0 +1,250 @@
+{
+  "communities": {
+    "0": [
+      "server",
+      "server_handler",
+      "server_handler_do_get",
+      "server_handler_do_options",
+      "server_handler_init",
+      "server_handler_log_message",
+      "server_handler_send_json",
+      "server_http_get_json",
+      "server_http_get_text",
+      "server_local_ip",
+      "server_main",
+      "server_rationale_103",
+      "server_rationale_31",
+      "server_stooq_daily",
+      "server_yahoo_chart",
+      "simplehttprequesthandler"
+    ],
+    "1": [
+      "app_pages",
+      "app_pages_analyzekey",
+      "app_pages_clearall",
+      "app_pages_get",
+      "app_pages_getstale",
+      "app_pages_loadquotes",
+      "app_pages_normalizeaction",
+      "app_pages_parsegrokoverrides",
+      "app_pages_parsemoneytoken",
+      "app_pages_pickskey",
+      "app_pages_portfoliolevelrecs",
+      "app_pages_processgrokreply",
+      "app_pages_rendergrokparsed",
+      "app_pages_savequotes",
+      "app_pages_set"
+    ],
+    "2": [
+      "app_pages_buildportfoliogrokprompt",
+      "app_pages_clamp",
+      "app_pages_esc",
+      "app_pages_fmtp",
+      "app_pages_fmtpct",
+      "app_pages_getquotefor",
+      "app_pages_interestscore",
+      "app_pages_m",
+      "app_pages_num",
+      "app_pages_onpricesupdated",
+      "app_pages_onshow",
+      "app_pages_positionstrategy",
+      "app_pages_renderportfolio",
+      "app_pages_renderwatchlist"
+    ],
+    "3": [
+      "day_trading",
+      "day_trading_analyzebars",
+      "day_trading_detectpatterns",
+      "day_trading_ema",
+      "day_trading_ensurechart",
+      "day_trading_macd",
+      "day_trading_onshow",
+      "day_trading_pivotsupportresistance",
+      "day_trading_renderchart",
+      "day_trading_rsi",
+      "day_trading_sma",
+      "day_trading_vwapseries"
+    ],
+    "4": [
+      "day_trading_aggregatebars",
+      "day_trading_fetchcandles",
+      "day_trading_fetchjsonviaproxies",
+      "day_trading_fetchvialocalproxy",
+      "day_trading_fetchyahoocandlesbrowser",
+      "day_trading_isfileprotocol",
+      "day_trading_islocalhttpapp",
+      "day_trading_num",
+      "day_trading_parseyahoochart"
+    ],
+    "5": [
+      "day_trading_apikey",
+      "day_trading_builddaytradegrokprompt",
+      "day_trading_chip",
+      "day_trading_clamp",
+      "day_trading_escapehtml",
+      "day_trading_formatpct",
+      "day_trading_formatprice",
+      "day_trading_m",
+      "day_trading_renderanalysis"
+    ],
+    "6": [
+      "app_pages_addposition",
+      "app_pages_applygrokoverridestoportfolio",
+      "app_pages_cleargrokoverrides",
+      "app_pages_loadport",
+      "app_pages_removeposition",
+      "app_pages_saveport",
+      "app_pages_toast",
+      "app_pages_wire"
+    ],
+    "7": [
+      "day_trading_fhget",
+      "day_trading_loadandanalyze",
+      "day_trading_loadsaved",
+      "day_trading_rendersavedlist",
+      "day_trading_resetchart",
+      "day_trading_saveanalysis",
+      "day_trading_setstatus",
+      "day_trading_wire"
+    ],
+    "8": [
+      "app_pages_addwatch",
+      "app_pages_loadwatch",
+      "app_pages_removewatch",
+      "app_pages_savewatch",
+      "app_pages_updatewatchbadges"
+    ]
+  },
+  "cohesion": {
+    "0": 0.175,
+    "1": 0.17142857142857143,
+    "2": 0.37362637362637363,
+    "3": 0.3181818181818182,
+    "4": 0.3055555555555556,
+    "5": 0.3611111111111111,
+    "6": 0.5357142857142857,
+    "7": 0.42857142857142855,
+    "8": 0.7
+  },
+  "gods": [
+    {
+      "id": "app_pages_renderportfolio",
+      "label": "renderPortfolio()",
+      "degree": 14
+    },
+    {
+      "id": "app_pages_renderwatchlist",
+      "label": "renderWatchlist()",
+      "degree": 13
+    },
+    {
+      "id": "day_trading_analyzebars",
+      "label": "analyzeBars()",
+      "degree": 13
+    },
+    {
+      "id": "app_pages_wire",
+      "label": "wire()",
+      "degree": 12
+    },
+    {
+      "id": "day_trading_loadandanalyze",
+      "label": "loadAndAnalyze()",
+      "degree": 12
+    },
+    {
+      "id": "app_pages_m",
+      "label": "M()",
+      "degree": 10
+    },
+    {
+      "id": "app_pages_loadport",
+      "label": "loadPort()",
+      "degree": 9
+    },
+    {
+      "id": "app_pages_fmtp",
+      "label": "fmtP()",
+      "degree": 8
+    },
+    {
+      "id": "app_pages_fmtpct",
+      "label": "fmtPct()",
+      "degree": 8
+    },
+    {
+      "id": "day_trading_m",
+      "label": "M()",
+      "degree": 8
+    }
+  ],
+  "surprises": [
+    {
+      "source": "applyGrokOverridesToPortfolio()",
+      "target": "parseGrokOverrides()",
+      "source_files": [
+        "app-pages.js",
+        "app-pages.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 1 → community 6"
+    },
+    {
+      "source": "renderPortfolio()",
+      "target": "portfolioLevelRecs()",
+      "source_files": [
+        "app-pages.js",
+        "app-pages.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 1 → community 2"
+    },
+    {
+      "source": "wire()",
+      "target": "buildPortfolioGrokPrompt()",
+      "source_files": [
+        "app-pages.js",
+        "app-pages.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 2 → community 6"
+    },
+    {
+      "source": "addWatch()",
+      "target": "renderWatchlist()",
+      "source_files": [
+        "app-pages.js",
+        "app-pages.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 2 → community 8"
+    },
+    {
+      "source": "analyzeBars()",
+      "target": "clamp()",
+      "source_files": [
+        "day-trading.js",
+        "day-trading.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 3 → community 5"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `analyzeBars()` connect `day-trading.js` to `fetchCandles`, `M`, `loadAndAnalyze`?",
+      "why": "High betweenness centrality (0.007) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `renderPortfolio()` connect `renderPortfolio` to `app-pages.js`, `wire`?",
+      "why": "High betweenness centrality (0.006) - this node is a cross-community bridge."
+    }
+  ]
+}
