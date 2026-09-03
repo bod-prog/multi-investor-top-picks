@@ -7,3 +7,5 @@ Thumbs.db
 *.log
 .idea/
 .vscode/
+graphify-out/cost.json
+graphify-out/cache/
