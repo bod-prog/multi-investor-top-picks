@@ -18,8 +18,9 @@
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js"></script>
-  <!-- Defines window.MITPHistory; the main inline script wires its controls on load, so it must come first -->
+  <!-- Define window.MITPHistory / window.MITPBacktest before the main inline script wires their controls -->
   <script src="history.js?v=20260904a"></script>
+  <script src="backtest.js?v=20260904a"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -1182,6 +1183,89 @@
         <em>Імов. росту</em> — евристична ймовірність, що ріст продовжиться.
         Це не гарантія і не фінансова порада. Наведи курсор на комірку — короткий опис.
       </p>
+    </section>
+
+    <!-- Backtest -->
+    <section class="glass rounded-2xl p-5 sm:p-6 shadow-glow mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+        <div>
+          <h2 class="text-lg font-bold text-white">Бектест сигналу RS</h2>
+          <p class="text-xs text-slate-500 mt-1 max-w-2xl">
+            Що дав би цей рейтинг у минулому: на кожну дату ребалансу береться RS, порахований
+            <strong class="text-slate-400">лише з даних до тієї дати</strong>, купується Top&nbsp;N рівними частками
+            й тримається до наступного ребалансу. Порівняння — із середнім по всьому списку та з SPY.
+          </p>
+        </div>
+        <button type="button" id="bt-run"
+          class="shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold border border-surface-600 bg-surface-800 text-slate-200 hover:bg-surface-700 disabled:opacity-60">
+          Запустити бектест
+        </button>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3 mb-3">
+        <label class="text-xs text-slate-500">Скільки купувати
+          <select id="bt-topn" class="ml-1 px-2 py-1.5 rounded-lg bg-surface-900 border border-surface-600 text-xs text-slate-200">
+            <option value="3">Top 3</option>
+            <option value="5" selected>Top 5</option>
+            <option value="10">Top 10</option>
+          </select>
+        </label>
+        <label class="text-xs text-slate-500">Тримати
+          <select id="bt-hold" class="ml-1 px-2 py-1.5 rounded-lg bg-surface-900 border border-surface-600 text-xs text-slate-200">
+            <option value="5">1 тиждень</option>
+            <option value="21" selected>1 місяць</option>
+            <option value="63">1 квартал</option>
+          </select>
+        </label>
+        <label class="text-xs text-slate-500">Комісія за ребаланс, %
+          <input id="bt-cost" type="number" min="0" max="5" step="0.05" value="0.1"
+            class="ml-1 w-20 px-2 py-1.5 rounded-lg bg-surface-900 border border-surface-600 text-xs text-slate-200" />
+        </label>
+        <label class="text-xs text-slate-500">Глибина
+          <select id="bt-range" class="ml-1 px-2 py-1.5 rounded-lg bg-surface-900 border border-surface-600 text-xs text-slate-200">
+            <option value="2y">2 роки</option>
+            <option value="5y" selected>5 років</option>
+            <option value="10y">10 років</option>
+          </select>
+        </label>
+      </div>
+
+      <p id="bt-status" class="text-xs text-slate-500">Потрібна історія цін (Yahoo). Перший запуск — до хвилини.</p>
+
+      <div id="bt-result" class="hidden mt-4 space-y-4">
+        <p id="bt-verdict" class="text-sm font-semibold rounded-xl px-4 py-3 border"></p>
+        <div class="overflow-x-auto scroll-thin">
+          <table class="w-full text-sm min-w-[560px]">
+            <thead class="text-[11px] uppercase tracking-wider text-slate-500 border-b border-white/10">
+              <tr>
+                <th class="text-left px-3 py-2 font-semibold"></th>
+                <th class="text-right px-3 py-2 font-semibold">Разом за період</th>
+                <th class="text-right px-3 py-2 font-semibold">Середнє за ребаланс</th>
+                <th class="text-right px-3 py-2 font-semibold">Макс. просадка</th>
+              </tr>
+            </thead>
+            <tbody id="bt-summary" class="divide-y divide-white/5"></tbody>
+          </table>
+        </div>
+        <div class="overflow-x-auto scroll-thin">
+          <table class="w-full text-xs min-w-[560px]">
+            <thead class="text-[10px] uppercase tracking-wider text-slate-500 border-b border-white/10">
+              <tr>
+                <th class="text-left px-3 py-2 font-semibold">Період</th>
+                <th class="text-left px-3 py-2 font-semibold">Куплено</th>
+                <th class="text-right px-3 py-2 font-semibold">Стратегія</th>
+                <th class="text-right px-3 py-2 font-semibold">Список</th>
+                <th class="text-right px-3 py-2 font-semibold">SPY</th>
+              </tr>
+            </thead>
+            <tbody id="bt-periods" class="divide-y divide-white/5"></tbody>
+          </table>
+        </div>
+        <div>
+          <p class="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-2">Чому цим числам не можна вірити як прогнозу</p>
+          <ul id="bt-caveats" class="text-[11px] text-slate-500 space-y-1 list-disc pl-4"></ul>
+        </div>
+      </div>
     </section>
 
     <div class="grid gap-6 lg:grid-cols-5">
@@ -3294,6 +3378,118 @@
       }
     }
 
+    // ─── Backtest ────────────────────────────────────────────────────
+    let backtestBusy = false;
+
+    function btPct(x, digits = 2) {
+      if (!Number.isFinite(x)) return '—';
+      const v = x * 100;
+      return `${v > 0 ? '+' : ''}${v.toFixed(digits)}%`;
+    }
+
+    function btTone(x) {
+      if (!Number.isFinite(x)) return 'text-slate-400';
+      if (x > 0) return 'text-emerald-400';
+      if (x < 0) return 'text-red-400';
+      return 'text-slate-400';
+    }
+
+    function btDate(unixSeconds) {
+      if (!unixSeconds) return '—';
+      return new Date(unixSeconds * 1000).toISOString().slice(0, 10);
+    }
+
+    function renderBacktest(report) {
+      const verdictEl = document.getElementById('bt-verdict');
+      const t = report.excess.tStatVsBenchmark ?? report.excess.tStatVsUniverse;
+      const significant = Math.abs(t) >= 2;
+      const edge = report.excess.vsBenchmark ?? report.excess.vsUniverse;
+      verdictEl.textContent = window.MITPBacktest.verdict(report);
+      verdictEl.className = significant && edge > 0
+        ? 'text-sm font-semibold rounded-xl px-4 py-3 border border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+        : significant
+          ? 'text-sm font-semibold rounded-xl px-4 py-3 border border-red-500/30 bg-red-500/10 text-red-300'
+          : 'text-sm font-semibold rounded-xl px-4 py-3 border border-amber-500/30 bg-amber-500/10 text-amber-200';
+
+      const rows = [
+        { label: `Стратегія · Top ${report.params.topN}`, total: report.totals.strategy, avg: report.perPeriod.strategy, dd: report.maxDrawdown.strategy, strong: true },
+        { label: 'Середнє по всьому списку', total: report.totals.universe, avg: report.perPeriod.universe, dd: report.maxDrawdown.universe },
+        { label: report.benchmarkTicker || 'SPY', total: report.totals.benchmark, avg: report.perPeriod.benchmark, dd: null },
+      ];
+      document.getElementById('bt-summary').innerHTML = rows.map((r) => `
+        <tr class="${r.strong ? 'bg-white/[0.03]' : ''}">
+          <td class="px-3 py-2 ${r.strong ? 'text-white font-semibold' : 'text-slate-400'}">${escapeHtml(r.label)}</td>
+          <td class="px-3 py-2 text-right font-mono ${btTone(r.total)}">${btPct(r.total, 1)}</td>
+          <td class="px-3 py-2 text-right font-mono ${btTone(r.avg)}">${btPct(r.avg)}</td>
+          <td class="px-3 py-2 text-right font-mono ${r.dd == null ? 'text-slate-600' : 'text-slate-400'}">${r.dd == null ? '—' : btPct(r.dd, 1)}</td>
+        </tr>`).join('');
+
+      document.getElementById('bt-periods').innerHTML = report.periods.map((p) => `
+        <tr>
+          <td class="px-3 py-2 text-slate-500 font-mono whitespace-nowrap">${btDate(p.fromDate)} → ${btDate(p.toDate)}</td>
+          <td class="px-3 py-2 text-slate-400">${p.picks.map((x) => escapeHtml(x.ticker)).join(', ')}</td>
+          <td class="px-3 py-2 text-right font-mono ${btTone(p.strategy)}">${btPct(p.strategy)}</td>
+          <td class="px-3 py-2 text-right font-mono text-slate-500">${btPct(p.universe)}</td>
+          <td class="px-3 py-2 text-right font-mono text-slate-500">${btPct(p.benchmark)}</td>
+        </tr>`).join('');
+
+      document.getElementById('bt-caveats').innerHTML = window.MITPBacktest
+        .caveats(report)
+        .map((c) => `<li>${escapeHtml(c)}</li>`)
+        .join('');
+
+      document.getElementById('bt-result').classList.remove('hidden');
+    }
+
+    async function runBacktest() {
+      if (backtestBusy) return;
+      if (!window.MITPBacktest || !window.MITPHistory) {
+        showToast('Модуль бектесту не завантажився', 'err');
+        return;
+      }
+      const tickers = stocks.map((s) => s.ticker);
+      if (tickers.length < 2) {
+        showToast('Потрібно щонайменше 2 тікери у списку', 'warn');
+        return;
+      }
+      const btn = document.getElementById('bt-run');
+      const status = document.getElementById('bt-status');
+      backtestBusy = true;
+      btn.disabled = true;
+      btn.textContent = 'Рахую…';
+      status.textContent = 'Завантажую історію…';
+      status.className = 'text-xs text-slate-400';
+      try {
+        const report = await window.MITPBacktest.runForTickers(tickers, {
+          topN: Number(document.getElementById('bt-topn').value) || 5,
+          holdSessions: Number(document.getElementById('bt-hold').value) || 21,
+          costPct: Math.max(0, Number(document.getElementById('bt-cost').value) || 0),
+          range: document.getElementById('bt-range').value || '5y',
+          onProgress: (done, total) => {
+            status.textContent = `Завантажую історію… ${done}/${total}`;
+          },
+        });
+        renderBacktest(report);
+        status.textContent =
+          `${btDate(report.windowFrom)} → ${btDate(report.windowTo)} · ${report.sampleSize} ребалансів · ` +
+          `${report.tickers.length} тікерів`;
+        status.className = 'text-xs text-slate-500';
+        showToast(`Бектест готовий · ${report.sampleSize} періодів`, 'ok');
+      } catch (e) {
+        status.textContent = `Бектест не вдався: ${e.message || e}`;
+        status.className = 'text-xs text-amber-400';
+        showToast(e.message || 'Backtest failed', 'err', 5000);
+      } finally {
+        backtestBusy = false;
+        btn.disabled = false;
+        btn.textContent = 'Запустити бектест';
+      }
+    }
+
+    function wireBacktestControls() {
+      document.getElementById('bt-run')?.addEventListener('click', runBacktest);
+    }
+
     function reRenderFromCache() {
       if (!lastScoredAll.length) return;
       const ranked = applySortAndLimit(lastScoredAll);
@@ -4084,6 +4280,7 @@ ${newsLines}
     document.getElementById('generate-btn').addEventListener('click', generatePicks);
     document.getElementById('btn-ws-reconnect')?.addEventListener('click', manualReconnectWs);
     wireHistoryControls();
+    wireBacktestControls();
     updateLimitBar();
     document.querySelectorAll('#topn-group .topn-btn').forEach((btn) => {
       btn.addEventListener('click', () => {

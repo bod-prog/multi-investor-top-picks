@@ -24,9 +24,9 @@
     "semantic_hash": "4566192619c3c513de25ae8559fd5fe0"
   },
   "history.js": {
-    "mtime": 1788495570.610724,
-    "seen": 1788496020.6402593,
-    "ast_hash": "82a82c9e46a965d6064dceba26110a5f",
+    "mtime": 1788533280.5380967,
+    "seen": 1788533625.733758,
+    "ast_hash": "b3d10bd2e2157c6aefeb93f3b5b82f86",
     "semantic_hash": ""
   },
   ".claude/CLAUDE.md": {
@@ -96,9 +96,9 @@
     "semantic_hash": ""
   },
   "DEPLOY-ONLINE.md": {
-    "mtime": 1788495996.6507492,
-    "seen": 1788496020.64027,
-    "ast_hash": "f20a7e92ba93dd58b50e878ff7c5f5cf",
+    "mtime": 1788533617.2214885,
+    "seen": 1788533625.733783,
+    "ast_hash": "2fbad4b18279a8e583aea6b721e62fdd",
     "semantic_hash": ""
   },
   "GITHUB-PAGES.md": {
@@ -108,21 +108,33 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1788496207.6587617,
-    "seen": 1788496212.7481785,
-    "ast_hash": "981e8480ec0074240fe1f2fc1e891ebd",
+    "mtime": 1788533617.2211454,
+    "seen": 1788533625.7337863,
+    "ast_hash": "f9acf012c700168ce5c87ed46b5a34f2",
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1788496087.0587547,
-    "seen": 1788496212.7481794,
-    "ast_hash": "625f96a3c522e7e01c21c561649aa8a3",
+    "mtime": 1788533486.8701003,
+    "seen": 1788533625.7337875,
+    "ast_hash": "83bba5582746351daf0455ef26736692",
     "semantic_hash": ""
   },
   "test/history.test.js": {
-    "mtime": 1788496199.8427613,
-    "seen": 1788496212.748155,
+    "mtime": 1788533085.5060933,
+    "seen": 1788533625.733763,
     "ast_hash": "6d35226bfe4b59066a2e61f478e5595b",
+    "semantic_hash": ""
+  },
+  "backtest.js": {
+    "mtime": 1788533576.630102,
+    "seen": 1788533625.7337527,
+    "ast_hash": "1575e7246c5e6a6783dcc66877d69445",
+    "semantic_hash": ""
+  },
+  "test/backtest.test.js": {
+    "mtime": 1788533581.406102,
+    "seen": 1788533625.733761,
+    "ast_hash": "3c3bd8c4594d025f4a83139bf8fafd17",
     "semantic_hash": ""
   }
 }

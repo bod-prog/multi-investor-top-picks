@@ -677,6 +677,186 @@
       "source_location": "L86"
     },
     {
+      "id": "test_backtest_test_check",
+      "label": "check()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "check()",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L38"
+    },
+    {
+      "id": "test_backtest_test_near",
+      "label": "near()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "near()",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L42"
+    },
+    {
+      "id": "test_backtest_test_trend",
+      "label": "trend()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "trend()",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L51"
+    },
+    {
+      "id": "backtest_alignseries",
+      "label": "alignSeries()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "backtest.js",
+      "file_type": "code",
+      "norm_label": "alignseries()",
+      "source_file": "backtest.js",
+      "source_location": "L71"
+    },
+    {
+      "id": "backtest_caveats",
+      "label": "caveats()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "backtest.js",
+      "file_type": "code",
+      "norm_label": "caveats()",
+      "source_file": "backtest.js",
+      "source_location": "L249"
+    },
+    {
+      "id": "backtest_compound",
+      "label": "compound()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "backtest.js",
+      "file_type": "code",
+      "norm_label": "compound()",
+      "source_file": "backtest.js",
+      "source_location": "L46"
+    },
+    {
+      "id": "backtest_internals",
+      "label": "internals()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "backtest.js",
+      "file_type": "code",
+      "norm_label": "internals()",
+      "source_file": "backtest.js",
+      "source_location": "L30"
+    },
+    {
+      "id": "backtest_maxdrawdown",
+      "label": "maxDrawdown()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "backtest.js",
+      "file_type": "code",
+      "norm_label": "maxdrawdown()",
+      "source_file": "backtest.js",
+      "source_location": "L50"
+    },
+    {
+      "id": "backtest_mean",
+      "label": "mean()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "backtest.js",
+      "file_type": "code",
+      "norm_label": "mean()",
+      "source_file": "backtest.js",
+      "source_location": "L36"
+    },
+    {
+      "id": "backtest_rankat",
+      "label": "rankAt()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "backtest.js",
+      "file_type": "code",
+      "norm_label": "rankat()",
+      "source_file": "backtest.js",
+      "source_location": "L108"
+    },
+    {
+      "id": "backtest_ret",
+      "label": "ret()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "backtest.js",
+      "file_type": "code",
+      "norm_label": "ret()",
+      "source_file": "backtest.js",
+      "source_location": "L118"
+    },
+    {
+      "id": "backtest_run",
+      "label": "run()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "backtest.js",
+      "file_type": "code",
+      "norm_label": "run()",
+      "source_file": "backtest.js",
+      "source_location": "L129"
+    },
+    {
+      "id": "backtest_runfortickers",
+      "label": "runForTickers()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "backtest.js",
+      "file_type": "code",
+      "norm_label": "runfortickers()",
+      "source_file": "backtest.js",
+      "source_location": "L230"
+    },
+    {
+      "id": "backtest_stdev",
+      "label": "stdev()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "backtest.js",
+      "file_type": "code",
+      "norm_label": "stdev()",
+      "source_file": "backtest.js",
+      "source_location": "L40"
+    },
+    {
+      "id": "backtest_verdict",
+      "label": "verdict()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "backtest.js",
+      "file_type": "code",
+      "norm_label": "verdict()",
+      "source_file": "backtest.js",
+      "source_location": "L267"
+    },
+    {
       "id": "day_trading_aggregatebars",
       "label": "aggregateBars()",
       "_callable": true,
@@ -1130,7 +1310,7 @@
       "file_type": "code",
       "norm_label": "annualisedvolpct()",
       "source_file": "history.js",
-      "source_location": "L161"
+      "source_location": "L162"
     },
     {
       "id": "history_cacheget",
@@ -1142,7 +1322,7 @@
       "file_type": "code",
       "norm_label": "cacheget()",
       "source_file": "history.js",
-      "source_location": "L226"
+      "source_location": "L227"
     },
     {
       "id": "history_cacheset",
@@ -1154,7 +1334,7 @@
       "file_type": "code",
       "norm_label": "cacheset()",
       "source_file": "history.js",
-      "source_location": "L239"
+      "source_location": "L240"
     },
     {
       "id": "history_clamp",
@@ -1178,7 +1358,7 @@
       "file_type": "code",
       "norm_label": "clearcache()",
       "source_file": "history.js",
-      "source_location": "L245"
+      "source_location": "L246"
     },
     {
       "id": "history_describe",
@@ -1190,7 +1370,7 @@
       "file_type": "code",
       "norm_label": "describe()",
       "source_file": "history.js",
-      "source_location": "L358"
+      "source_location": "L359"
     },
     {
       "id": "history_enrich",
@@ -1202,7 +1382,7 @@
       "file_type": "code",
       "norm_label": "enrich()",
       "source_file": "history.js",
-      "source_location": "L281"
+      "source_location": "L282"
     },
     {
       "id": "history_fetchdailycloses",
@@ -1214,7 +1394,7 @@
       "file_type": "code",
       "norm_label": "fetchdailycloses()",
       "source_file": "history.js",
-      "source_location": "L111"
+      "source_location": "L112"
     },
     {
       "id": "history_fetchjsonviaproxies",
@@ -1227,6 +1407,18 @@
       "norm_label": "fetchjsonviaproxies()",
       "source_file": "history.js",
       "source_location": "L61"
+    },
+    {
+      "id": "history_fetchseries",
+      "label": "fetchSeries()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "history.js",
+      "file_type": "code",
+      "norm_label": "fetchseries()",
+      "source_file": "history.js",
+      "source_location": "L389"
     },
     {
       "id": "history_fmtpct",
@@ -1250,7 +1442,7 @@
       "file_type": "code",
       "norm_label": "isenabled()",
       "source_file": "history.js",
-      "source_location": "L369"
+      "source_location": "L370"
     },
     {
       "id": "history_ishttpapp",
@@ -1298,7 +1490,7 @@
       "file_type": "code",
       "norm_label": "perfpct()",
       "source_file": "history.js",
-      "source_location": "L139"
+      "source_location": "L140"
     },
     {
       "id": "history_rsscores",
@@ -1310,7 +1502,7 @@
       "file_type": "code",
       "norm_label": "rsscores()",
       "source_file": "history.js",
-      "source_location": "L193"
+      "source_location": "L194"
     },
     {
       "id": "history_runpool",
@@ -1322,7 +1514,7 @@
       "file_type": "code",
       "norm_label": "runpool()",
       "source_file": "history.js",
-      "source_location": "L258"
+      "source_location": "L259"
     },
     {
       "id": "history_setenabled",
@@ -1334,7 +1526,7 @@
       "file_type": "code",
       "norm_label": "setenabled()",
       "source_file": "history.js",
-      "source_location": "L377"
+      "source_location": "L378"
     },
     {
       "id": "history_statsfromcloses",
@@ -1346,7 +1538,7 @@
       "file_type": "code",
       "norm_label": "statsfromcloses()",
       "source_file": "history.js",
-      "source_location": "L173"
+      "source_location": "L174"
     },
     {
       "id": "history_weightedperf",
@@ -1358,7 +1550,7 @@
       "file_type": "code",
       "norm_label": "weightedperf()",
       "source_file": "history.js",
-      "source_location": "L148"
+      "source_location": "L149"
     },
     {
       "id": "server",
@@ -1880,6 +2072,226 @@
       "source_location": "L64"
     },
     {
+      "id": "test_backtest_test",
+      "label": "backtest.test.js",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "backtest.test.js",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "test_backtest_test_aligned",
+      "label": "aligned",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "aligned",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L143"
+    },
+    {
+      "id": "test_backtest_test_clone",
+      "label": "clone",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "clone",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L127"
+    },
+    {
+      "id": "test_backtest_test_dates",
+      "label": "dates",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "dates",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L48"
+    },
+    {
+      "id": "test_backtest_test_expectedperiods",
+      "label": "expectedPeriods",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "expectedperiods",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L102"
+    },
+    {
+      "id": "test_backtest_test_flatpanel",
+      "label": "flatPanel",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "flatpanel",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L128"
+    },
+    {
+      "id": "test_backtest_test_flatreport",
+      "label": "flatReport",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "flatreport",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L134"
+    },
+    {
+      "id": "test_backtest_test_free",
+      "label": "free",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "free",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L123"
+    },
+    {
+      "id": "test_backtest_test_fs",
+      "label": "fs",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "fs",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L11"
+    },
+    {
+      "id": "test_backtest_test_opts",
+      "label": "opts",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "opts",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L99"
+    },
+    {
+      "id": "test_backtest_test_panel",
+      "label": "panel",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "panel",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L56"
+    },
+    {
+      "id": "test_backtest_test_path",
+      "label": "path",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "path",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L12"
+    },
+    {
+      "id": "test_backtest_test_rankplain",
+      "label": "rankPlain",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "rankplain",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L78"
+    },
+    {
+      "id": "test_backtest_test_rankwithfuture",
+      "label": "rankWithFuture",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "rankwithfuture",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L79"
+    },
+    {
+      "id": "test_backtest_test_report",
+      "label": "report",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "report",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L100"
+    },
+    {
+      "id": "test_backtest_test_sandbox",
+      "label": "sandbox",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "sandbox",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L16"
+    },
+    {
+      "id": "test_backtest_test_store",
+      "label": "store",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "store",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L15"
+    },
+    {
+      "id": "test_backtest_test_truncated",
+      "label": "truncated",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "truncated",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L86"
+    },
+    {
+      "id": "test_backtest_test_vm",
+      "label": "vm",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "vm",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L13"
+    },
+    {
+      "id": "test_backtest_test_withfuture",
+      "label": "withFuture",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "backtest.test.js",
+      "file_type": "code",
+      "norm_label": "withfuture",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L72"
+    },
+    {
       "id": "claude_skills_graphify_skill",
       "label": "SKILL.md",
       "_origin": "ast",
@@ -2182,6 +2594,17 @@
       "norm_label": "what you must do when invoked",
       "source_file": ".claude/skills/graphify/SKILL.md",
       "source_location": "L49"
+    },
+    {
+      "id": "backtest",
+      "label": "backtest.js",
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "backtest.js",
+      "file_type": "code",
+      "norm_label": "backtest.js",
+      "source_file": "backtest.js",
+      "source_location": "L1"
     },
     {
       "id": "day_trading",
@@ -2614,6 +3037,18 @@
       "source_location": "L1"
     },
     {
+      "id": "readme_backtest",
+      "label": "Backtest",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "Multi-Investor Top Picks Generator",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "backtest",
+      "source_file": "README.md",
+      "source_location": "L54"
+    },
+    {
       "id": "readme_finnhub",
       "label": "Finnhub",
       "_origin": "ast",
@@ -2623,7 +3058,7 @@
       "node_kind": "heading",
       "norm_label": "finnhub",
       "source_file": "README.md",
-      "source_location": "L53"
+      "source_location": "L76"
     },
     {
       "id": "readme_github_pages",
@@ -2659,7 +3094,7 @@
       "node_kind": "heading",
       "norm_label": "rs & volatility",
       "source_file": "README.md",
-      "source_location": "L32"
+      "source_location": "L33"
     },
     {
       "id": "readme_run_locally",
@@ -3660,6 +4095,126 @@
       "weight": 1.0
     },
     {
+      "source": "backtest_rankat",
+      "target": "backtest_internals",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backtest.js",
+      "source_location": "L109",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest_run",
+      "target": "backtest_rankat",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backtest.js",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest_run",
+      "target": "backtest_ret",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backtest.js",
+      "source_location": "L149",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest_run",
+      "target": "backtest_mean",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backtest.js",
+      "source_location": "L161",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest_run",
+      "target": "backtest_stdev",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backtest.js",
+      "source_location": "L188",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest_run",
+      "target": "backtest_compound",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backtest.js",
+      "source_location": "L201",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest_run",
+      "target": "backtest_maxdrawdown",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backtest.js",
+      "source_location": "L223",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest_runfortickers",
+      "target": "backtest_alignseries",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backtest.js",
+      "source_location": "L239",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest_runfortickers",
+      "target": "backtest_run",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backtest.js",
+      "source_location": "L240",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest_stdev",
+      "target": "backtest_mean",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backtest.js",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
       "source": "day_trading_analyzebars",
       "target": "day_trading_ema",
       "relation": "calls",
@@ -4376,7 +4931,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L362",
+      "source_location": "L363",
       "weight": 1.0
     },
     {
@@ -4388,7 +4943,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L290",
+      "source_location": "L291",
       "weight": 1.0
     },
     {
@@ -4400,7 +4955,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L297",
+      "source_location": "L298",
       "weight": 1.0
     },
     {
@@ -4412,7 +4967,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L298",
+      "source_location": "L299",
       "weight": 1.0
     },
     {
@@ -4424,7 +4979,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L303",
+      "source_location": "L304",
       "weight": 1.0
     },
     {
@@ -4436,7 +4991,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L304",
+      "source_location": "L305",
       "weight": 1.0
     },
     {
@@ -4448,7 +5003,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L306",
+      "source_location": "L307",
       "weight": 1.0
     },
     {
@@ -4460,7 +5015,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L323",
+      "source_location": "L324",
       "weight": 1.0
     },
     {
@@ -4472,7 +5027,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L336",
+      "source_location": "L337",
       "weight": 1.0
     },
     {
@@ -4484,7 +5039,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L113",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
@@ -4496,7 +5051,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L120",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -4508,7 +5063,31 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L131",
+      "source_location": "L132",
+      "weight": 1.0
+    },
+    {
+      "source": "history_fetchseries",
+      "target": "history_runpool",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "history.js",
+      "source_location": "L394",
+      "weight": 1.0
+    },
+    {
+      "source": "history_fetchseries",
+      "target": "history_fetchdailycloses",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "history.js",
+      "source_location": "L396",
       "weight": 1.0
     },
     {
@@ -4532,7 +5111,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L210",
+      "source_location": "L211",
       "weight": 1.0
     },
     {
@@ -4544,7 +5123,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L176",
+      "source_location": "L177",
       "weight": 1.0
     },
     {
@@ -4556,7 +5135,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L178",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -4568,7 +5147,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "history.js",
-      "source_location": "L184",
+      "source_location": "L185",
       "weight": 1.0
     },
     {
@@ -4641,6 +5220,18 @@
       "context": "call",
       "source_file": "server.py",
       "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test_near",
+      "target": "test_backtest_test_check",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "test/backtest.test.js",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -5092,6 +5683,138 @@
       "confidence_score": 1.0,
       "source_file": "app-pages.js",
       "source_location": "L974",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest",
+      "target": "backtest_rankat",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtest.js",
+      "source_location": "L108",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest",
+      "target": "backtest_ret",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtest.js",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest",
+      "target": "backtest_run",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtest.js",
+      "source_location": "L129",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest",
+      "target": "backtest_runfortickers",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtest.js",
+      "source_location": "L230",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest",
+      "target": "backtest_caveats",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtest.js",
+      "source_location": "L249",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest",
+      "target": "backtest_verdict",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtest.js",
+      "source_location": "L267",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest",
+      "target": "backtest_internals",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtest.js",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest",
+      "target": "backtest_mean",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtest.js",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest",
+      "target": "backtest_stdev",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtest.js",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest",
+      "target": "backtest_compound",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtest.js",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest",
+      "target": "backtest_maxdrawdown",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtest.js",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "backtest",
+      "target": "backtest_alignseries",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backtest.js",
+      "source_location": "L71",
       "weight": 1.0
     },
     {
@@ -6268,7 +6991,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "history.js",
-      "source_location": "L111",
+      "source_location": "L112",
       "weight": 1.0
     },
     {
@@ -6279,7 +7002,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "history.js",
-      "source_location": "L139",
+      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -6290,7 +7013,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "history.js",
-      "source_location": "L148",
+      "source_location": "L149",
       "weight": 1.0
     },
     {
@@ -6301,7 +7024,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "history.js",
-      "source_location": "L161",
+      "source_location": "L162",
       "weight": 1.0
     },
     {
@@ -6312,7 +7035,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "history.js",
-      "source_location": "L173",
+      "source_location": "L174",
       "weight": 1.0
     },
     {
@@ -6323,7 +7046,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "history.js",
-      "source_location": "L193",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -6334,7 +7057,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "history.js",
-      "source_location": "L226",
+      "source_location": "L227",
       "weight": 1.0
     },
     {
@@ -6345,7 +7068,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "history.js",
-      "source_location": "L239",
+      "source_location": "L240",
       "weight": 1.0
     },
     {
@@ -6356,7 +7079,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "history.js",
-      "source_location": "L245",
+      "source_location": "L246",
       "weight": 1.0
     },
     {
@@ -6367,7 +7090,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "history.js",
-      "source_location": "L258",
+      "source_location": "L259",
       "weight": 1.0
     },
     {
@@ -6378,7 +7101,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "history.js",
-      "source_location": "L281",
+      "source_location": "L282",
       "weight": 1.0
     },
     {
@@ -6389,7 +7112,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "history.js",
-      "source_location": "L358",
+      "source_location": "L359",
       "weight": 1.0
     },
     {
@@ -6400,7 +7123,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "history.js",
-      "source_location": "L369",
+      "source_location": "L370",
       "weight": 1.0
     },
     {
@@ -6411,7 +7134,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "history.js",
-      "source_location": "L377",
+      "source_location": "L378",
+      "weight": 1.0
+    },
+    {
+      "source": "history",
+      "target": "history_fetchseries",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "history.js",
+      "source_location": "L389",
       "weight": 1.0
     },
     {
@@ -6521,7 +7255,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L32",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_multi_investor_top_picks_generator",
+      "target": "readme_backtest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "L54",
       "weight": 1.0
     },
     {
@@ -6532,7 +7277,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L53",
+      "source_location": "L76",
       "weight": 1.0
     },
     {
@@ -6610,6 +7355,248 @@
       "confidence_score": 1.0,
       "source_file": "server.py",
       "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_report",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_expectedperiods",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_fs",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_path",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_free",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L123",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_clone",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L127",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_flatpanel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L128",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_vm",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_flatreport",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L134",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_aligned",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_store",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_sandbox",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_check",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_near",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_dates",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_trend",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_panel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_withfuture",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_rankplain",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_rankwithfuture",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_truncated",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "test_backtest_test",
+      "target": "test_backtest_test_opts",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/backtest.test.js",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
@@ -6924,5 +7911,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "689471c43066006fabbc3353cc5f049912ba659a"
+  "built_at_commit": "8dfabacd376a3ae889a50ab08f2c3f725ee7a761"
 }

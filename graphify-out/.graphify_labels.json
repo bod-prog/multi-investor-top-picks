@@ -17,5 +17,7 @@
   "15": "CLAUDE.md",
   "16": ".claude/CLAUDE.md",
   "17": "extraction-spec.md",
-  "18": "history.test.js"
+  "18": "history.test.js",
+  "19": "backtest.test.js",
+  "20": "backtest.js"
 }

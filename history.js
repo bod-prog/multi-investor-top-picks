@@ -98,22 +98,23 @@
     const ts = result.timestamp || [];
     const raw = result.indicators?.quote?.[0]?.close || [];
     const closes = [];
-    let asOf = 0;
+    const dates = [];
     for (let i = 0; i < ts.length; i++) {
       const c = num(raw[i], NaN);
       if (!Number.isFinite(c) || c <= 0) continue;
       closes.push(c);
-      asOf = ts[i];
+      dates.push(ts[i]);
     }
-    return { closes, asOf };
+    return { closes, dates, asOf: dates.length ? dates[dates.length - 1] : 0 };
   }
 
-  async function fetchDailyCloses(ticker) {
+  /** Daily closes with their timestamps. `range` is a Yahoo range (1y, 2y, 5y…). */
+  async function fetchDailyCloses(ticker, range = '1y') {
     // 1) local Python proxy (start.bat) — no CORS, no key
     if (isHttpApp()) {
       try {
         const res = await fetch(
-          `/api/candles?symbol=${encodeURIComponent(ticker)}&interval=1d&range=1y`
+          `/api/candles?symbol=${encodeURIComponent(ticker)}&interval=1d&range=${encodeURIComponent(range)}`
         );
         const data = await res.json().catch(() => ({}));
         if (res.ok) {
@@ -127,7 +128,7 @@
     // 2) Yahoo directly / via public CORS proxies
     const url =
       `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}` +
-      `?interval=1d&range=1y&includePrePost=false`;
+      `?interval=1d&range=${encodeURIComponent(range)}&includePrePost=false`;
     const parsed = parseCloses(await fetchJsonViaProxies(url));
     if (!parsed.closes.length) throw new Error('0 bars');
     return parsed;
@@ -380,6 +381,33 @@
     } catch (_) {}
   }
 
+  /**
+   * Raw daily series for several tickers, fetched with the same fallback
+   * chain as enrich(). Used by the backtest, which needs the bars themselves
+   * (and their dates) rather than the derived stats enrich() caches.
+   */
+  async function fetchSeries(tickers, { range = '2y', onProgress = null } = {}) {
+    const wanted = [...new Set(tickers.map((t) => String(t).toUpperCase()))];
+    const series = {};
+    const failed = [];
+    let done = 0;
+    await runPool(wanted, async (ticker) => {
+      try {
+        const { closes, dates } = await fetchDailyCloses(ticker, range);
+        series[ticker] = { closes, dates };
+      } catch (_) {
+        failed.push(ticker);
+      }
+      done++;
+      if (onProgress) {
+        try {
+          onProgress(done, wanted.length, ticker);
+        } catch (_) {}
+      }
+    });
+    return { series, failed };
+  }
+
   window.MITPHistory = {
     BENCHMARK,
     CACHE_TTL_MS,
@@ -388,6 +416,7 @@
     clearCache,
     isEnabled,
     setEnabled,
+    fetchSeries,
     getLastRun: () => lastRun,
     // exposed for tests / debugging in the console
     _internals: { perfPct, weightedPerf, annualisedVolPct, statsFromCloses, rsScores },

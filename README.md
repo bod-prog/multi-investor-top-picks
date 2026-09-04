@@ -28,6 +28,7 @@ Required files at repo root:
 - `app-pages.js`
 - `day-trading.js`
 - `history.js`
+- `backtest.js`
 
 ## RS & Volatility
 
@@ -49,6 +50,28 @@ ticker) the app falls back to the same-day values and says so in the status
 line — nothing breaks, the numbers are just weaker.
 
 Check the math (no deps, no network): `node test/history.test.js`
+
+## Backtest
+
+**Бектест сигналу RS** on the Top Picks page answers "would this ranking have
+made money?" — walk-forward, with no look-ahead: at each rebalance the ranking
+sees only closes up to that date (the same `statsFromCloses` / `rsScores` the
+live app uses), buys the top N equal-weight, holds, repeats. It reports the
+strategy against both the equal-weight universe and `SPY`, per period and
+compounded, with max drawdown, win rate and a t-statistic.
+
+What it deliberately does **not** claim:
+
+- Only the **price signal (RS)** is tested. Finnhub serves current fundamentals
+  only, so scoring a past date with today's P/E, ROE and growth would be
+  look-ahead bias — that half of the score stays untested.
+- The ticker list is today's list of **survivors**; delisted and bankrupt names
+  are missing, which inflates any result.
+- A handful of rebalances is a tiny sample. The report prints a t-statistic
+  precisely so a good-looking number below |t| ≈ 2 is read as luck.
+
+`node test/backtest.test.js` verifies the engine, including that the ranking is
+byte-identical whether or not future bars exist in the data.
 
 ## Finnhub
 
