@@ -58,34 +58,52 @@
     return location.protocol === 'http:' || location.protocol === 'https:';
   }
 
-  async function fetchJsonViaProxies(url) {
-    const attempts = [
-      async () => {
-        const res = await fetch(url, { mode: 'cors' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      },
-      async () => {
-        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-        if (!res.ok) throw new Error(`allorigins ${res.status}`);
-        return res.json();
-      },
-      async () => {
-        const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
-        if (!res.ok) throw new Error(`corsproxy ${res.status}`);
-        return res.json();
-      },
-    ];
-    let lastErr = null;
-    for (const fn of attempts) {
-      try {
-        const data = await fn();
-        if (data) return data;
-      } catch (e) {
-        lastErr = e;
-      }
+  // Yahoo answers on both hosts; one is sometimes rate-limited while the other
+  // is fine. Public CORS proxies go down regularly, so try several.
+  const YAHOO_HOSTS = ['query1.finance.yahoo.com', 'query2.finance.yahoo.com'];
+  const CORS_PROXIES = [
+    { name: 'direct', wrap: (url) => url },
+    { name: 'allorigins', wrap: (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}` },
+    { name: 'corsproxy', wrap: (url) => `https://corsproxy.io/?${encodeURIComponent(url)}` },
+    { name: 'codetabs', wrap: (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}` },
+  ];
+
+  // Whichever host/proxy pair answered last: probing costs a round-trip per
+  // ticker, so once one works the rest of the batch goes straight to it.
+  let workingRoute = null;
+  // On GitHub Pages there is no server.py, so /api/candles is a 404 on every
+  // ticker. Probe it once and stop asking for the rest of the batch.
+  let localProxyDead = false;
+
+  function chartUrl(host, ticker, range) {
+    return (
+      `https://${host}/v8/finance/chart/${encodeURIComponent(ticker)}` +
+      `?interval=1d&range=${encodeURIComponent(range)}&includePrePost=false`
+    );
+  }
+
+  /** Every host/proxy pair, the one that worked last time first. */
+  function routes() {
+    const all = [];
+    for (const host of YAHOO_HOSTS) {
+      for (const proxy of CORS_PROXIES) all.push({ host, proxy });
     }
-    throw lastErr || new Error('CORS proxies failed');
+    if (!workingRoute) return all;
+    const first = all.filter((r) => r.host === workingRoute.host && r.proxy.name === workingRoute.proxy.name);
+    return [...first, ...all.filter((r) => !first.includes(r))];
+  }
+
+  /**
+   * Fetch and parse in one step: a proxy that is up but broken answers 200
+   * with an HTML error page or a JSON envelope, so only a response that
+   * actually parses as a Yahoo chart counts as success.
+   */
+  async function fetchChartVia(route, ticker, range) {
+    const res = await fetch(route.proxy.wrap(chartUrl(route.host, ticker, range)), { mode: 'cors' });
+    if (!res.ok) throw new Error(`${route.proxy.name} HTTP ${res.status}`);
+    const parsed = parseCloses(await res.json());
+    if (!parsed.closes.length) throw new Error(`${route.proxy.name}: 0 bars`);
+    return parsed;
   }
 
   function parseCloses(data) {
@@ -111,7 +129,7 @@
   /** Daily closes with their timestamps. `range` is a Yahoo range (1y, 2y, 5y…). */
   async function fetchDailyCloses(ticker, range = '1y') {
     // 1) local Python proxy (start.bat) — no CORS, no key
-    if (isHttpApp()) {
+    if (isHttpApp() && !localProxyDead) {
       try {
         const res = await fetch(
           `/api/candles?symbol=${encodeURIComponent(ticker)}&interval=1d&range=${encodeURIComponent(range)}`
@@ -121,17 +139,23 @@
           const parsed = parseCloses(data);
           if (parsed.closes.length) return parsed;
         }
+        localProxyDead = true;
       } catch (_) {
-        // fall through to the browser path
+        localProxyDead = true; // no server.py here — stop probing it
       }
     }
-    // 2) Yahoo directly / via public CORS proxies
-    const url =
-      `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}` +
-      `?interval=1d&range=${encodeURIComponent(range)}&includePrePost=false`;
-    const parsed = parseCloses(await fetchJsonViaProxies(url));
-    if (!parsed.closes.length) throw new Error('0 bars');
-    return parsed;
+    // 2) Yahoo, across both hosts and every CORS proxy, until one answers
+    let lastErr = null;
+    for (const route of routes()) {
+      try {
+        const parsed = await fetchChartVia(route, ticker, range);
+        workingRoute = route;
+        return parsed;
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    throw lastErr || new Error('no data source reachable');
   }
 
   // ─── Statistics ────────────────────────────────────────────────────
@@ -419,6 +443,18 @@
     fetchSeries,
     getLastRun: () => lastRun,
     // exposed for tests / debugging in the console
-    _internals: { perfPct, weightedPerf, annualisedVolPct, statsFromCloses, rsScores },
+    _internals: {
+      perfPct,
+      weightedPerf,
+      annualisedVolPct,
+      statsFromCloses,
+      rsScores,
+      fetchDailyCloses,
+      routes,
+      resetRoute: () => { workingRoute = null; localProxyDead = false; },
+      getRoute: () => workingRoute,
+      CORS_PROXIES,
+      YAHOO_HOSTS,
+    },
   };
 })();
