@@ -1,16 +1,16 @@
 # Graph Report - multi-investor-top-picks  (2026-09-04)
 
 ## Corpus Check
-- 20 files · ~47,263 words
+- 22 files · ~50,746 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 224 nodes · 371 edges · 19 communities (14 shown, 5 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.85)
+- 262 nodes · 420 edges · 21 communities (16 shown, 5 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `689471c4`
+- Built from commit: `8dfabacd`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -34,6 +34,8 @@
 - .claude/CLAUDE.md
 - extraction-spec.md
 - history.test.js
+- backtest.test.js
+- backtest.js
 
 ## God Nodes (most connected - your core abstractions)
 1. `renderPortfolio()` - 14 edges
@@ -53,7 +55,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (19 total, 5 thin omitted)
+## Communities (21 total, 5 thin omitted)
 
 ### Community 0 - "server.py"
 Cohesion: 0.17
@@ -72,8 +74,8 @@ Cohesion: 0.14
 Nodes (36): aggregateBars(), analyzeBars(), apiKey(), buildDayTradeGrokPrompt(), chip(), clamp(), detectPatterns(), ema() (+28 more)
 
 ### Community 4 - "history.js"
-Cohesion: 0.18
-Nodes (18): annualisedVolPct(), cacheGet(), cacheSet(), clamp(), clearCache(), describe(), enrich(), fetchDailyCloses() (+10 more)
+Cohesion: 0.17
+Nodes (19): annualisedVolPct(), cacheGet(), cacheSet(), clamp(), clearCache(), describe(), enrich(), fetchDailyCloses() (+11 more)
 
 ### Community 5 - "Викласти на GitHub Pages (онлайн + телефон)"
 Cohesion: 0.20
@@ -92,8 +94,8 @@ Cohesion: 0.33
 Nodes (5): For /graphify explain, For /graphify path, graphify reference: query, path, explain, Step 0 — Constrained query expansion (REQUIRED before traversal), Step 1 — Traversal
 
 ### Community 9 - "Multi-Investor Top Picks Generator"
-Cohesion: 0.33
-Nodes (5): Finnhub, GitHub Pages, Multi-Investor Top Picks Generator, RS & Volatility, Run locally
+Cohesion: 0.29
+Nodes (6): Backtest, Finnhub, GitHub Pages, Multi-Investor Top Picks Generator, RS & Volatility, Run locally
 
 ### Community 10 - "graphify reference: add a URL and watch a folder"
 Cohesion: 0.50
@@ -111,16 +113,24 @@ Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphif
 Cohesion: 0.11
 Nodes (15): alt, bench, fs, geo, oldLaggardPop, path, { rs, benchPerf }, sandbox (+7 more)
 
+### Community 19 - "backtest.test.js"
+Cohesion: 0.09
+Nodes (21): aligned, check(), clone, dates, expectedPeriods, flatPanel, flatReport, free (+13 more)
+
+### Community 20 - "backtest.js"
+Cohesion: 0.28
+Nodes (10): alignSeries(), compound(), internals(), maxDrawdown(), mean(), rankAt(), ret(), run() (+2 more)
+
 ## Knowledge Gaps
-- **75 isolated node(s):** `fs`, `path`, `vm`, `store`, `sandbox` (+70 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 109 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **95 isolated node(s):** `fs`, `path`, `vm`, `store`, `sandbox` (+90 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 132 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **What connects `fs`, `path`, `vm` to the rest of the system?**
-  _75 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _95 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `app-pages.js` be split into smaller, more focused modules?**
   _Cohesion score 0.14285714285714285 - nodes in this community are weakly interconnected._
 - **Should `What You Must Do When Invoked` be split into smaller, more focused modules?**
@@ -129,3 +139,5 @@ _Questions this graph is uniquely positioned to answer:_
   _Cohesion score 0.13940256045519203 - nodes in this community are weakly interconnected._
 - **Should `history.test.js` be split into smaller, more focused modules?**
   _Cohesion score 0.10526315789473684 - nodes in this community are weakly interconnected._
+- **Should `backtest.test.js` be split into smaller, more focused modules?**
+  _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._

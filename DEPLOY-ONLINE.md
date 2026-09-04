@@ -62,6 +62,7 @@
 - `app-pages.js`
 - `day-trading.js`
 - `history.js`
+- `backtest.js`
 
 Не обов’язкові на Netlify:
 - `server.py`, `start.bat` (лише для локального сервера)
