@@ -19,5 +19,8 @@
   "17": "extraction-spec.md",
   "18": "history.test.js",
   "19": "backtest.test.js",
-  "20": "backtest.js"
+  "20": "backtest.js",
+  "21": "daytrade-stats.test.js",
+  "22": "app.js",
+  "23": "stats.js"
 }

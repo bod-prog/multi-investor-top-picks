@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Журнал дей-трейдера</title>
+<meta name="description" content="Розмір позиції, денні ліміти, чеклист і чесна статистика власних угод."/>
+<meta name="theme-color" content="#0f141c"/>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Crect width='26' height='26' rx='7' fill='%230f141c'/%3E%3Cpath d='M6 17.5 10.5 12l3.5 3.5L20 8' stroke='%233987e5' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"/>
+<style>
+/* Self-contained: no CDN, works offline and on a plane. */
+:root{
+  --bg:#0f141c; --surface:#141a24; --surface-2:#1b2330; --raised:#212b3a;
+  --border:#273246; --border-soft:#1e2839;
+  --ink:#e6ecf5; --ink-2:#9fb0c6; --ink-3:#7f92aa;
+  --accent:#3987e5;
+  /* Marks carry the saturated status hues; text uses the lighter tints so it
+     clears contrast on this surface. Red/green are indistinguishable for
+     ~8% of men, so every value also carries an explicit sign or word. */
+  --good:#0ca30c; --critical:#d03b3b; --warning:#fab219;
+  --good-ink:#4ade4a; --critical-ink:#ff7a7a; --warn-ink:#ffc94d;
+  --radius:14px;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;
+  padding:0 0 env(safe-area-inset-bottom)}
+h1,h2,h3{margin:0;font-weight:650;letter-spacing:-.01em}
+h1{font-size:20px}
+h2{font-size:16px}
+h3{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600}
+p{margin:0}
+a{color:var(--accent)}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header.top{border-bottom:1px solid var(--border-soft);background:var(--surface);position:sticky;top:0;z-index:20}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand svg{flex:none}
+.brand small{display:block;color:var(--ink-3);font-size:12px;font-weight:400;letter-spacing:0}
+.card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);padding:16px;margin-bottom:16px}
+.card>h2{margin-bottom:4px}
+.card .hint{color:var(--ink-3);font-size:12.5px;margin-bottom:14px}
+.grid{display:grid;gap:12px}
+@media(min-width:720px){.grid.cols-2{grid-template-columns:1fr 1fr}.grid.cols-3{grid-template-columns:repeat(3,1fr)}}
+label.field{display:block;font-size:12px;color:var(--ink-2);margin-bottom:5px;font-weight:500}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--ink);
+  border-radius:10px;padding:10px 11px;font:inherit;font-size:15px;min-height:42px}
+input:focus,select,textarea:focus{outline:2px solid rgba(57,135,229,.5);outline-offset:1px}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink-3) 50%),linear-gradient(135deg,var(--ink-3) 50%,transparent 50%);
+  background-position:calc(100% - 16px) 19px,calc(100% - 11px) 19px;background-size:5px 5px;background-repeat:no-repeat;padding-right:32px}
+textarea{min-height:70px;resize:vertical}
+.btn{appearance:none;border:1px solid var(--border);background:var(--raised);color:var(--ink);
+  border-radius:10px;padding:11px 16px;font:inherit;font-weight:600;cursor:pointer;min-height:44px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#06101d}
+.btn.ghost{background:transparent;color:var(--ink-2);font-weight:500}
+.btn.danger{color:var(--critical-ink)}
+.btn.small{padding:7px 10px;min-height:34px;font-size:13px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row.end{justify-content:flex-end}
+.banner{border-radius:var(--radius);padding:14px 16px;border:1px solid;display:flex;gap:12px;align-items:flex-start}
+.banner .glyph{font-size:18px;line-height:1.2;flex:none}
+.banner b{display:block;margin-bottom:2px}
+.banner span{color:var(--ink-2);font-size:13px}
+.banner.good{border-color:rgba(12,163,12,.45);background:rgba(12,163,12,.10)}
+.banner.good b{color:var(--good-ink)}
+.banner.critical{border-color:rgba(208,59,59,.45);background:rgba(208,59,59,.10)}
+.banner.critical b{color:var(--critical-ink)}
+.banner.warning{border-color:rgba(250,178,25,.45);background:rgba(250,178,25,.10)}
+.banner.warning b{color:var(--warn-ink)}
+.banner.neutral{border-color:var(--border);background:var(--surface-2)}
+/* Stat tile: label (sentence case) + value; no meaning from colour alone. */
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:640px){.tiles{grid-template-columns:repeat(4,1fr)}}
+.tile{background:var(--surface-2);border:1px solid var(--border-soft);border-radius:12px;padding:12px}
+.tile .label{font-size:11.5px;color:var(--ink-3);margin-bottom:4px}
+.tile .value{font-size:22px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.tile .sub{font-size:11.5px;color:var(--ink-3);margin-top:2px}
+.value.pos{color:var(--good-ink)} .value.neg{color:var(--critical-ink)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);
+  font-weight:600;padding:8px 10px;border-bottom:1px solid var(--border)}
+td{padding:9px 10px;border-bottom:1px solid var(--border-soft);vertical-align:top}
+tbody tr:last-child td{border-bottom:0}
+.num{font-variant-numeric:tabular-nums;text-align:right;font-family:var(--mono);font-size:12.5px}
+.pos{color:var(--good-ink)} .neg{color:var(--critical-ink)} .muted{color:var(--ink-3)}
+.warn-open{color:var(--warn-ink)}
+.scroll-x{overflow-x:auto;-webkit-overflow-scrolling:touch}
+/* On a phone nine columns cannot fit; the entry/stop/exit detail lives one tap
+   away in the edit form, so drop those columns rather than shrink everything. */
+@media(max-width:640px){
+  .opt{display:none}
+  table{font-size:13px}
+  th,td{padding:8px 6px}
+}
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--surface-2);border:1px solid var(--border);
+  border-radius:999px;padding:3px 9px;font-size:11.5px;color:var(--ink-2);white-space:nowrap}
+.check{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border:1px solid var(--border-soft);
+  border-radius:10px;background:var(--surface-2);margin-bottom:7px;cursor:pointer}
+.check input{width:19px;height:19px;min-height:0;flex:none;margin:1px 0 0;accent-color:var(--accent)}
+.check span{font-size:13.5px}
+.empty{color:var(--ink-3);font-size:13.5px;text-align:center;padding:22px 10px}
+.figure{background:var(--surface);border-radius:12px;padding:4px 0 0}
+.figcaption{font-size:12px;color:var(--ink-3);margin-top:6px}
+svg.chart{display:block;width:100%;height:auto;overflow:visible}
+.tooltip{position:absolute;pointer-events:none;background:var(--raised);border:1px solid var(--border);
+  border-radius:9px;padding:7px 10px;font-size:12px;box-shadow:0 6px 20px rgba(0,0,0,.45);white-space:nowrap;z-index:30}
+.disclaimer{color:var(--ink-3);font-size:12px;line-height:1.6;border-top:1px solid var(--border-soft);
+  padding:16px 0 28px;margin-top:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+        <rect width="26" height="26" rx="7" fill="#3987e5" opacity=".16"/>
+        <path d="M6 17.5 10.5 12l3.5 3.5L20 8" stroke="#3987e5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <h1>Журнал дей-трейдера</h1>
+        <small>ризик · дисципліна · власна статистика</small>
+      </div>
+    </div>
+    <a href="../" class="btn ghost small">← Скринер</a>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- Today -->
+  <div id="day-banner" class="banner neutral" style="margin-bottom:16px">
+    <span class="glyph" id="day-glyph">•</span>
+    <div><b id="day-title">Сьогодні угод ще не було</b><span id="day-detail"></span></div>
+  </div>
+
+  <!-- Position size -->
+  <section class="card">
+    <h2>Розмір позиції</h2>
+    <p class="hint">Скільки акцій узяти, щоб втратити рівно стільки, скільки ти вирішив — не більше.</p>
+    <div class="grid cols-3">
+      <div><label class="field" for="ps-account">Депозит, $</label><input id="ps-account" type="number" inputmode="decimal" min="0" step="1" value="1000"/></div>
+      <div><label class="field" for="ps-risk">Ризик на угоду, %</label><input id="ps-risk" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="1"/></div>
+      <div><label class="field" for="ps-entry">Вхід, $</label><input id="ps-entry" type="number" inputmode="decimal" min="0" step="0.01" placeholder="напр. 50.00"/></div>
+      <div><label class="field" for="ps-stop">Стоп-лос, $</label><input id="ps-stop" type="number" inputmode="decimal" min="0" step="0.01" placeholder="обов'язково"/></div>
+      <div><label class="field" for="ps-target">Ціль, $ <span class="muted">(необов'язково)</span></label><input id="ps-target" type="number" inputmode="decimal" min="0" step="0.01"/></div>
+    </div>
+    <div id="ps-out" class="tiles" style="margin-top:14px"></div>
+    <p id="ps-warn" class="banner warning" style="margin-top:12px" hidden><span class="glyph">!</span><div><b id="ps-warn-title"></b><span id="ps-warn-text"></span></div></p>
+    <div class="row end" style="margin-top:12px"><button type="button" class="btn small" id="ps-to-trade">Перенести в нову угоду ↓</button></div>
+  </section>
+
+  <!-- New trade -->
+  <section class="card">
+    <h2>Нова угода</h2>
+    <p class="hint">Стоп заповнюй завжди — без нього результат неможливо виміряти в R.</p>
+    <form id="trade-form">
+      <input type="hidden" id="t-id"/>
+      <div class="grid cols-3">
+        <div><label class="field" for="t-date">Дата</label><input id="t-date" type="date" required/></div>
+        <div><label class="field" for="t-ticker">Тікер</label><input id="t-ticker" type="text" maxlength="12" placeholder="AAPL" style="text-transform:uppercase" required/></div>
+        <div><label class="field" for="t-side">Напрям</label>
+          <select id="t-side"><option value="long">Long (на ріст)</option><option value="short">Short (на падіння)</option></select></div>
+        <div><label class="field" for="t-entry">Вхід, $</label><input id="t-entry" type="number" inputmode="decimal" min="0" step="0.01" required/></div>
+        <div><label class="field" for="t-stop">Стоп, $</label><input id="t-stop" type="number" inputmode="decimal" min="0" step="0.01" required/></div>
+        <div><label class="field" for="t-qty">Кількість</label><input id="t-qty" type="number" inputmode="numeric" min="0" step="1" required/></div>
+        <div><label class="field" for="t-exit">Вихід, $ <span class="muted">(порожньо = відкрита)</span></label><input id="t-exit" type="number" inputmode="decimal" min="0" step="0.01"/></div>
+        <div><label class="field" for="t-fees">Комісія, $</label><input id="t-fees" type="number" inputmode="decimal" min="0" step="0.01" value="0"/></div>
+        <div><label class="field" for="t-setup">Сетап</label><input id="t-setup" type="text" list="setup-list" placeholder="breakout" />
+          <datalist id="setup-list"><option value="breakout"></option><option value="momentum"></option><option value="pullback"></option><option value="reversal"></option><option value="gap&go"></option><option value="scalp"></option></datalist></div>
+      </div>
+      <div style="margin-top:12px"><label class="field" for="t-notes">Нотатка</label><textarea id="t-notes" placeholder="Чому зайшов? Що відчував? Що зробив би інакше?"></textarea></div>
+
+      <h3 style="margin:16px 0 8px">Чеклист перед входом</h3>
+      <div id="checklist"></div>
+      <p class="hint" style="margin:6px 0 0">Статистика окремо покаже, як ти торгуєш за правилами і без них.</p>
+
+      <div class="row end" style="margin-top:14px">
+        <button type="button" class="btn ghost" id="t-cancel" hidden>Скасувати</button>
+        <button type="submit" class="btn primary" id="t-submit">Записати угоду</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Stats -->
+  <section class="card">
+    <h2>Твоя статистика</h2>
+    <p class="hint">Рахується лише за закритими угодами, у R: 1R — це сума, якою ти ризикнув.</p>
+    <div id="verdict" class="banner neutral" style="margin-bottom:14px">
+      <span class="glyph" id="v-glyph">•</span>
+      <div><b id="v-title">Ще немає закритих угод</b><span id="v-detail">Додай перші угоди — статистика з'явиться сама.</span></div>
+    </div>
+    <div class="tiles" id="stat-tiles"></div>
+
+    <div id="curve-wrap" style="margin-top:18px;position:relative" hidden>
+      <h3 style="margin-bottom:8px">Крива результату, наростаючим підсумком у R</h3>
+      <!-- No preserveAspectRatio="none": stretching would make the 2px line
+           thicker horizontally than vertically and skew the marker circles. -->
+      <div class="figure"><svg class="chart" id="curve" viewBox="0 0 720 220" role="img" aria-labelledby="curve-desc"></svg></div>
+      <p class="figcaption" id="curve-desc"></p>
+    </div>
+
+    <div class="grid cols-2" style="margin-top:18px">
+      <div><h3 style="margin-bottom:8px">За сетапом</h3><div class="scroll-x"><table><tbody id="by-setup"></tbody></table></div></div>
+      <div><h3 style="margin-bottom:8px">Правила</h3><div class="scroll-x"><table><tbody id="by-rules"></tbody></table></div></div>
+    </div>
+  </section>
+
+  <!-- Journal -->
+  <section class="card">
+    <div class="row" style="justify-content:space-between;margin-bottom:4px">
+      <h2>Журнал</h2>
+      <span class="chip" id="journal-count">0 угод</span>
+    </div>
+    <p class="hint">Натисни на угоду, щоб відредагувати.</p>
+    <div class="scroll-x">
+      <table>
+        <thead><tr>
+          <th>Дата</th><th>Тікер</th><th class="opt">Сетап</th>
+          <th class="num opt">Вхід</th><th class="num opt">Стоп</th><th class="num opt">Вихід</th>
+          <th class="num">Результат</th><th class="num">R</th><th></th>
+        </tr></thead>
+        <tbody id="journal"></tbody>
+      </table>
+    </div>
+    <p class="empty" id="journal-empty">Ще жодної угоди.</p>
+  </section>
+
+  <!-- Settings & data -->
+  <section class="card">
+    <h2>Ліміти та дані</h2>
+    <p class="hint">Денні ліміти — головний захист депозиту. Коли ліміт вичерпано, вгорі з'явиться попередження.</p>
+    <div class="grid cols-2">
+      <div><label class="field" for="lim-trades">Макс. угод на день</label><input id="lim-trades" type="number" inputmode="numeric" min="0" step="1" value="3"/></div>
+      <div><label class="field" for="lim-loss">Макс. збиток за день, R</label><input id="lim-loss" type="number" inputmode="decimal" min="0" step="0.5" value="2"/></div>
+    </div>
+    <h3 style="margin:16px 0 8px">Свої правила в чеклисті</h3>
+    <textarea id="rules-text" spellcheck="false" placeholder="Одне правило на рядок"></textarea>
+    <div class="row end" style="margin-top:12px">
+      <button type="button" class="btn small" id="export">Зберегти у файл</button>
+      <button type="button" class="btn small" id="import-btn">Завантажити з файлу</button>
+      <input type="file" id="import-file" accept="application/json" class="sr"/>
+      <button type="button" class="btn small danger" id="wipe">Стерти все</button>
+    </div>
+    <p class="hint" style="margin:10px 0 0">Дані зберігаються лише у твоєму браузері. Почистиш історію — вони зникнуть, тому час від часу зберігай у файл.</p>
+  </section>
+
+  <p class="disclaimer">
+    Це інструмент обліку й дисципліни, а не порада що купувати. Він нічого не прогнозує —
+    він показує, що вже сталося з твоїми грошима. Більшість роздрібних дей-трейдерів втрачають
+    гроші на дистанції; чесна статистика власних угод — найшвидший спосіб дізнатися, чи ти виняток.
+    <strong>Не є фінансовою порадою.</strong>
+  </p>
+</main>
+
+<script src="stats.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
