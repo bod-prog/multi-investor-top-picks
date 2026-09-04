@@ -1,23 +1,23 @@
 # MITP Desk — snapshot з Grok.me
 
 Джерело: https://star-blue-quartz-zippy.grok.me  
-Гілка: `grok-version` (main не змінювалась)  
+Гілка: `grok-version` (`main` не змінювалась)  
 Знято: 2026-09-04
 
-Це **зібраний** фронтенд Grok App Builder (Vite/React), не вихідні `.tsx`.
-Grok.me віддає лише бандли в `/assets/*`. Source maps немає.
+Це **зібраний** фронтенд Grok App Builder (Vite + React + TanStack Router).
+Вихідних `.tsx` на хості немає, source maps теж немає.
 
-## Запуск локально
+## Повний снапшот ассетів
 
 ```bash
-cd grok-me
+chmod +x sync-from-live.sh
+./sync-from-live.sh
 python3 -m http.server 4173
 ```
 
 Відкрий http://localhost:4173
 
-API котирувань і паперовий рахунок хостяться на інфраструктурі Grok, тому
-офлайн частина UI відкриється, а живі дані можуть не підтягнутись.
+API котирувань, логін Google/X і паперовий рахунок йдуть на інфраструктуру Grok.
 
 ## Маршрути
 
@@ -28,3 +28,4 @@ API котирувань і паперовий рахунок хостяться
 - `/portfolio`
 - `/journal`
 - `/watchlist`
+- `/login`
