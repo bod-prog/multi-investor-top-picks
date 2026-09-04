@@ -1,16 +1,16 @@
 # Graph Report - multi-investor-top-picks  (2026-09-04)
 
 ## Corpus Check
-- 22 files · ~51,497 words
+- 25 files · ~57,881 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 266 nodes · 428 edges · 21 communities (16 shown, 5 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.85)
+- 334 nodes · 548 edges · 24 communities (19 shown, 5 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 7 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `99509672`
+- Built from commit: `4312ec2c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -36,18 +36,21 @@
 - history.test.js
 - backtest.test.js
 - backtest.js
+- daytrade-stats.test.js
+- app.js
+- stats.js
 
 ## God Nodes (most connected - your core abstractions)
 1. `renderPortfolio()` - 14 edges
-2. `renderWatchlist()` - 13 edges
-3. `analyzeBars()` - 13 edges
-4. `wire()` - 12 edges
-5. `loadAndAnalyze()` - 12 edges
-6. `What You Must Do When Invoked` - 12 edges
-7. `M()` - 10 edges
-8. `/graphify` - 10 edges
-9. `loadPort()` - 9 edges
-10. `enrich()` - 9 edges
+2. `init()` - 14 edges
+3. `renderWatchlist()` - 13 edges
+4. `analyzeBars()` - 13 edges
+5. `wire()` - 12 edges
+6. `loadAndAnalyze()` - 12 edges
+7. `What You Must Do When Invoked` - 12 edges
+8. `M()` - 10 edges
+9. `summarise()` - 10 edges
+10. `/graphify` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
 - None detected - all connections are within the same source files.
@@ -55,7 +58,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (21 total, 5 thin omitted)
+## Communities (24 total, 5 thin omitted)
 
 ### Community 0 - "server.py"
 Cohesion: 0.17
@@ -94,8 +97,8 @@ Cohesion: 0.33
 Nodes (5): For /graphify explain, For /graphify path, graphify reference: query, path, explain, Step 0 — Constrained query expansion (REQUIRED before traversal), Step 1 — Traversal
 
 ### Community 9 - "Multi-Investor Top Picks Generator"
-Cohesion: 0.29
-Nodes (6): Backtest, Finnhub, GitHub Pages, Multi-Investor Top Picks Generator, RS & Volatility, Run locally
+Cohesion: 0.25
+Nodes (7): Backtest, Finnhub, GitHub Pages, Multi-Investor Top Picks Generator, RS & Volatility, Run locally, Trading journal (`/daytrade/`)
 
 ### Community 10 - "graphify reference: add a URL and watch a folder"
 Cohesion: 0.50
@@ -121,16 +124,30 @@ Nodes (21): aligned, check(), clone, dates, expectedPeriods, flatPanel, flatRepo
 Cohesion: 0.28
 Nodes (10): alignSeries(), compound(), internals(), maxDrawdown(), mean(), rankAt(), ret(), run() (+2 more)
 
+### Community 21 - "daytrade-stats.test.js"
+Cohesion: 0.09
+Nodes (26): bleeding, book, busy, byRules, bySetup, calm, check(), consistent (+18 more)
+
+### Community 22 - "app.js"
+Cohesion: 0.23
+Nodes (20): checklistState(), exportData(), fillForm(), importData(), init(), load(), loadSettingsIntoForm(), niceStep() (+12 more)
+
+### Community 23 - "stats.js"
+Cohesion: 0.22
+Nodes (17): dayStatus(), equityCurve(), fmtR(), groupBy(), isClosed(), longestLossStreak(), maxDrawdownR(), mean() (+9 more)
+
 ## Knowledge Gaps
-- **95 isolated node(s):** `fs`, `path`, `vm`, `store`, `sandbox` (+90 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 132 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **115 isolated node(s):** `fs`, `path`, `vm`, `store`, `sandbox` (+110 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 153 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
+- **Are the 2 inferred relationships involving `init()` (e.g. with `exportData()` and `submitTrade()`) actually correct?**
+  _`init()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `fs`, `path`, `vm` to the rest of the system?**
-  _95 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _115 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `app-pages.js` be split into smaller, more focused modules?**
   _Cohesion score 0.14285714285714285 - nodes in this community are weakly interconnected._
 - **Should `What You Must Do When Invoked` be split into smaller, more focused modules?**

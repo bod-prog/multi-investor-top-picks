@@ -58,6 +58,30 @@ line — nothing breaks, the numbers are just weaker.
 
 Check the math (no deps, no network): `node test/history.test.js`
 
+## Trading journal (`/daytrade/`)
+
+A separate, self-contained page — no CDN, no API key, no backend. It does not
+generate signals; it measures what already happened to your money:
+
+- **Position size** — shares that keep the loss at the risk you chose, with the
+  reward-to-risk ratio and warnings (risk over 2%, R:R under 1.5, a position
+  needing margin, a stop so far away the size rounds to zero).
+- **Daily limits** — max trades and max loss in R per day, with an explicit stop
+  banner once either is hit.
+- **Pre-trade checklist** — your own rules, and the statistics later score the
+  trades where you followed them against the ones where you did not.
+- **Statistics in R** — expectancy, win rate, profit factor, max drawdown,
+  longest losing streak, equity curve, breakdown by setup.
+- **A verdict that refuses to over-claim** — under ~30 trades, or with |t| < 2,
+  it says the edge is not established rather than showing a green number.
+
+Data lives in `localStorage`; export/import JSON keeps a backup (import merges,
+it never deletes trades entered since the backup).
+
+`node test/daytrade-stats.test.js` covers the arithmetic — R-multiples with fees,
+expectancy, drawdown, position sizing rounding down, daily limits, and the
+wording of the verdict at each sample size.
+
 ## Backtest
 
 **Бектест сигналу RS** on the Top Picks page answers "would this ranking have
