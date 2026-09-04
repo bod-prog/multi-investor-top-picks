@@ -1,1 +1,21 @@
-{"0": "server.py", "1": "app-pages.js", "2": "renderPortfolio", "3": "day-trading.js", "4": "fetchCandles", "5": "M", "6": "wire", "7": "loadAndAnalyze", "8": "addWatch"}
+{
+  "0": "server.py",
+  "1": "app-pages.js",
+  "2": "What You Must Do When Invoked",
+  "3": "day-trading.js",
+  "4": "history.js",
+  "5": "Викласти на GitHub Pages (онлайн + телефон)",
+  "6": "graphify reference: extra exports and benchmark",
+  "7": "Як викласти Multi-Investor онлайн (телефон з будь-якої мережі)",
+  "8": "graphify reference: query, path, explain",
+  "9": "Multi-Investor Top Picks Generator",
+  "10": "graphify reference: add a URL and watch a folder",
+  "11": "graphify reference: commit hook and native CLAUDE.md integration",
+  "12": "graphify reference: incremental update and cluster-only",
+  "13": "graphify reference: GitHub clone and cross-repo merge",
+  "14": "graphify reference: transcribe video and audio",
+  "15": "CLAUDE.md",
+  "16": ".claude/CLAUDE.md",
+  "17": "extraction-spec.md",
+  "18": "history.test.js"
+}
