@@ -1,16 +1,16 @@
 # Graph Report - multi-investor-top-picks  (2026-09-04)
 
 ## Corpus Check
-- 22 files · ~50,746 words
+- 22 files · ~51,497 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 262 nodes · 420 edges · 21 communities (16 shown, 5 thin omitted)
+- 266 nodes · 428 edges · 21 communities (16 shown, 5 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8dfabacd`
+- Built from commit: `99509672`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -74,8 +74,8 @@ Cohesion: 0.14
 Nodes (36): aggregateBars(), analyzeBars(), apiKey(), buildDayTradeGrokPrompt(), chip(), clamp(), detectPatterns(), ema() (+28 more)
 
 ### Community 4 - "history.js"
-Cohesion: 0.17
-Nodes (19): annualisedVolPct(), cacheGet(), cacheSet(), clamp(), clearCache(), describe(), enrich(), fetchDailyCloses() (+11 more)
+Cohesion: 0.16
+Nodes (21): annualisedVolPct(), cacheGet(), cacheSet(), chartUrl(), clamp(), clearCache(), describe(), enrich() (+13 more)
 
 ### Community 5 - "Викласти на GitHub Pages (онлайн + телефон)"
 Cohesion: 0.20
@@ -110,8 +110,8 @@ Cohesion: 0.50
 Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphify reference: incremental update and cluster-only
 
 ### Community 18 - "history.test.js"
-Cohesion: 0.11
-Nodes (15): alt, bench, fs, geo, oldLaggardPop, path, { rs, benchPerf }, sandbox (+7 more)
+Cohesion: 0.10
+Nodes (17): alt, bench, chartResponse(), fs, geo, oldLaggardPop, path, { rs, benchPerf } (+9 more)
 
 ### Community 19 - "backtest.test.js"
 Cohesion: 0.09
@@ -138,6 +138,6 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `day-trading.js` be split into smaller, more focused modules?**
   _Cohesion score 0.13940256045519203 - nodes in this community are weakly interconnected._
 - **Should `history.test.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.10526315789473684 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1 - nodes in this community are weakly interconnected._
 - **Should `backtest.test.js` be split into smaller, more focused modules?**
   _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._

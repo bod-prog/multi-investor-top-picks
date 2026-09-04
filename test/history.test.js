@@ -122,5 +122,86 @@ checkTrue('old same-day proxy ranked a one-day pop above a year-long leader',
   oldLaggardPop > oldLeaderQuiet, `${oldLaggardPop} vs ${oldLeaderQuiet}`);
 checkTrue('history-based RS gets that ordering right', rs.LEAD > rs.LAG, `${rs.LEAD} vs ${rs.LAG}`);
 
-console.log(failures ? `\n${failures} FAILURE(S)` : '\nAll checks passed');
-process.exit(failures ? 1 : 0);
+// ── data-source fallback ───────────────────────────────────────────
+// Public CORS proxies go down constantly; on GitHub Pages there is no local
+// server.py to fall back on, so the chain has to keep trying.
+const { fetchDailyCloses, resetRoute, getRoute, routes } = H._internals;
+
+function chartResponse(closes) {
+  return {
+    ok: true,
+    json: async () => ({
+      chart: {
+        result: [{
+          timestamp: closes.map((_, i) => 1700000000 + i * 86400),
+          indicators: { quote: [{ close: closes }] },
+        }],
+        error: null,
+      },
+    }),
+  };
+}
+
+/** Stub fetch: only URLs matching `liveMatcher` answer with real data. */
+function stubFetch(liveMatcher, { closes = [10, 11, 12], onCall = null } = {}) {
+  const calls = [];
+  sandbox.fetch = async (url) => {
+    calls.push(String(url));
+    if (onCall) onCall(String(url));
+    if (String(url).startsWith('/api/candles')) throw new Error('no local server');
+    if (!liveMatcher(String(url))) throw new Error('proxy down');
+    return chartResponse(closes);
+  };
+  return calls;
+}
+
+(async () => {
+  // only the third proxy (codetabs) is up, and only on the second Yahoo host
+  resetRoute();
+  let calls = stubFetch((u) => u.includes('codetabs') && u.includes('query2'));
+  const viaLastResort = await fetchDailyCloses('AAPL', '1y');
+  checkTrue('falls through dead proxies to one that answers', viaLastResort.closes.length === 3,
+    `${calls.length} attempts`);
+  checkTrue('the working route is remembered', getRoute() && getRoute().proxy.name === 'codetabs',
+    JSON.stringify(getRoute() && { host: getRoute().host, proxy: getRoute().proxy.name }));
+
+  // the rest of the batch should go straight there — one call, not nine,
+  // and without re-probing the local server that already 404'd
+  const secondCalls = stubFetch((u) => u.includes('codetabs') && u.includes('query2'));
+  await fetchDailyCloses('MSFT', '1y');
+  checkTrue('a remembered route is tried first, not re-probed', secondCalls.length === 1,
+    `${secondCalls.length} attempts`);
+  checkTrue('a missing local server is not re-probed for every ticker',
+    !secondCalls.some((u) => u.startsWith('/api/candles')), secondCalls.join(' | '));
+
+  // a proxy that is up but answers with junk must not count as success
+  resetRoute();
+  sandbox.fetch = async (url) => {
+    if (String(url).startsWith('/api/candles')) throw new Error('no local server');
+    if (String(url).includes('allorigins')) return { ok: true, json: async () => ({ contents: '<html>error</html>' }) };
+    if (String(url).includes('codetabs')) return chartResponse([5, 6, 7]);
+    throw new Error('proxy down');
+  };
+  const skippedJunk = await fetchDailyCloses('AAPL', '1y');
+  checkTrue('a proxy answering junk is skipped, not trusted', skippedJunk.closes.length === 3 && skippedJunk.closes[0] === 5);
+
+  // everything down → a real error, not silent bad data
+  resetRoute();
+  stubFetch(() => false);
+  let threw = '';
+  try { await fetchDailyCloses('AAPL', '1y'); } catch (e) { threw = e.message; }
+  checkTrue('every source down surfaces an error', !!threw, threw);
+  checkTrue('every host/proxy pair is attempted', routes().length === 8, `${routes().length} routes`);
+
+  // the local server, when present, still wins without touching the network
+  resetRoute();
+  sandbox.fetch = async (url) => {
+    if (String(url).startsWith('/api/candles')) return chartResponse([1, 2, 3, 4]);
+    throw new Error('should not reach the network');
+  };
+  const local = await fetchDailyCloses('AAPL', '1y');
+  checkTrue('the local server.py proxy is preferred', local.closes.length === 4);
+
+  console.log(failures ? `\n${failures} FAILURE(S)` : '\nAll checks passed');
+  process.exit(failures ? 1 : 0);
+})();

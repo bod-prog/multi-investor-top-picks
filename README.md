@@ -32,10 +32,17 @@ Required files at repo root:
 
 ## RS & Volatility
 
-Both inputs come from ~1 year of daily bars (Yahoo chart API — free, no key),
-fetched through the local `server.py` proxy when you run it and public CORS
-proxies otherwise. Toggle it under **Джерело RS / Volatility**; results are
-cached in `localStorage` for 12h.
+Both inputs come from ~1 year of daily bars (Yahoo chart API — free, no key).
+Toggle it under **Джерело RS / Volatility**; results are cached in
+`localStorage` for 12h.
+
+Data is fetched through the local `server.py` proxy when you run it, and
+otherwise across both Yahoo hosts × several public CORS proxies until one
+answers — those proxies go down often, and on GitHub Pages there is no local
+server to fall back on. A response only counts as success if it parses as a
+Yahoo chart (a proxy that is up but broken answers `200` with an error page),
+and the route that worked is reused for the rest of the batch instead of
+re-probing per ticker.
 
 | | On (default) | Off |
 |--|--------------|-----|
