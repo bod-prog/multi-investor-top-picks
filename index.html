@@ -18,6 +18,8 @@
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js"></script>
+  <!-- Defines window.MITPHistory; the main inline script wires its controls on load, so it must come first -->
+  <script src="history.js?v=20260904a"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -1094,6 +1096,26 @@
             <button type="button" data-topn="50" class="topn-btn px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border border-surface-600 bg-surface-800 text-slate-300">Top 50</button>
           </div>
         </div>
+        <div class="lg:col-span-2">
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 sm:mb-3">Джерело RS / Volatility</label>
+          <div class="rounded-xl border border-surface-600 bg-surface-900/60 p-3 sm:p-4">
+            <div class="flex flex-wrap items-center gap-3">
+              <label class="inline-flex items-center gap-2 cursor-pointer">
+                <input id="hist-enabled" type="checkbox" class="w-4 h-4 rounded accent-emerald-500" checked />
+                <span class="text-sm text-slate-300">Історія цін за 1 рік (Yahoo, без ключа)</span>
+              </label>
+              <button type="button" id="hist-refresh"
+                class="px-3 py-1.5 rounded-lg text-xs font-medium border border-surface-600 bg-surface-800 text-slate-400 hover:text-slate-200">
+                Оновити історію
+              </button>
+            </div>
+            <p id="hist-status" class="text-[11px] text-slate-500 mt-2">Історія ще не завантажена — RS і волатильність рахуються за сьогоднішню сесію.</p>
+            <p class="text-[11px] text-slate-600 mt-1">
+              Увімкнено: <strong class="text-slate-500">RS</strong> — зважена дохідність за 3/6/9/12 міс, у перцентилі списку та проти SPY;
+              <strong class="text-slate-500">Volatility</strong> — річна σ денних змін. Вимкнено: обидва рахуються лише з сьогоднішньої свічки.
+            </p>
+          </div>
+        </div>
       </div>
       <div class="mobile-sticky-actions mt-5 sm:mt-6 flex flex-col sm:flex-row sm:items-center gap-3">
         <button id="generate-btn" type="button"
@@ -1923,8 +1945,11 @@
       stock.dayHigh = high;
       stock.dayLow = low;
       stock.open = num(q.o, price);
-      stock.rs = clamp(50 + dayPct * 8, 5, 99);
-      stock.volatility = clamp(rangePct * 12 + Math.abs(dayPct) * 2, 5, 95);
+      // Same-day proxy — only while MITPHistory has nothing better for this ticker
+      if (!stock.hasHistory) {
+        stock.rs = clamp(50 + dayPct * 8, 5, 99);
+        stock.volatility = clamp(rangePct * 12 + Math.abs(dayPct) * 2, 5, 95);
+      }
       stock.hasQuote = true;
       stock.live = true;
       // short-lived quote cache
@@ -2278,7 +2303,7 @@
               stock.hasQuote = true;
               if (stock.prevClose > 0) {
                 stock.dayChangePct = ((price - stock.prevClose) / stock.prevClose) * 100;
-                stock.rs = clamp(50 + stock.dayChangePct * 8, 5, 99);
+                if (!stock.hasHistory) stock.rs = clamp(50 + stock.dayChangePct * 8, 5, 99);
               }
               ticksReceived++;
               document.getElementById('stat-ticks').textContent = String(ticksReceived);
@@ -3118,7 +3143,7 @@
       status.textContent = 'Generating top picks...';
       status.className = 'text-sm text-slate-400';
 
-      setTimeout(() => {
+      const scoreAndRender = () => {
         try {
           lastScoredAll = eligible.map((s) => {
             const scored = { ...s, ...scoreStock(s, styles, selectedHorizon) };
@@ -3165,7 +3190,108 @@
           loading?.classList.remove('show');
           hideGlobalBusy();
         }
-      }, 320);
+      };
+
+      // Historical RS / volatility first — scoring reads stock.rs and
+      // stock.volatility, so they must be current before scoreAndRender runs.
+      // Any failure leaves the same-day proxy values in place.
+      if (window.MITPHistory?.isEnabled()) {
+        status.textContent = 'Історія цін для RS / volatility…';
+        loadHistory({ force: false })
+          .catch(() => {})
+          .then(() => setTimeout(scoreAndRender, 60));
+      } else {
+        setTimeout(scoreAndRender, 320);
+      }
+    }
+
+    // ─── Historical RS / volatility ──────────────────────────────────
+    let historyBusy = false;
+
+    function renderHistoryStatus(text, tone = 'text-slate-500') {
+      const el = document.getElementById('hist-status');
+      if (!el) return;
+      el.textContent = text;
+      el.className = `text-[11px] mt-2 ${tone}`;
+    }
+
+    function describeHistoryRun(run) {
+      if (!run) return;
+      if (!run.applied) {
+        renderHistoryStatus(
+          'Історію завантажити не вдалося — RS і волатильність за сьогоднішню сесію. ' +
+          'Локально запусти start.bat, онлайн — можливо, CORS-проксі недоступні.',
+          'text-amber-400'
+        );
+        return;
+      }
+      const bench = Number.isFinite(run.benchPerf)
+        ? ` · ${run.benchmark} ${run.benchPerf > 0 ? '+' : ''}${run.benchPerf.toFixed(1)}%`
+        : '';
+      const missed = run.failed.length ? ` · без історії: ${run.failed.join(', ')}` : '';
+      renderHistoryStatus(
+        `Історія 1 рік: ${run.applied}/${run.total} тікерів${bench}${missed}. ` +
+        'RS — перцентиль зваженої дохідності 3/6/9/12 міс, volatility — річна σ.',
+        'text-emerald-400'
+      );
+    }
+
+    async function loadHistory({ force = false } = {}) {
+      if (!window.MITPHistory || historyBusy) return null;
+      historyBusy = true;
+      const refreshBtn = document.getElementById('hist-refresh');
+      if (refreshBtn) refreshBtn.disabled = true;
+      try {
+        const run = await window.MITPHistory.enrich(stocks, {
+          force,
+          onProgress: (done, total) => {
+            renderHistoryStatus(`Завантажую денні свічки… ${done}/${total}`, 'text-slate-400');
+          },
+        });
+        describeHistoryRun(run);
+        return run;
+      } catch (e) {
+        renderHistoryStatus(`Історія недоступна: ${e.message || e}`, 'text-amber-400');
+        return null;
+      } finally {
+        historyBusy = false;
+        if (refreshBtn) refreshBtn.disabled = false;
+      }
+    }
+
+    function wireHistoryControls() {
+      const toggle = document.getElementById('hist-enabled');
+      const refresh = document.getElementById('hist-refresh');
+      if (toggle) {
+        toggle.checked = window.MITPHistory ? window.MITPHistory.isEnabled() : false;
+        toggle.disabled = !window.MITPHistory;
+        toggle.addEventListener('change', () => {
+          if (!window.MITPHistory) return;
+          window.MITPHistory.setEnabled(toggle.checked);
+          if (toggle.checked) {
+            renderHistoryStatus('Історію буде завантажено на наступному Generate.', 'text-slate-400');
+          } else {
+            // Drop history so the same-day proxy takes over again on the next quote
+            stocks.forEach((s) => {
+              s.hasHistory = false;
+              delete s.history;
+            });
+            renderHistoryStatus('Вимкнено — RS і волатильність за сьогоднішню сесію.', 'text-slate-500');
+          }
+        });
+      }
+      if (refresh) {
+        refresh.addEventListener('click', () => {
+          if (!window.MITPHistory) return;
+          if (!window.MITPHistory.isEnabled()) {
+            showToast('Спершу увімкни історію цін', 'warn');
+            return;
+          }
+          loadHistory({ force: true }).then((run) => {
+            if (run?.applied) showToast(`Історія оновлена · ${run.applied} тікерів`, 'ok');
+          });
+        });
+      }
     }
 
     function reRenderFromCache() {
@@ -3957,6 +4083,7 @@ ${newsLines}
     });
     document.getElementById('generate-btn').addEventListener('click', generatePicks);
     document.getElementById('btn-ws-reconnect')?.addEventListener('click', manualReconnectWs);
+    wireHistoryControls();
     updateLimitBar();
     document.querySelectorAll('#topn-group .topn-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
