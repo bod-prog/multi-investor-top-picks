@@ -72,8 +72,11 @@ textarea{min-height:70px;resize:vertical}
 .banner.warning b{color:var(--warn-ink)}
 .banner.neutral{border-color:var(--border);background:var(--surface-2)}
 /* Stat tile: label (sentence case) + value; no meaning from colour alone. */
-.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-@media(min-width:640px){.tiles{grid-template-columns:repeat(4,1fr)}}
+/* align-items:start — an expanded explanation grows its own tile instead of
+   stretching every neighbour in the row and leaving dead space. */
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;align-items:start}
+@media(min-width:640px){.tiles{grid-template-columns:repeat(4,1fr)}.tile.open{grid-column:span 2}}
+@media(max-width:639px){.tile.open{grid-column:1/-1}}
 .tile{background:var(--surface-2);border:1px solid var(--border-soft);border-radius:12px;padding:12px}
 .tile .label{font-size:11.5px;color:var(--ink-3);margin-bottom:4px}
 .tile .value{font-size:22px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
@@ -102,6 +105,24 @@ tbody tr:last-child td{border-bottom:0}
 .check input{width:19px;height:19px;min-height:0;flex:none;margin:1px 0 0;accent-color:var(--accent)}
 .check span{font-size:13.5px}
 .empty{color:var(--ink-3);font-size:13.5px;text-align:center;padding:22px 10px}
+/* Showing the arithmetic is the whole point: a number you can reproduce on a
+   phone calculator needs no trust. */
+.worked{background:var(--surface-2);border:1px solid var(--border-soft);border-radius:12px;padding:12px 14px}
+.worked p{margin:0 0 6px;font-size:13.5px;color:var(--ink-2)}
+.worked p:last-child{margin-bottom:0}
+.calc{font-family:var(--mono);font-size:13px;color:var(--ink);background:var(--bg);
+  border:1px solid var(--border);border-radius:6px;padding:1px 6px;white-space:nowrap}
+.why{appearance:none;border:1px solid var(--border);background:transparent;color:var(--ink-3);
+  border-radius:50%;width:20px;height:20px;min-height:0;padding:0;font-size:12px;font-weight:700;
+  cursor:pointer;line-height:1;flex:none}
+.why:hover,.why[aria-expanded="true"]{border-color:var(--accent);color:var(--accent)}
+.why-demo{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;
+  border:1px solid var(--border);border-radius:50%;font-size:11px;font-weight:700;color:var(--ink-3)}
+.tile-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.tile-why{margin-top:9px;padding-top:9px;border-top:1px solid var(--border);font-size:12px;
+  color:var(--ink-2);line-height:1.55}
+.tile-why .calc{font-size:11.5px;display:inline-block;margin-top:3px}
+.ps-calc{margin-top:10px;font-size:12.5px;color:var(--ink-2)}
 .figure{background:var(--surface);border-radius:12px;padding:4px 0 0}
 .figcaption{font-size:12px;color:var(--ink-3);margin-top:6px}
 svg.chart{display:block;width:100%;height:auto;overflow:visible}
@@ -139,6 +160,29 @@ svg.chart{display:block;width:100%;height:auto;overflow:visible}
     <div><b id="day-title">Сьогодні угод ще не було</b><span id="day-detail"></span></div>
   </div>
 
+  <!-- What R is. Nothing on this page makes sense without it. -->
+  <section class="card" id="explain-card">
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div>
+        <h2>Що таке R і навіщо воно</h2>
+        <p class="hint" style="margin-bottom:0">Одне поняття, без якого решта сторінки — беззмістовна.</p>
+      </div>
+      <button type="button" class="btn ghost small" id="explain-toggle" aria-expanded="true" aria-controls="explain-body">Згорнути</button>
+    </div>
+    <div id="explain-body" style="margin-top:12px">
+      <p style="margin-bottom:10px"><b>R — це сума, якою ти ризикнув в одній угоді.</b> Не відсоток, не бали. Просто гроші, які ти втратиш, якщо спрацює стоп.</p>
+      <div class="worked">
+        <p>Купив 50 акцій по <b>$100</b>, стоп поставив на <b>$98</b>.</p>
+        <p>Ризик на акцію: <span class="calc">$100 − $98 = $2</span></p>
+        <p>Ризик на всю угоду: <span class="calc">$2 × 50 = $100</span> — <b>це і є 1R</b></p>
+        <p>Продав по $104 → заробив <span class="calc">$4 × 50 = $200</span> = <b class="pos">+2.00R</b></p>
+        <p>Продав по $98 (стоп) → втратив $100 = <b class="neg">−1.00R</b></p>
+      </div>
+      <p style="margin-top:12px">Навіщо так складно? Бо <b>у гривнях чи доларах угоди непорівнянні</b>: заробити $200, ризикнувши $1000, — це погано, а заробити $200, ризикнувши $50, — чудово. В R це видно одразу: −0.2R проти +4R.</p>
+      <p style="margin-top:10px;color:var(--ink-2)">Далі на сторінці біля кожного числа є кнопка <span class="why-demo">?</span> — вона показує, з чого саме це число порахувалося на твоїх угодах. Можеш перевірити на калькуляторі.</p>
+    </div>
+  </section>
+
   <!-- Position size -->
   <section class="card">
     <h2>Розмір позиції</h2>
@@ -151,6 +195,7 @@ svg.chart{display:block;width:100%;height:auto;overflow:visible}
       <div><label class="field" for="ps-target">Ціль, $ <span class="muted">(необов'язково)</span></label><input id="ps-target" type="number" inputmode="decimal" min="0" step="0.01"/></div>
     </div>
     <div id="ps-out" class="tiles" style="margin-top:14px"></div>
+    <p class="ps-calc" id="ps-calc"></p>
     <p id="ps-warn" class="banner warning" style="margin-top:12px" hidden><span class="glyph">!</span><div><b id="ps-warn-title"></b><span id="ps-warn-text"></span></div></p>
     <div class="row end" style="margin-top:12px"><button type="button" class="btn small" id="ps-to-trade">Перенести в нову угоду ↓</button></div>
   </section>
@@ -228,7 +273,16 @@ svg.chart{display:block;width:100%;height:auto;overflow:visible}
         <tbody id="journal"></tbody>
       </table>
     </div>
-    <p class="empty" id="journal-empty">Ще жодної угоди.</p>
+    <div class="empty" id="journal-empty">
+      <p style="margin-bottom:12px">Ще жодної угоди.</p>
+      <button type="button" class="btn small" id="demo-load">Показати на прикладі</button>
+      <p style="margin-top:10px;font-size:12px">Завантажить 8 вигаданих угод, щоб побачити, як усе рахується. Прибрати — однією кнопкою.</p>
+    </div>
+    <div class="row" id="demo-active" hidden style="margin-top:12px;justify-content:space-between;
+      background:rgba(250,178,25,.10);border:1px solid rgba(250,178,25,.45);border-radius:12px;padding:10px 12px">
+      <span style="font-size:13px;color:var(--warn-ink)">Показано приклад — це не твої угоди</span>
+      <button type="button" class="btn small" id="demo-clear">Прибрати приклад</button>
+    </div>
   </section>
 
   <!-- Settings & data -->
