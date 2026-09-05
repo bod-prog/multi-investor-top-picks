@@ -917,6 +917,18 @@
       "source_location": "L19"
     },
     {
+      "id": "daytrade_app_buildexplanations",
+      "label": "buildExplanations()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "app.js",
+      "file_type": "code",
+      "norm_label": "buildexplanations()",
+      "source_file": "daytrade/app.js",
+      "source_location": "L173"
+    },
+    {
       "id": "daytrade_app_checkliststate",
       "label": "checklistState()",
       "_callable": true,
@@ -926,7 +938,19 @@
       "file_type": "code",
       "norm_label": "checkliststate()",
       "source_file": "daytrade/app.js",
-      "source_location": "L114"
+      "source_location": "L124"
+    },
+    {
+      "id": "daytrade_app_cleardemo",
+      "label": "clearDemo()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "app.js",
+      "file_type": "code",
+      "norm_label": "cleardemo()",
+      "source_file": "daytrade/app.js",
+      "source_location": "L524"
     },
     {
       "id": "daytrade_app_exportdata",
@@ -938,7 +962,7 @@
       "file_type": "code",
       "norm_label": "exportdata()",
       "source_file": "daytrade/app.js",
-      "source_location": "L384"
+      "source_location": "L532"
     },
     {
       "id": "daytrade_app_fillform",
@@ -950,7 +974,7 @@
       "file_type": "code",
       "norm_label": "fillform()",
       "source_file": "daytrade/app.js",
-      "source_location": "L332"
+      "source_location": "L441"
     },
     {
       "id": "daytrade_app_importdata",
@@ -962,7 +986,7 @@
       "file_type": "code",
       "norm_label": "importdata()",
       "source_file": "daytrade/app.js",
-      "source_location": "L395"
+      "source_location": "L543"
     },
     {
       "id": "daytrade_app_init",
@@ -974,7 +998,19 @@
       "file_type": "code",
       "norm_label": "init()",
       "source_file": "daytrade/app.js",
-      "source_location": "L434"
+      "source_location": "L582"
+    },
+    {
+      "id": "daytrade_app_isdemoloaded",
+      "label": "isDemoLoaded()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "app.js",
+      "file_type": "code",
+      "norm_label": "isdemoloaded()",
+      "source_file": "daytrade/app.js",
+      "source_location": "L507"
     },
     {
       "id": "daytrade_app_load",
@@ -989,6 +1025,18 @@
       "source_location": "L33"
     },
     {
+      "id": "daytrade_app_loaddemo",
+      "label": "loadDemo()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "app.js",
+      "file_type": "code",
+      "norm_label": "loaddemo()",
+      "source_file": "daytrade/app.js",
+      "source_location": "L511"
+    },
+    {
       "id": "daytrade_app_loadsettingsintoform",
       "label": "loadSettingsIntoForm()",
       "_callable": true,
@@ -998,7 +1046,7 @@
       "file_type": "code",
       "norm_label": "loadsettingsintoform()",
       "source_file": "daytrade/app.js",
-      "source_location": "L420"
+      "source_location": "L568"
     },
     {
       "id": "daytrade_app_nicestep",
@@ -1010,7 +1058,7 @@
       "file_type": "code",
       "norm_label": "nicestep()",
       "source_file": "daytrade/app.js",
-      "source_location": "L285"
+      "source_location": "L392"
     },
     {
       "id": "daytrade_app_plural",
@@ -1022,7 +1070,7 @@
       "file_type": "code",
       "norm_label": "plural()",
       "source_file": "daytrade/app.js",
-      "source_location": "L148"
+      "source_location": "L158"
     },
     {
       "id": "daytrade_app_renderall",
@@ -1034,7 +1082,7 @@
       "file_type": "code",
       "norm_label": "renderall()",
       "source_file": "daytrade/app.js",
-      "source_location": "L428"
+      "source_location": "L576"
     },
     {
       "id": "daytrade_app_renderchecklist",
@@ -1046,7 +1094,7 @@
       "file_type": "code",
       "norm_label": "renderchecklist()",
       "source_file": "daytrade/app.js",
-      "source_location": "L108"
+      "source_location": "L118"
     },
     {
       "id": "daytrade_app_rendercurve",
@@ -1058,7 +1106,7 @@
       "file_type": "code",
       "norm_label": "rendercurve()",
       "source_file": "daytrade/app.js",
-      "source_location": "L208"
+      "source_location": "L315"
     },
     {
       "id": "daytrade_app_renderday",
@@ -1070,7 +1118,7 @@
       "file_type": "code",
       "norm_label": "renderday()",
       "source_file": "daytrade/app.js",
-      "source_location": "L121"
+      "source_location": "L131"
     },
     {
       "id": "daytrade_app_rendergroups",
@@ -1082,7 +1130,7 @@
       "file_type": "code",
       "norm_label": "rendergroups()",
       "source_file": "daytrade/app.js",
-      "source_location": "L190"
+      "source_location": "L297"
     },
     {
       "id": "daytrade_app_renderjournal",
@@ -1094,7 +1142,7 @@
       "file_type": "code",
       "norm_label": "renderjournal()",
       "source_file": "daytrade/app.js",
-      "source_location": "L293"
+      "source_location": "L400"
     },
     {
       "id": "daytrade_app_renderpositionsize",
@@ -1118,7 +1166,7 @@
       "file_type": "code",
       "norm_label": "renderstats()",
       "source_file": "daytrade/app.js",
-      "source_location": "L158"
+      "source_location": "L237"
     },
     {
       "id": "daytrade_app_resetform",
@@ -1130,7 +1178,7 @@
       "file_type": "code",
       "norm_label": "resetform()",
       "source_file": "daytrade/app.js",
-      "source_location": "L322"
+      "source_location": "L431"
     },
     {
       "id": "daytrade_app_save",
@@ -1154,7 +1202,7 @@
       "file_type": "code",
       "norm_label": "submittrade()",
       "source_file": "daytrade/app.js",
-      "source_location": "L349"
+      "source_location": "L458"
     },
     {
       "id": "daytrade_stats_daystatus",
@@ -5761,6 +5809,30 @@
       "weight": 1.0
     },
     {
+      "source": "daytrade_app_cleardemo",
+      "target": "daytrade_app_save",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "daytrade/app.js",
+      "source_location": "L526",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app_cleardemo",
+      "target": "daytrade_app_renderall",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "daytrade/app.js",
+      "source_location": "L527",
+      "weight": 1.0
+    },
+    {
       "source": "daytrade_app_importdata",
       "target": "daytrade_app_save",
       "relation": "calls",
@@ -5769,7 +5841,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L407",
+      "source_location": "L555",
       "weight": 1.0
     },
     {
@@ -5781,7 +5853,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L408",
+      "source_location": "L556",
       "weight": 1.0
     },
     {
@@ -5793,7 +5865,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L409",
+      "source_location": "L557",
       "weight": 1.0
     },
     {
@@ -5805,7 +5877,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L435",
+      "source_location": "L583",
       "weight": 1.0
     },
     {
@@ -5817,7 +5889,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L436",
+      "source_location": "L584",
       "weight": 1.0
     },
     {
@@ -5829,7 +5901,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L437",
+      "source_location": "L585",
       "weight": 1.0
     },
     {
@@ -5841,7 +5913,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L438",
+      "source_location": "L586",
       "weight": 1.0
     },
     {
@@ -5853,7 +5925,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L439",
+      "source_location": "L587",
       "weight": 1.0
     },
     {
@@ -5865,7 +5937,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L442",
+      "source_location": "L590",
       "weight": 1.0
     },
     {
@@ -5877,7 +5949,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L460",
+      "source_location": "L608",
       "weight": 1.0
     },
     {
@@ -5889,7 +5961,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L463",
+      "source_location": "L611",
       "weight": 1.0
     },
     {
@@ -5901,7 +5973,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L469",
+      "source_location": "L617",
       "weight": 1.0
     },
     {
@@ -5913,7 +5985,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L477",
+      "source_location": "L625",
       "weight": 1.0
     },
     {
@@ -5925,7 +5997,31 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L482",
+      "source_location": "L650",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app_loaddemo",
+      "target": "daytrade_app_save",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "daytrade/app.js",
+      "source_location": "L520",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app_loaddemo",
+      "target": "daytrade_app_renderall",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "daytrade/app.js",
+      "source_location": "L521",
       "weight": 1.0
     },
     {
@@ -5937,7 +6033,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L425",
+      "source_location": "L573",
       "weight": 1.0
     },
     {
@@ -5949,7 +6045,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L429",
+      "source_location": "L577",
       "weight": 1.0
     },
     {
@@ -5961,7 +6057,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L430",
+      "source_location": "L578",
       "weight": 1.0
     },
     {
@@ -5973,7 +6069,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L431",
+      "source_location": "L579",
       "weight": 1.0
     },
     {
@@ -5985,7 +6081,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L235",
+      "source_location": "L342",
       "weight": 1.0
     },
     {
@@ -5997,7 +6093,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L124",
+      "source_location": "L134",
       "weight": 1.0
     },
     {
@@ -6009,7 +6105,31 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L296",
+      "source_location": "L403",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app_renderjournal",
+      "target": "daytrade_app_isdemoloaded",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "daytrade/app.js",
+      "source_location": "L405",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app_renderstats",
+      "target": "daytrade_app_buildexplanations",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "daytrade/app.js",
+      "source_location": "L247",
       "weight": 1.0
     },
     {
@@ -6021,7 +6141,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L186",
+      "source_location": "L293",
       "weight": 1.0
     },
     {
@@ -6033,7 +6153,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L187",
+      "source_location": "L294",
       "weight": 1.0
     },
     {
@@ -6045,7 +6165,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L352",
+      "source_location": "L461",
       "weight": 1.0
     },
     {
@@ -6057,7 +6177,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L377",
+      "source_location": "L486",
       "weight": 1.0
     },
     {
@@ -6069,7 +6189,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L378",
+      "source_location": "L487",
       "weight": 1.0
     },
     {
@@ -6081,7 +6201,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "daytrade/app.js",
-      "source_location": "L379",
+      "source_location": "L488",
       "weight": 1.0
     },
     {
@@ -8301,7 +8421,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "daytrade/app.js",
-      "source_location": "L108",
+      "source_location": "L118",
       "weight": 1.0
     },
     {
@@ -8312,7 +8432,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "daytrade/app.js",
-      "source_location": "L114",
+      "source_location": "L124",
       "weight": 1.0
     },
     {
@@ -8323,7 +8443,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "daytrade/app.js",
-      "source_location": "L121",
+      "source_location": "L131",
       "weight": 1.0
     },
     {
@@ -8334,7 +8454,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "daytrade/app.js",
-      "source_location": "L148",
+      "source_location": "L158",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app",
+      "target": "daytrade_app_buildexplanations",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "daytrade/app.js",
+      "source_location": "L173",
       "weight": 1.0
     },
     {
@@ -8345,7 +8476,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "daytrade/app.js",
-      "source_location": "L158",
+      "source_location": "L237",
       "weight": 1.0
     },
     {
@@ -8356,7 +8487,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "daytrade/app.js",
-      "source_location": "L190",
+      "source_location": "L297",
       "weight": 1.0
     },
     {
@@ -8367,40 +8498,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "daytrade/app.js",
-      "source_location": "L208",
-      "weight": 1.0
-    },
-    {
-      "source": "daytrade_app",
-      "target": "daytrade_app_nicestep",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "daytrade/app.js",
-      "source_location": "L285",
-      "weight": 1.0
-    },
-    {
-      "source": "daytrade_app",
-      "target": "daytrade_app_renderjournal",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "daytrade/app.js",
-      "source_location": "L293",
-      "weight": 1.0
-    },
-    {
-      "source": "daytrade_app",
-      "target": "daytrade_app_resetform",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "daytrade/app.js",
-      "source_location": "L322",
+      "source_location": "L315",
       "weight": 1.0
     },
     {
@@ -8416,79 +8514,46 @@
     },
     {
       "source": "daytrade_app",
+      "target": "daytrade_app_nicestep",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "daytrade/app.js",
+      "source_location": "L392",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app",
+      "target": "daytrade_app_renderjournal",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "daytrade/app.js",
+      "source_location": "L400",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app",
+      "target": "daytrade_app_resetform",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "daytrade/app.js",
+      "source_location": "L431",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app",
       "target": "daytrade_app_fillform",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "daytrade/app.js",
-      "source_location": "L332",
-      "weight": 1.0
-    },
-    {
-      "source": "daytrade_app",
-      "target": "daytrade_app_submittrade",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "daytrade/app.js",
-      "source_location": "L349",
-      "weight": 1.0
-    },
-    {
-      "source": "daytrade_app",
-      "target": "daytrade_app_exportdata",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "daytrade/app.js",
-      "source_location": "L384",
-      "weight": 1.0
-    },
-    {
-      "source": "daytrade_app",
-      "target": "daytrade_app_importdata",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "daytrade/app.js",
-      "source_location": "L395",
-      "weight": 1.0
-    },
-    {
-      "source": "daytrade_app",
-      "target": "daytrade_app_loadsettingsintoform",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "daytrade/app.js",
-      "source_location": "L420",
-      "weight": 1.0
-    },
-    {
-      "source": "daytrade_app",
-      "target": "daytrade_app_renderall",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "daytrade/app.js",
-      "source_location": "L428",
-      "weight": 1.0
-    },
-    {
-      "source": "daytrade_app",
-      "target": "daytrade_app_init",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "daytrade/app.js",
-      "source_location": "L434",
+      "source_location": "L441",
       "weight": 1.0
     },
     {
@@ -8504,6 +8569,83 @@
     },
     {
       "source": "daytrade_app",
+      "target": "daytrade_app_submittrade",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "daytrade/app.js",
+      "source_location": "L458",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app",
+      "target": "daytrade_app_isdemoloaded",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "daytrade/app.js",
+      "source_location": "L507",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app",
+      "target": "daytrade_app_loaddemo",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "daytrade/app.js",
+      "source_location": "L511",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app",
+      "target": "daytrade_app_cleardemo",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "daytrade/app.js",
+      "source_location": "L524",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app",
+      "target": "daytrade_app_exportdata",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "daytrade/app.js",
+      "source_location": "L532",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app",
+      "target": "daytrade_app_importdata",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "daytrade/app.js",
+      "source_location": "L543",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app",
+      "target": "daytrade_app_loadsettingsintoform",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "daytrade/app.js",
+      "source_location": "L568",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app",
       "target": "daytrade_app_renderpositionsize",
       "relation": "contains",
       "_origin": "ast",
@@ -8511,6 +8653,28 @@
       "confidence_score": 1.0,
       "source_file": "daytrade/app.js",
       "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app",
+      "target": "daytrade_app_renderall",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "daytrade/app.js",
+      "source_location": "L576",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app",
+      "target": "daytrade_app_init",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "daytrade/app.js",
+      "source_location": "L582",
       "weight": 1.0
     },
     {
@@ -10163,7 +10327,31 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "daytrade/app.js",
-      "source_location": "L452",
+      "source_location": "L600",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app_init",
+      "target": "daytrade_app_loaddemo",
+      "relation": "indirect_call",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "argument",
+      "source_file": "daytrade/app.js",
+      "source_location": "L628",
+      "weight": 1.0
+    },
+    {
+      "source": "daytrade_app_init",
+      "target": "daytrade_app_cleardemo",
+      "relation": "indirect_call",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "argument",
+      "source_file": "daytrade/app.js",
+      "source_location": "L629",
       "weight": 1.0
     },
     {
@@ -10175,7 +10363,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "daytrade/app.js",
-      "source_location": "L480",
+      "source_location": "L648",
       "weight": 1.0
     },
     {
@@ -10216,5 +10404,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "4312ec2c77c02f858d23a91920501aca8320cbca"
+  "built_at_commit": "29d478e8d61565703b7122d611dc0ab824e93ad0"
 }

@@ -72,6 +72,7 @@
     if (!res) {
       out.innerHTML = `<div class="tile" style="grid-column:1/-1"><div class="label">Розмір позиції</div>
         <div class="value muted">—</div><div class="sub">Заповни депозит, вхід і стоп. Стоп не може дорівнювати входу.</div></div>`;
+      $('ps-calc').textContent = '';
       warn.hidden = true;
       return null;
     }
@@ -86,6 +87,15 @@
         <div class="sub">${rr == null ? 'вкажи ціль' : `прибуток ≈ ${money(res.targetMoney)}`}</div></div>
       <div class="tile"><div class="label">Частка депозиту</div><div class="value">${((res.positionValue / (Number(input.account) || 1)) * 100).toFixed(0)}%</div>
         <div class="sub">ризик ${(Number(input.riskPct) || 0).toFixed(2)}% рахунку</div></div>`;
+
+    // Spell the division out. A number you can redo on a calculator needs no trust.
+    $('ps-calc').innerHTML =
+      `Порахувалось так: ризикуємо <span class="calc">${money(res.riskBudget)}</span> ` +
+      `(${Number(input.riskPct)}% від ${money(Number(input.account))}), ` +
+      `на одній акції ризик <span class="calc">${money(res.perShare)}</span> ` +
+      `(різниця між входом і стопом). ` +
+      `<span class="calc">${money(res.riskBudget)} ÷ ${money(res.perShare)} = ${res.shares}</span> акцій ` +
+      `(округлено вниз, щоб не перевищити ризик).`;
 
     const problems = [];
     if (Number(input.riskPct) > 2) problems.push('Ризик понад 2% на угоду — серія з 5 збитків забере понад десяту частину депозиту.');
@@ -155,6 +165,75 @@
 
   // ─── Statistics ───────────────────────────────────────────────────
 
+  /**
+   * Every number on this page has to be reproducible on a phone calculator,
+   * so each tile can show the actual sum it came from — with the user's own
+   * figures, not a generic definition.
+   */
+  function buildExplanations(sum) {
+    if (!sum.count) return {};
+    const list = (rs) => rs.map((r) => S.fmtR(r).replace('R', '')).join(' ');
+    const n = sum.count;
+    const short = sum.rs.length <= 10;
+    const seq = short ? `<span class="calc">${list(sum.rs)}</span>` : `${n} значень R`;
+
+    const winsR = sum.rs.filter((r) => r > 0);
+    const lossR = sum.rs.filter((r) => r < 0);
+    const grossWin = winsR.reduce((a, r) => a + r, 0);
+    const grossLoss = Math.abs(lossR.reduce((a, r) => a + r, 0));
+
+    // Where the deepest fall actually happened, so the number is checkable.
+    let run = 0, peak = 0, peakAt = 0, trough = 0, troughAt = 0, worst = 0, curPeak = 0, curPeakAt = 0;
+    sum.rs.forEach((r, i) => {
+      run += r;
+      if (run > curPeak) { curPeak = run; curPeakAt = i + 1; }
+      if (run - curPeak < worst) { worst = run - curPeak; peak = curPeak; peakAt = curPeakAt; trough = run; troughAt = i + 1; }
+    });
+
+    return {
+      count: `Рахуються лише <b>закриті</b> угоди, у яких був стоп — таких ${n}.` +
+        (sum.openCount ? ` Ще ${sum.openCount} відкритих: у них результату поки немає.` : '') +
+        (sum.unscorable ? ` ${sum.unscorable} без стопу: без нього немає з чим порівнювати прибуток, тому в R їх порахувати неможливо.` : ''),
+
+      // Written so a calculator reproduces it exactly: "3 ÷ 8" gives 0.375,
+      // not 38, so the ×100 has to be on the page.
+      winrate: `${sum.wins} угод у плюс із ${n}: <span class="calc">${sum.wins} ÷ ${n} × 100 = ${(sum.winRate * 100).toFixed(0)}%</span>.<br>` +
+        `Сам собою цей відсоток нічого не вирішує: можна вигравати 30% разів і заробляти, якщо плюси більші за мінуси.`,
+
+      expectancy: `Складаємо результати всіх угод у R і ділимо на кількість:<br>${seq}<br>` +
+        `<span class="calc">${S.fmtR(sum.totalR).replace('R', '')} ÷ ${n} = ${S.fmtR(sum.expectancy)}</span><br>` +
+        `Це середній заробіток на одну угоду, у частках твого ризику. Плюс — заробляєш, мінус — втрачаєш.`,
+
+      total: `Сума результатів усіх ${n} угод: <span class="calc">${S.fmtR(sum.totalR)}</span>.<br>` +
+        `У грошах — <span class="calc">${money(sum.totalMoney)}</span>: це реальні суми з твоїх угод, разом із комісіями.`,
+
+      pf: `Усі плюси разом: <span class="calc">+${grossWin.toFixed(2)}R</span>. Усі мінуси разом: <span class="calc">−${grossLoss.toFixed(2)}R</span>.<br>` +
+        (grossLoss > 0
+          ? `<span class="calc">${grossWin.toFixed(2)} ÷ ${grossLoss.toFixed(2)} = ${(grossWin / grossLoss).toFixed(2)}</span><br>`
+          : 'Мінусів ще не було, тому ділити нема на що.<br>') +
+        `Більше за 1 — заробляєш більше, ніж втрачаєш. Менше — навпаки.`,
+
+      avg: `Середній плюс — сума виграшних поділена на їх кількість:<br>` +
+        `${sum.wins ? `<span class="calc">${grossWin.toFixed(2)} ÷ ${sum.wins} = ${sum.avgWin.toFixed(2)}</span>` : '—'}<br>` +
+        `Середній мінус: ${sum.losses ? `<span class="calc">-${grossLoss.toFixed(2)} ÷ ${sum.losses} = ${sum.avgLoss.toFixed(2)}</span>` : '—'}<br>` +
+        `Якщо середній плюс більший за середній мінус — можна заробляти навіть із малим відсотком вгаданих.`,
+
+      dd: worst < 0
+        ? `Найглибше падіння від найкращого моменту. Після ${peakAt}-ї угоди підсумок був <span class="calc">${S.fmtR(peak)}</span>, ` +
+          `а після ${troughAt}-ї опустився до <span class="calc">${S.fmtR(trough)}</span>:<br>` +
+          // No "− +3.00": the peak goes in without its sign so the line reads
+          // as one subtraction a calculator can repeat.
+          `<span class="calc">${S.fmtR(trough).replace('R', '')} − ${peak.toFixed(2)} = ${S.fmtR(worst).replace('R', '')}</span><br>` +
+          `Це найважче, що довелося пережити. Реальна просадка майже завжди буде глибшою за минулу.`
+        : `Підсумок жодного разу не падав нижче попереднього максимуму.`,
+
+      extremes: `Найкраща угода: <span class="calc">${S.fmtR(sum.best)}</span>, найгірша: <span class="calc">${S.fmtR(sum.worst)}</span>.<br>` +
+        (sum.worst < -1.2
+          ? `Найгірша гірша за −1R — отже, стоп спрацював не там, де планувалось (прослизання або стоп посунули).`
+          : `Найгірша не гірша за −1R — стопи трималися.`),
+    };
+  }
+
   function renderStats() {
     const sum = S.summarise(trades);
     const v = S.verdict(sum);
@@ -165,23 +244,51 @@
     $('v-detail').textContent = v.detail;
 
     const pf = sum.profitFactor;
-    $('stat-tiles').innerHTML = `
-      <div class="tile"><div class="label">Закритих угод</div><div class="value">${sum.count}</div>
-        <div class="sub">${sum.openCount ? `${sum.openCount} відкритих` : 'усі закриті'}${sum.unscorable ? ` · ${sum.unscorable} без стопу` : ''}</div></div>
-      <div class="tile"><div class="label">Виграшних</div><div class="value">${sum.count ? Math.round(sum.winRate * 100) : 0}%</div>
-        <div class="sub">${sum.wins} у плюс · ${sum.losses} у мінус</div></div>
-      <div class="tile"><div class="label">Експектансі</div><div class="value ${signClass(sum.expectancy)}">${sum.count ? S.fmtR(sum.expectancy) : '—'}</div>
-        <div class="sub">середнє за угоду</div></div>
-      <div class="tile"><div class="label">Разом</div><div class="value ${signClass(sum.totalR)}">${sum.count ? S.fmtR(sum.totalR) : '—'}</div>
-        <div class="sub">${money(sum.totalMoney)}</div></div>
-      <div class="tile"><div class="label">Профіт-фактор</div><div class="value">${sum.count ? (Number.isFinite(pf) ? pf.toFixed(2) : '∞') : '—'}</div>
-        <div class="sub">виграно / програно</div></div>
-      <div class="tile"><div class="label">Середній плюс</div><div class="value pos">${sum.wins ? S.fmtR(sum.avgWin) : '—'}</div>
-        <div class="sub">середній мінус ${sum.losses ? S.fmtR(sum.avgLoss) : '—'}</div></div>
-      <div class="tile"><div class="label">Макс. просадка</div><div class="value ${sum.maxDrawdownR < 0 ? 'neg' : ''}">${sum.count ? S.fmtR(sum.maxDrawdownR) : '—'}</div>
-        <div class="sub">найдовша серія мінусів: ${sum.longestLossStreak}</div></div>
-      <div class="tile"><div class="label">Найкраща / найгірша</div><div class="value" style="font-size:17px">${sum.count ? `${S.fmtR(sum.best)} / ${S.fmtR(sum.worst)}` : '—'}</div>
-        <div class="sub">одна угода</div></div>`;
+    const why = buildExplanations(sum);
+    const tile = (key, label, value, cls, sub) => `
+      <div class="tile">
+        <div class="tile-head">
+          <div style="min-width:0">
+            <div class="label">${label}</div>
+            <div class="value ${cls || ''}">${value}</div>
+            <div class="sub">${sub}</div>
+          </div>
+          ${why[key] ? `<button type="button" class="why" data-why="${key}" aria-expanded="false"
+            aria-label="Як порахувалось: ${label}">?</button>` : ''}
+        </div>
+        ${why[key] ? `<div class="tile-why" id="why-${key}" hidden>${why[key]}</div>` : ''}
+      </div>`;
+
+    $('stat-tiles').innerHTML = [
+      tile('count', 'Закритих угод', String(sum.count), '',
+        `${sum.openCount ? `${sum.openCount} відкритих` : 'усі закриті'}${sum.unscorable ? ` · ${sum.unscorable} без стопу` : ''}`),
+      tile('winrate', 'Виграшних', `${sum.count ? Math.round(sum.winRate * 100) : 0}%`, '',
+        `${sum.wins} у плюс · ${sum.losses} у мінус`),
+      tile('expectancy', 'Експектансі', sum.count ? S.fmtR(sum.expectancy) : '—', signClass(sum.expectancy),
+        'середнє за угоду'),
+      tile('total', 'Разом', sum.count ? S.fmtR(sum.totalR) : '—', signClass(sum.totalR), money(sum.totalMoney)),
+      tile('pf', 'Профіт-фактор', sum.count ? (Number.isFinite(pf) ? pf.toFixed(2) : '∞') : '—', '',
+        'виграно / програно'),
+      tile('avg', 'Середній плюс', sum.wins ? S.fmtR(sum.avgWin) : '—', 'pos',
+        `середній мінус ${sum.losses ? S.fmtR(sum.avgLoss) : '—'}`),
+      tile('dd', 'Макс. просадка', sum.count ? S.fmtR(sum.maxDrawdownR) : '—', sum.maxDrawdownR < 0 ? 'neg' : '',
+        `найдовша серія мінусів: ${sum.longestLossStreak}`),
+      tile('extremes', 'Найкраща / найгірша',
+        sum.count ? `${S.fmtR(sum.best)} / ${S.fmtR(sum.worst)}` : '—', '', 'одна угода'),
+    ].join('');
+
+    document.querySelectorAll('#stat-tiles .why').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const box = $(`why-${btn.dataset.why}`);
+        const open = !box.hidden;
+        box.hidden = open;
+        btn.setAttribute('aria-expanded', String(!open));
+        // An open explanation gets more width; arithmetic in a narrow column
+        // wraps onto every second word.
+        btn.closest('.tile').classList.toggle('open', !open);
+      });
+    });
+
 
     renderCurve(sum);
     renderGroups();
@@ -295,6 +402,8 @@
     const empty = $('journal-empty');
     $('journal-count').textContent = `${trades.length} ${plural(trades.length, 'угода', 'угоди', 'угод')}`;
 
+    $('demo-active').hidden = !isDemoLoaded();
+
     if (!trades.length) { body.innerHTML = ''; empty.hidden = false; return; }
     empty.hidden = true;
 
@@ -376,6 +485,45 @@
     }
     save();
     resetForm();
+    renderAll();
+  }
+
+  // ─── Demo book ────────────────────────────────────────────────────
+  // An empty page teaches nothing. These eight trades are deliberately
+  // ordinary: a couple of good ones, a losing streak, one rule-breaking
+  // revenge trade that loses more than 1R.
+
+  const DEMO = [
+    { d: 7, ticker: 'AAPL', entry: 100, stop: 98, exit: 104, qty: 50, setup: 'breakout', rules: 5 },
+    { d: 6, ticker: 'NVDA', entry: 50, stop: 49, exit: 49, qty: 100, setup: 'pullback', rules: 5 },
+    { d: 5, ticker: 'TSLA', entry: 200, stop: 196, exit: 208, qty: 25, setup: 'breakout', rules: 5 },
+    { d: 4, ticker: 'AMD', entry: 80, stop: 78, exit: 78, qty: 50, setup: 'momentum', rules: 5 },
+    { d: 3, ticker: 'MSFT', entry: 300, stop: 295, exit: 295, qty: 20, setup: 'pullback', rules: 5 },
+    { d: 3, ticker: 'AMD', entry: 79, stop: 77, exit: 75.5, qty: 50, setup: 'відіграш збитку', rules: 2 },
+    { d: 2, ticker: 'NVDA', entry: 52, stop: 51, exit: 55, qty: 100, setup: 'breakout', rules: 5 },
+    { d: 1, ticker: 'AAPL', entry: 102, stop: 100, exit: 101, qty: 50, setup: 'momentum', rules: 4 },
+  ];
+
+  function isDemoLoaded() {
+    return trades.some((t) => String(t.id).startsWith('demo'));
+  }
+
+  function loadDemo() {
+    const day = (back) => new Date(Date.now() - back * 86400000).toISOString().slice(0, 10);
+    DEMO.forEach((d, i) => {
+      trades.push({
+        id: `demo${i}`, date: day(d.d), ticker: d.ticker, side: 'long',
+        entry: d.entry, stop: d.stop, exit: d.exit, qty: d.qty, fees: 0,
+        setup: d.setup, notes: '', rulesTicked: d.rules, rulesTotal: 5,
+      });
+    });
+    save();
+    renderAll();
+  }
+
+  function clearDemo() {
+    trades = trades.filter((t) => !String(t.id).startsWith('demo'));
+    save();
     renderAll();
   }
 
@@ -476,6 +624,26 @@
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => renderCurve(S.summarise(trades)), 150);
     });
+
+    $('demo-load').addEventListener('click', loadDemo);
+    $('demo-clear').addEventListener('click', clearDemo);
+
+    const explainBody = $('explain-body');
+    const explainBtn = $('explain-toggle');
+    explainBtn.addEventListener('click', () => {
+      const open = !explainBody.hidden;
+      explainBody.hidden = open;
+      explainBtn.textContent = open ? 'Показати' : 'Згорнути';
+      explainBtn.setAttribute('aria-expanded', String(!open));
+      try { localStorage.setItem('dt_explain_open', open ? '0' : '1'); } catch (_) {}
+    });
+    try {
+      if (localStorage.getItem('dt_explain_open') === '0') {
+        explainBody.hidden = true;
+        explainBtn.textContent = 'Показати';
+        explainBtn.setAttribute('aria-expanded', 'false');
+      }
+    } catch (_) {}
 
     $('export').addEventListener('click', exportData);
     $('import-btn').addEventListener('click', () => $('import-file').click());

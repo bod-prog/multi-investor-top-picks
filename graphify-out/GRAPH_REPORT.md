@@ -1,16 +1,16 @@
-# Graph Report - multi-investor-top-picks  (2026-09-04)
+# Graph Report - multi-investor-top-picks  (2026-09-05)
 
 ## Corpus Check
-- 25 files · ~57,881 words
+- 25 files · ~59,261 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 334 nodes · 548 edges · 24 communities (19 shown, 5 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 7 edges (avg confidence: 0.85)
+- 338 nodes · 560 edges · 24 communities (19 shown, 5 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 9 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4312ec2c`
+- Built from commit: `29d478e8`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -41,8 +41,8 @@
 - stats.js
 
 ## God Nodes (most connected - your core abstractions)
-1. `renderPortfolio()` - 14 edges
-2. `init()` - 14 edges
+1. `init()` - 16 edges
+2. `renderPortfolio()` - 14 edges
 3. `renderWatchlist()` - 13 edges
 4. `analyzeBars()` - 13 edges
 5. `wire()` - 12 edges
@@ -129,8 +129,8 @@ Cohesion: 0.09
 Nodes (26): bleeding, book, busy, byRules, bySetup, calm, check(), consistent (+18 more)
 
 ### Community 22 - "app.js"
-Cohesion: 0.23
-Nodes (20): checklistState(), exportData(), fillForm(), importData(), init(), load(), loadSettingsIntoForm(), niceStep() (+12 more)
+Cohesion: 0.20
+Nodes (24): buildExplanations(), checklistState(), clearDemo(), exportData(), fillForm(), importData(), init(), isDemoLoaded() (+16 more)
 
 ### Community 23 - "stats.js"
 Cohesion: 0.22
@@ -144,8 +144,8 @@ Nodes (17): dayStatus(), equityCurve(), fmtR(), groupBy(), isClosed(), longestLo
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Are the 2 inferred relationships involving `init()` (e.g. with `exportData()` and `submitTrade()`) actually correct?**
-  _`init()` has 2 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 4 inferred relationships involving `init()` (e.g. with `clearDemo()` and `exportData()`) actually correct?**
+  _`init()` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `fs`, `path`, `vm` to the rest of the system?**
   _115 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `app-pages.js` be split into smaller, more focused modules?**
