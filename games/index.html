@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Arcade — ігровий набір</title>
+<link rel="stylesheet" href="lib/arcade.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>Arcade</h1>
+  <p class="sub">
+    Ігровий набір цього репозиторію: бібліотеки з GitHub лежать у <code>games/vendor/</code>,
+    спільний каркас — у <code>games/lib/arcade.js</code>. Без збірки, без CDN, працює офлайн
+    і на GitHub&nbsp;Pages.
+  </p>
+
+  <section class="panel">
+    <h2>Ігри</h2>
+    <div class="grid">
+      <a class="card" href="demos/hopper/">
+        <strong>Hopper</strong>
+        <span>Нескінченний раннер на Phaser&nbsp;3: стрибки, монети, звуки jsfxr, рекорд у localStorage. Керування: пробіл, стрілка вгору або тап.</span>
+      </a>
+      <a class="card" href="demos/spin/">
+        <strong>Spin</strong>
+        <span>Мінімальна 3D-сцена на three.js — перевірка, що WebGL-шлях працює, і шаблон для 3D-ігор.</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Самоперевірка набору</h2>
+    <table class="checks"><tbody id="checks"></tbody></table>
+    <p class="hint" id="summary">Перевіряю…</p>
+  </section>
+</div>
+
+<script src="vendor/phaser/phaser.min.js"></script>
+<script src="vendor/howler/howler.min.js"></script>
+<script src="vendor/jsfxr/riffwave.js"></script>
+<script src="vendor/jsfxr/sfxr.js"></script>
+<script src="lib/arcade.js"></script>
+<script type="module">
+// Every row here answers one question: is this piece of the kit actually usable?
+const rows = [
+  {
+    name: 'Phaser 3 — 2D-рушій',
+    run: () => {
+      if (!window.Phaser) throw new Error('глобальний Phaser не знайдено');
+      if (!Phaser.Game || !Phaser.Scene) throw new Error('неповна збірка');
+      return 'v' + Phaser.VERSION;
+    }
+  },
+  {
+    name: 'three.js — 3D-рушій',
+    run: async () => {
+      const THREE = await import('./vendor/three/three.module.min.js');
+      if (!THREE.WebGLRenderer) throw new Error('модуль без WebGLRenderer');
+      window.THREE = THREE;
+      return 'r' + THREE.REVISION;
+    }
+  },
+  {
+    name: 'WebGL у цьому браузері',
+    soft: true, // програмний рендер є не всюди (headless, старі телефони)
+    run: () => {
+      const gl = document.createElement('canvas').getContext('webgl2')
+        || document.createElement('canvas').getContext('webgl');
+      if (!gl) throw new Error('контекст недоступний — 2D-ігри працюють, 3D ні');
+      const info = gl.getExtension('WEBGL_debug_renderer_info');
+      return info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)).slice(0, 40) : 'доступний';
+    }
+  },
+  {
+    name: 'howler.js — музика і довгі семпли',
+    run: () => {
+      if (!window.Howl || !window.Howler) throw new Error('глобальний Howl не знайдено');
+      return 'Web Audio: ' + (Howler.usingWebAudio ? 'так' : 'HTML5 fallback');
+    }
+  },
+  {
+    name: 'jsfxr — 8-бітні звуки без файлів',
+    run: () => {
+      if (!window.jsfxr) throw new Error('глобальний jsfxr не знайдено');
+      const params = jsfxr.sfxr.generate('pickupCoin');
+      const wave = jsfxr.sfxr.toWave(params);
+      if (!wave || !wave.dataURI || wave.dataURI.length < 128) throw new Error('порожній семпл');
+      return Math.round(wave.dataURI.length / 1024) + ' КБ семпл згенеровано';
+    }
+  },
+  {
+    name: 'Шрифт Press Start 2P',
+    run: async () => {
+      const ok = await Arcade.loadFont('vendor/fonts/PressStart2P-Regular.ttf');
+      if (!ok) throw new Error('шрифт не завантажився');
+      return 'підключений';
+    }
+  },
+  {
+    name: 'Каркас Arcade (input / sfx / loop / store)',
+    run: () => {
+      for (const key of ['Store', 'Input', 'Sfx', 'Loop', 'fit', 'loadFont']) {
+        if (!Arcade[key]) throw new Error('немає Arcade.' + key);
+      }
+      const probe = 'selftest';
+      if (Arcade.Store.best(probe, 7) !== 7) throw new Error('localStorage недоступний');
+      return 'v' + Arcade.version;
+    }
+  }
+];
+
+const tbody = document.getElementById('checks');
+const results = [];
+
+for (const row of rows) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td class="pending">…</td><td class="name"></td><td class="note"></td>';
+  tr.children[1].textContent = row.name;
+  tbody.appendChild(tr);
+
+  let status, note;
+  try {
+    note = await row.run();
+    status = 'ok';
+  } catch (err) {
+    status = row.soft ? 'warn' : 'bad';
+    note = err.message;
+  }
+
+  tr.children[0].className = status;
+  tr.children[0].textContent = status === 'ok' ? '✓' : status === 'warn' ? '!' : '✗';
+  tr.children[2].textContent = note;
+  results.push({ name: row.name, status, note });
+}
+
+const failed = results.filter(r => r.status === 'bad').length;
+const warned = results.filter(r => r.status === 'warn').length;
+document.getElementById('summary').textContent = failed
+  ? failed + ' з ' + results.length + ' перевірок впало'
+  : 'Усі ' + results.length + ' перевірок пройдено' + (warned ? ' (' + warned + ' із застереженням)' : '');
+
+// Для headless-перевірки (chromium --dump-dom) і для консолі.
+window.__selfTest = { results, failed, warned };
+document.body.dataset.selftest = failed ? 'failed' : 'passed';
+</script>
+</body>
+</html>

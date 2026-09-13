@@ -108,3 +108,14 @@ byte-identical whether or not future bars exist in the data.
 
 Get a free key: https://finnhub.io/register  
 Enter it in the app UI (stored only in your browser `localStorage`).
+
+## Games
+
+`games/` — окремий ігровий набір цього репозиторію, не повʼязаний зі скринером.
+Рушії завантажені з GitHub і лежать у `games/vendor/` (Phaser 3, three.js,
+howler.js, jsfxr, шрифт Press Start 2P), спільний каркас — `games/lib/arcade.js`,
+приклади — `games/demos/` (2D-раннер і 3D-сцена).
+
+Відкрити `games/` через локальний сервер (`python3 -m http.server 8080`) або на
+GitHub Pages: сторінка сама покаже, чи піднявся кожен рушій. Деталі, версії,
+хеші й ліцензії — у [`games/README.md`](games/README.md).

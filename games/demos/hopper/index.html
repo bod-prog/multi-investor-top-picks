@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hopper</title>
+<link rel="stylesheet" href="../../lib/arcade.css">
+<style>
+  body { padding: 1rem; display: flex; flex-direction: column; justify-content: center; }
+  #stage { display: flex; justify-content: center; min-height: 0; padding: 0; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="stage" class="stage"></div>
+    <p class="hint">
+      <kbd>ПРОБІЛ</kbd> / <kbd>↑</kbd> / тап — стрибок · <kbd>M</kbd> — звук ·
+      <a href="../../" style="color:var(--accent)">назад до набору</a>
+    </p>
+  </div>
+
+  <script src="../../vendor/jsfxr/riffwave.js"></script>
+  <script src="../../vendor/jsfxr/sfxr.js"></script>
+  <script src="../../vendor/phaser/phaser.min.js"></script>
+  <script src="../../lib/arcade.js"></script>
+  <script src="game.js"></script>
+  <script>
+    // Mute is a kit-level concern, not a game-level one.
+    addEventListener('keydown', function (e) {
+      if (e.code === 'KeyM') Arcade.Sfx.toggle();
+    });
+  </script>
+</body>
+</html>
