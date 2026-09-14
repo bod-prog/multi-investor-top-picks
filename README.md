@@ -116,6 +116,10 @@ Enter it in the app UI (stored only in your browser `localStorage`).
 howler.js, jsfxr, шрифт Press Start 2P), спільний каркас — `games/lib/arcade.js`,
 приклади — `games/demos/` (2D-раннер і 3D-сцена).
 
+Головна гра — [`games/jewel/`](games/jewel/): мозаїка з самоцвітів із чотирма
+рівнями складності, рівнями з власних фото, монетами й магазином
+(`node test/jewel.test.js` перевіряє її правила).
+
 Відкрити `games/` через локальний сервер (`python3 -m http.server 8080`) або на
 GitHub Pages: сторінка сама покаже, чи піднявся кожен рушій. Деталі, версії,
 хеші й ліцензії — у [`games/README.md`](games/README.md).

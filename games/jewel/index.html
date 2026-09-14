@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0b1220">
+<title>Jewel Coloring</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="night">
+
+<header class="bar">
+  <button id="back" class="icon-btn" hidden aria-label="Назад">‹</button>
+  <h1 id="screenTitle">Самоцвіти</h1>
+  <div class="coins" id="coinsBox" title="Монети">
+    <span class="coin"></span><span id="coinCount">0</span>
+  </div>
+  <button id="shopBtn" class="icon-btn" aria-label="Магазин">⛃</button>
+</header>
+
+<main>
+  <!-- ---------------------------------------------------------- бібліотека -->
+  <section class="screen" id="screen-library">
+    <div class="tabs">
+      <button class="tab is-active" data-tab="art">Картинки</button>
+      <button class="tab" data-tab="photo">Мої фото</button>
+    </div>
+
+    <div class="gallery" id="galleryArt"></div>
+
+    <div class="gallery" id="galleryPhoto" hidden></div>
+    <div class="photo-actions" id="photoActions" hidden>
+      <label class="btn primary">
+        <input type="file" id="photoInput" accept="image/*" hidden>
+        Зробити рівень з фото
+      </label>
+      <p class="note">
+        Фото не виходить із телефона — усе перетворення відбувається у браузері.
+        Картинку, згенеровану в Grok, теж можна зберегти у галерею і завантажити сюди.
+      </p>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ кадрування -->
+  <section class="screen" id="screen-crop" hidden>
+    <div class="crop-wrap">
+      <canvas id="cropCanvas" width="320" height="320"></canvas>
+      <p class="note">Перетягни, щоб вибрати частину фото. Колесо або два пальці — масштаб.</p>
+      <input type="text" id="photoTitle" class="text-input" maxlength="24" placeholder="Назва рівня">
+      <div class="row">
+        <button class="btn ghost" id="cropCancel">Скасувати</button>
+        <button class="btn primary" id="cropAccept">Далі</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------ гра -->
+  <section class="screen game" id="screen-game" hidden>
+    <div class="stage">
+      <canvas id="board"></canvas>
+      <div class="hud">
+        <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+        <span id="progressText">0%</span>
+      </div>
+    </div>
+
+    <div class="tools">
+      <button class="tool" id="toolHint"><span>Підказка</span><em id="hintCount">0</em></button>
+      <button class="tool" id="toolBomb"><span>Бомба</span><em id="bombCount">0</em></button>
+      <button class="tool" id="toolPan" aria-pressed="false"><span>Рука</span><em>рух</em></button>
+      <button class="tool" id="toolFit"><span>Уся</span><em>картина</em></button>
+    </div>
+
+    <div class="palette" id="palette"></div>
+  </section>
+
+  <!-- -------------------------------------------------------------- магазин -->
+  <section class="screen" id="screen-shop" hidden>
+    <div class="shop-list" id="shopList"></div>
+  </section>
+</main>
+
+<!-- вибір складності -->
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-card">
+    <h2 id="sheetTitle">Складність</h2>
+    <div class="difficulties" id="difficulties"></div>
+    <button class="btn ghost" id="sheetClose">Закрити</button>
+  </div>
+</div>
+
+<!-- результат рівня -->
+<div class="overlay" id="result" hidden>
+  <div class="result-card">
+    <canvas id="resultArt" width="220" height="220"></canvas>
+    <h2>Готово!</h2>
+    <p class="result-line" id="resultCoins"></p>
+    <p class="result-note" id="resultStats"></p>
+    <div class="row">
+      <button class="btn ghost" id="resultAgain">Ще раз</button>
+      <button class="btn primary" id="resultNext">До картинок</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/jsfxr/riffwave.js"></script>
+<script src="../vendor/jsfxr/sfxr.js"></script>
+<script src="../lib/arcade.js"></script>
+<script src="js/quantize.js"></script>
+<script src="js/level.js"></script>
+<script src="js/shop.js"></script>
+<script src="js/art.js"></script>
+<script src="js/render.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
