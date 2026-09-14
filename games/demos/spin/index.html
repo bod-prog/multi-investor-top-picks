@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spin</title>
+<link rel="stylesheet" href="../../lib/arcade.css">
+<style>
+  body { padding: 1rem; display: flex; flex-direction: column; justify-content: center; }
+  #stage { display: flex; justify-content: center; min-height: 0; padding: 0; }
+  #stage canvas { max-width: 100%; }
+  #fallback { color: var(--warn); text-align: center; font-size: .9rem; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="stage" class="stage"></div>
+    <p id="fallback" hidden>WebGL недоступний у цьому браузері — 3D-демо не запускається, 2D-ігри працюють.</p>
+    <p class="hint">
+      <kbd>← →</kbd> / <kbd>↑ ↓</kbd> або тап — крутити · <kbd>ПРОБІЛ</kbd> — колір ·
+      <a href="../../" style="color:var(--accent)">назад до набору</a>
+    </p>
+  </div>
+
+  <script src="../../vendor/jsfxr/riffwave.js"></script>
+  <script src="../../vendor/jsfxr/sfxr.js"></script>
+  <script src="../../lib/arcade.js"></script>
+  <script type="module" src="scene.js"></script>
+</body>
+</html>
