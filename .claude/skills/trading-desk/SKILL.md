@@ -161,6 +161,18 @@ take partial profits · **Sell** exit or avoid.
 If prior decisions on this ticker exist in the decision log, weigh them here:
 what did the last call get right or wrong, and does that change anything?
 
+Query the log rather than reading it end to end — it grows every run:
+
+```
+python3 trading-desk/tools/deskdb.py ticker NVDA      # every call and mention
+python3 trading-desk/tools/deskdb.py method           # the accumulated rules
+python3 trading-desk/tools/deskdb.py search "net revenue retention"
+```
+
+The `method` rows are the desk's own accumulated corrections, and Phase 5 is
+where they bind: a rule logged in an earlier run applies to this one unless
+you say why it does not.
+
 Hold is a real answer. Reach for it when the evidence is balanced, materially
 conflicting, or too thin to justify moving exposure.
 
@@ -177,6 +189,10 @@ template in `references/report-template.md`, then append one line to
 The log is what makes later runs smarter than isolated ones — on the next run
 for the same ticker, read it first, check what the earlier call would have
 returned by now, and let that inform Phase 5.
+
+The markdown is the source of truth. `trading-desk/tools/deskdb.py` builds a
+disposable SQLite index over it for searching; it re-indexes itself whenever
+the markdown is newer, so appending a row is all this phase has to do.
 
 In chat, give the user the rating, the two or three arguments that actually
 decided it, the main risk, and the report path. Do not paste the whole report

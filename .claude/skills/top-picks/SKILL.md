@@ -42,7 +42,9 @@ genuinely open:
   and volatility; a 1m search wants fundamentals and catalysts.
 - **Constraints** — max price, market-cap floor, markets, sectors to avoid.
 - **Exclusions** — the current watchlist (`mitp_watchlist_v1`), portfolio
-  (`mitp_portfolio_v1`), and anything already in `trading-desk/decision-log.md`.
+  (`mitp_portfolio_v1`), and anything already in `trading-desk/decision-log.md`
+  — list those with `python3 trading-desk/tools/deskdb.py timeline`, and check a
+  specific name with `deskdb.py ticker <T>` before spending a slot on it.
   Surfacing a name the user already holds is a wasted slot, and adding to an
   existing concentration is worse than a wasted slot.
 
