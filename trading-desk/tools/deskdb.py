@@ -80,6 +80,7 @@ def parse_log(path):
     """
     rows = []
     last_date = None
+    unknown = set()
     with open(path, encoding="utf-8") as fh:
         for lineno, line in enumerate(fh, 1):
             line = line.rstrip("\n")
@@ -96,9 +97,19 @@ def parse_log(path):
             if who.lower() == "ticker" or set(who) <= {"-", " "}:
                 continue
 
+            # A ticker column wrapped in *asterisks* is a marker, never a
+            # ticker. Known markers get their own kind; unknown ones fall back
+            # to a generic note so a marker invented in a later run cannot
+            # silently be indexed as a company.
+            marked = who_raw.strip().startswith("*")
             marker = who.strip("*").strip().lower()
-            kind = KINDS.get(marker, "decision")
-            ticker = who.upper() if kind == "decision" else None
+            if marked:
+                kind = KINDS.get(marker, "note")
+                if marker not in KINDS:
+                    unknown.add(marker)
+                ticker = None
+            else:
+                kind, ticker = "decision", who.upper()
 
             date = clean(date_raw)
             if is_blank(date):
@@ -135,6 +146,9 @@ def parse_log(path):
                 "note": note.strip(),
                 "report": report,
             })
+    if unknown:
+        print(f"note: unrecognised row markers indexed as 'note': "
+              f"{', '.join(sorted(unknown))}", file=sys.stderr)
     return rows
 
 
@@ -285,7 +299,7 @@ def q_rating(args):
 def q_method(args):
     con = connect()
     rows = con.execute(
-        "SELECT * FROM entries WHERE kind IN ('method','flag','correction') "
+        "SELECT * FROM entries WHERE kind IN ('method','flag','correction','note') "
         "ORDER BY date_effective, lineno LIMIT ?", (args.limit,)).fetchall()
     fmt(rows, args.full, args.json)
 
