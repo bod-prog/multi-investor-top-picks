@@ -43,9 +43,13 @@ RATINGS = ["Buy", "Overweight", "Hold", "Underweight", "Sell"]
 # Non-ticker rows mark themselves with *asterisks* in the ticker column.
 KINDS = {
     "top-picks": "shortlist",
+    "day-picks": "shortlist",
+    "swing-picks": "shortlist",
+    "market": "market",
     "method": "method",
     "portfolio flag": "flag",
     "macro correction": "correction",
+    "macro resolved": "correction",
 }
 
 
@@ -126,8 +130,15 @@ def parse_log(path):
             # correction row was logged under the run above it, so it inherits
             # that run's report rather than claiming one of its own.
             report = None
-            if kind in ("decision", "shortlist") and eff:
-                stem = ticker if kind == "decision" else "top-picks"
+            if kind == "market" and eff:
+                for cand in sorted(glob.glob(os.path.join(REPORTS, f"market-{eff}*.md"))):
+                    rel = os.path.relpath(cand, os.path.dirname(ROOT))
+                    if rel not in claimed:
+                        report, _ = rel, claimed.add(rel)
+                        break
+            elif kind in ("decision", "shortlist") and eff:
+                stem = ticker if kind == "decision" else (
+                    marker if marker in ("day-picks", "swing-picks") else "top-picks")
                 # A date can carry more than one run (e.g. a 1m sweep and a
                 # `day` sweep), so suffixed reports are candidates too and the
                 # first one not already claimed by an earlier row wins.
@@ -308,7 +319,7 @@ def q_rating(args):
 def q_method(args):
     con = connect()
     rows = con.execute(
-        "SELECT * FROM entries WHERE kind IN ('method','flag','correction','note') "
+        "SELECT * FROM entries WHERE kind IN ('method','flag','correction','note','market') "
         "ORDER BY date_effective, lineno LIMIT ?", (args.limit,)).fetchall()
     fmt(rows, args.full, args.json)
 

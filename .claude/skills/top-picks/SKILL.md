@@ -1,12 +1,25 @@
 ---
 name: top-picks
-description: Finds new stock candidates worth analysing — generates a shortlist from scratch when no ticker is on the table yet, sourced from live screens, catalysts, themes and contrarian setups rather than from memory, then hands the survivors to trading-desk. Use this whenever the user asks what to buy, what to look at, what is interesting right now, for ideas, picks, candidates, or names; asks to find stocks matching a style (value, growth, GARP, momentum, breakout, high-beta) or a theme; asks what to add to their watchlist or ticker list; or asks to scan the market. Reach for it whenever the question is "which stocks?" rather than "this stock" — trading-desk analyses a ticker you already have, portfolio-review examines a book you already hold, and this is the step before both, the one that produces the tickers in the first place.
+description: Finds new stock candidates to hold for a month or more — a shortlist built from live screens, catalysts, themes and contrarian setups rather than from memory, on a valuation or quality thesis rather than a scheduled event. Use it for positional ideas; for a position held inside one session use day-picks, and for a dated catalyst over days to weeks use swing-picks. Use this whenever the user asks what to buy, what to look at, what is interesting right now, for ideas, picks, candidates, or names; asks to find stocks matching a style (value, growth, GARP, momentum, breakout, high-beta) or a theme; asks what to add to their watchlist or ticker list; or asks to scan the market. Reach for it whenever the question is "which stocks?" rather than "this stock" — trading-desk analyses a ticker you already have, portfolio-review examines a book you already hold, and this is the step before both, the one that produces the tickers in the first place.
 ---
 
 # Top Picks
 
-This is the top of the funnel: `top-picks` finds names → `trading-desk` analyses
-one in depth → `portfolio-review` judges the resulting book.
+The positional end of the funnel: `market-today` sets the tape → **`top-picks`**
+finds names worth holding a month or more → `trading-desk` analyses one in depth
+→ `portfolio-review` judges the resulting book.
+
+**Two siblings cover the shorter horizons**, and they are separate skills
+because their data and their handoffs differ, not merely their timeframes:
+
+| Skill | Horizon | Thesis | Downstream |
+|---|---|---|---|
+| `day-picks` | inside one session | today's move | terminal — the app and the desk both fail at this horizon |
+| `swing-picks` | 2–15 sessions | a **dated** scheduled event | app scoring works; desk optional |
+| **`top-picks`** | a month or more | valuation, quality, a structural change | app scoring works; desk recommended |
+
+If the request is intraday or names a date inside two weeks, **hand off** rather
+than stretching this skill to cover it.
 
 It exists because this project's own screener, powerful as it is, can only rank
 **a ticker list the user maintains by hand** — RS is percentile-ranked against
@@ -35,11 +48,13 @@ genuinely open:
   | `wood` | Innovation and revenue growth, multiple secondary |
   | `momentum` / `breakout` | Relative strength, price near highs |
   | `meanrev` | Oversold quality, fading an extreme move |
-  | `highbeta` / `gapgo` / `scalping` | Volatility and liquidity for intraday work |
 
-- **Horizon** — `day`, `10d`, or `1m`, matching the app's three settings. This
-  changes the sourcing completely: a day-horizon search wants today's movers
-  and volatility; a 1m search wants fundamentals and catalysts.
+  `highbeta` / `gapgo` / `scalping` belong to `day-picks`.
+
+- **Horizon** — `1m` and longer. The app's `day` and `10d` settings are served
+  by `day-picks` and `swing-picks`; this skill covers the `1m` setting and
+  anything beyond it. Two runs at the `day` horizon established that a single
+  skill cannot serve all three, which is why they are now separate.
 - **Constraints** — max price, market-cap floor, markets, sectors to avoid.
 - **Exclusions** — the current watchlist (`mitp_watchlist_v1`), portfolio
   (`mitp_portfolio_v1`), and anything already in `trading-desk/decision-log.md`
@@ -49,7 +64,8 @@ genuinely open:
   existing concentration is worse than a wasted slot.
 
 Default when unstated: `1m` horizon, balanced style, liquid names above ~$2B
-market cap.
+market cap. If the user asks for a shorter hold, route to the right sibling
+rather than running this with a compressed window.
 
 ## Phase 1 — Generate candidates from separate angles
 
