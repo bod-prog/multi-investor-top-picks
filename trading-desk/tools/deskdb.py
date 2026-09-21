@@ -25,6 +25,7 @@ No dependencies beyond the standard library.
 """
 
 import argparse
+import glob
 import json
 import os
 import re
@@ -81,6 +82,7 @@ def parse_log(path):
     rows = []
     last_date = None
     unknown = set()
+    claimed = set()
     with open(path, encoding="utf-8") as fh:
         for lineno, line in enumerate(fh, 1):
             line = line.rstrip("\n")
@@ -126,9 +128,16 @@ def parse_log(path):
             report = None
             if kind in ("decision", "shortlist") and eff:
                 stem = ticker if kind == "decision" else "top-picks"
-                cand = os.path.join(REPORTS, f"{stem}-{eff}.md")
-                if os.path.exists(cand):
-                    report = os.path.relpath(cand, os.path.dirname(ROOT))
+                # A date can carry more than one run (e.g. a 1m sweep and a
+                # `day` sweep), so suffixed reports are candidates too and the
+                # first one not already claimed by an earlier row wins.
+                exact = os.path.join(REPORTS, f"{stem}-{eff}.md")
+                variants = sorted(glob.glob(os.path.join(REPORTS, f"{stem}-{eff}-*.md")))
+                for cand in ([exact] if os.path.exists(exact) else []) + variants:
+                    rel = os.path.relpath(cand, os.path.dirname(ROOT))
+                    if rel not in claimed:
+                        report, _ = rel, claimed.add(rel)
+                        break
             elif rows:
                 report = rows[-1]["report"]
 
