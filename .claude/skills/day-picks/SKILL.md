@@ -33,10 +33,34 @@ which is the only channel that has ever produced a name here.
 - VWAP, the opening range, the bid-ask spread
 - Premarket volume, level 2, short-interest intraday
 
-**What you can get**: a dated price, the day's high and low, market cap, the
-percentage move, and the catalyst. That is enough to verify a name and to
-measure its gap structure. **It is not a trading setup**, and the report must
-say so rather than letting a well-verified price imply a tradeable edge.
+**What you can get**: named movers with a sourced reason, a percentage move,
+and often a price. That is enough to say **where to look**. It is not enough to
+say **where to enter**, and the report must keep those two apart.
+
+### The two tiers, and why this skill nearly failed without them
+
+**The user has a live broker screen. This skill does not.** Its job is to point
+at names worth their attention in the next few hours, not to hand them a price
+they would never trade off anyway. A verification bar borrowed from the
+multi-month workflow — market-cap cross-check, confirmed session range, gap-fill
+structure — is the right bar for a thesis held for two quarters and **the wrong
+bar for a watchlist**. Applied here it produced a run with **zero names on a day
+that had ten**, which is a calibrated failure, not a data limit.
+
+So the output has two tiers and they are never blurred:
+
+| Tier | Bar | Aim | What it is for |
+|---|---|---|---|
+| **1 · Watchlist** | Named today · a **sourced reason** · liquid enough to exit · a move worth looking at | **~10 names** | "Open these on your screen." The user prices them live. |
+| **2 · Verified** | Everything in tier 1, **plus** a price with its as-of, a cross-check where obtainable, and the gap-fill test | However many clear it — often 0–3 | "Here is the structure I could actually establish." |
+
+**Tier 1 is the deliverable the user asked for. Tier 2 is the part I can stand
+behind.** Deliver both, labelled, every run.
+
+A name with no sourced reason is still rejected. A name whose move is only
+remembered is still rejected. What is *not* a rejection any more: a missing
+market cap, an unresolved session range, or a price a few hours old — those
+demote a name from tier 2 to tier 1, they do not remove it.
 
 **The two downstream handoffs both fail at this horizon:**
 
@@ -84,16 +108,32 @@ names.
 On a day when chips and crypto are bid, that is the tape; note it as the
 search's bias rather than presenting the list as diversified.
 
-## Phase 2 — Verify, and measure the gap
+## Phase 2 — Sort into the two tiers
 
-Every name needs, all of them fetched and none remembered:
+**Tier 1 — does it belong on the watchlist?** Three questions, all cheap:
 
-1. **A price dated today**, with the session high and low.
-2. **Market cap and share count**, and the cross-check:
-   `cap ÷ shares` against the quoted price. Inside ~1% passes.
-3. **Liquidity** — mega-cap and large-cap names only, in practice. A thin name
-   cannot be exited intraday and does not belong on this list regardless of the
-   move.
+1. **Is it named and is the reason sourced today?** An earnings print, an
+   upgrade or downgrade, a regulatory decision, a large disclosed purchase, a
+   sector move it genuinely belongs to. No reason, no listing.
+2. **Is it liquid enough to exit?** Large and mega-cap in practice. A thin name
+   cannot be exited intraday regardless of the move.
+3. **Is the move worth the attention?** Roughly 3% or more, or a smaller move on
+   a genuine catalyst.
+
+That is the whole bar. **Aim for around ten.** If the day only produced six,
+deliver six and say the tape was thin — but check the earnings calendar's
+density before concluding that, because a light calendar produces a light day
+and that is a fact about the week, not about the market.
+
+**Tier 2 — can the structure be established?** For the tier-1 names that look
+most tradeable, try to add:
+
+1. **A price with its as-of time**, and the session high and low.
+2. **Market cap and share count**, cross-checked: `cap ÷ shares` against the
+   quoted price, inside ~1%.
+3. **The gap-fill test** (below).
+
+Failing any of these keeps the name in tier 1. It does not delete it.
 
 Then the one structural measurement that *is* available here:
 
@@ -109,9 +149,11 @@ Report the **intraday range as a percentage of price**. Mega-cap liquidity with
 a 6–11% range is what this horizon is looking for; a 1% range on a large cap is
 not a day trade however good the story.
 
-**A percentage move with no price level is not a candidate.** It cannot be
-entered, sized or stopped. This single rule rejected seven of nine candidates on
-one run — that is the rule working, not the market being thin.
+**A percentage move with no price level stays in tier 1 and cannot reach tier
+2.** It tells the user where to look; it cannot tell them where to enter. Do not
+reject it — on 2026-09-11 that rule removed seven of nine candidates and on
+2026-09-22 it removed all of them, which is how this skill learned that a
+watchlist and an entry are different products.
 
 **Discard, do not reconcile.** A market cap that implies a price above the day's
 high is wrong. Say which figure was discarded and why, so the next run does not
@@ -138,8 +180,17 @@ own output, and saying it plainly is more useful than pretending otherwise.
 
 ## Phase 4 — Output
 
-In chat: a ranked table (ticker · company · price and as-of · move · gap-fill ·
-range as % · catalyst), then the two or three with the best structure.
+In chat, **both tiers, clearly separated**:
+
+1. **The watchlist** — a table of roughly ten: ticker · company · move ·
+   direction · the sourced reason. This is what the user opens on their screen.
+2. **The verified subset** — for the few that cleared tier 2: price with its
+   as-of, session range, the gap-fill result, and the cross-check.
+3. One line on which two or three have the best *structure*, and why.
+
+Never present tier 1 as though it were tier 2. The watchlist says "look here";
+only the verified subset says anything about levels, and even that carries its
+age.
 
 Write the full run to `trading-desk/reports/day-picks-<YYYY-MM-DD>.md` and
 append one line to `trading-desk/decision-log.md` with the marker `*day-picks*`.
@@ -156,7 +207,9 @@ your own.
 will have moved again by the time this is read. Say that rather than implying
 the levels are live.
 
-**Do not pad.** Two verified names beat six with four unverified.
+**Do not pad tier 2**, ever — two verified names beat six with four invented.
+**Do fill tier 1** to about ten where the day supports it: an empty watchlist is
+not caution, it is a failure to do the job the user asked for.
 
 Every report carries:
 
