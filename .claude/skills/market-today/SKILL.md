@@ -1,6 +1,6 @@
 ---
 name: market-today
-description: Reads today's market and writes the frame the other skills work inside — index levels and breadth, the one macro driver actually moving the tape, sector rotation, and what all of it means for an intraday versus a multi-day position. Use this whenever the user asks what the market is doing, how it opened, what moved today, what the Fed or CPI or oil did, whether it is risk-on or risk-off, what is leading or lagging, or simply "what's happening"; and run it before day-picks or swing-picks whenever the tape has not already been established in this conversation. It produces a frame, not tickers — day-picks and swing-picks produce the names, trading-desk analyses one, portfolio-review judges the book.
+description: Reads today's market and writes the frame the other skills work inside — index levels and breadth, the one macro driver actually moving the tape, sector rotation, what all of it means for an intraday versus a multi-day position, and a plain verdict on whether today's conditions favour putting new money into stocks or waiting. Use this whenever the user asks what the market is doing, how it opened, what moved today, what the Fed or CPI or oil did, whether it is risk-on or risk-off, what is leading or lagging, or simply "what's happening"; and run it before day-picks or swing-picks whenever the tape has not already been established in this conversation. It produces a frame, not tickers — day-picks and swing-picks produce the names, trading-desk analyses one, portfolio-review judges the book.
 ---
 
 # Market Today
@@ -121,9 +121,85 @@ that are observation and which are judgement.
 End with **what would change this read** — one or two specific, checkable
 conditions. A frame that cannot be falsified is a mood, not an analysis.
 
+## Phase 5 — The verdict: deploy or wait
+
+The frame above says what the tape is. This says what to do about it, in one
+word, and it is the part the user reads first.
+
+**It is a verdict on conditions, not on the user and not on the future.** It
+answers "is today a good day to put new money into stocks", the way a surf
+report answers "are conditions good", and it does not answer "should you buy",
+which depends on a horizon, a portfolio and a risk tolerance this skill cannot
+see.
+
+### The four states
+
+| Verdict | What it means | Fires when |
+|---|---|---|
+| **Favourable** | Conditions support deploying new capital broadly | Breadth confirms the index move · no scheduled reprice inside the session · trend intact · volatility not depressed |
+| **Selective** | The tape works for specific setups, not for the index | Leadership narrow, or a rotation underway, or the index stretched while individual structures are sound |
+| **Wait** | Conditions argue against new money today | An unconfirmed high **plus** event risk **plus** no volatility premium · or a trend breaking · or a major scheduled release inside hours |
+| **Defensive** | Active risk-reduction signals | Volatility rising hard · breadth collapsing · credit widening · a disorderly move in rates |
+
+### How to decide it
+
+Score these six, each with the number that decided it. **State which ones fired**
+— a verdict without its criteria is a mood.
+
+1. **Breadth against price.** The single most informative input. An index at a
+   high on negative advance/decline is *unconfirmed* and caps the verdict at
+   Selective, however strong the price looks. If breadth is unavailable, say so
+   and say that the verdict is less reliable for it.
+2. **Volatility regime.** VIX level and direction. Depressed and falling means
+   no compensation for risk — that argues against *paying up*, not against
+   owning. Rising fast is the Defensive trigger.
+3. **Where price sits** in its own recent range, and whether the trend holds.
+4. **Scheduled event risk inside the session or the next one** — a Fed decision,
+   CPI, payrolls, a major auction. Buying hours before a known reprice is a
+   choice, and the verdict should name the hour.
+5. **Rates** — the 10-year's level and direction, and whether it is at a
+   threshold the market is watching.
+6. **Whether the day's move is confirmed** by the things that should confirm it:
+   a rally led by the sectors that ought to lead it, volume, credit.
+
+### The honesty rules, which matter more than the verdict
+
+**Never present this as a prediction.** A **Wait** day that rallies 2% is not a
+failed call — conditions and outcomes are different things, and a report that
+quietly rewrites itself to match the outcome is worthless. Write the verdict
+against what was knowable this morning and let it be judged on that.
+
+**Say when it does not matter.** For an investor with a multi-year horizon
+adding regularly, the honest answer most days is that this verdict changes very
+little; the evidence that timing entries improves long-run returns is weak. It
+matters for **deploying a large lump sum**, for **leveraged or short-dated
+positions**, and for **deciding whether to chase a move that has already
+happened**. Say which of those applies rather than implying today's word is
+universally important.
+
+**Never "buy" or "sell" as an instruction.** The states are conditions. Pair the
+verdict with *what kind* of buying it supports: the index, a rotation leader, a
+specific catalyst, or nothing.
+
+**Always give the falsifier** — one or two checkable conditions that would move
+it to the next state up or down. A verdict that cannot be wrong is not a
+verdict.
+
+### Output shape
+
+```
+**Verdict: Selective** — conditions support specific setups, not the index.
+Fired on: breadth unconfirmed (Nasdaq 48.6% advancing on a record close) ·
+10-year at 4.96%, 4bp under a threshold · event risk 13:00 ET.
+Would become Favourable if: Nasdaq advancers exceed decliners on an up day.
+Would become Wait if: the 10-year takes 5.00%.
+Matters most for: a lump sum or a chased entry. Matters little for: regular
+multi-year additions.
+```
+
 ## Output
 
-In chat: the regime line, the three or four numbers that matter, the dominant
+In chat: **the verdict first**, then the regime line, the three or four numbers that matter, the dominant
 driver, and the frame. Short — this is the input to other work, not the work.
 
 Write the full version to `trading-desk/reports/market-<YYYY-MM-DD>.md`. If a
@@ -134,8 +210,13 @@ Append one line to `trading-desk/decision-log.md` with the marker
 `*market*`:
 
 ```
-| 2026-09-21 | *market* | Risk-on, narrow | — | S&P +0.59%... |
+| 2026-09-21 | *market* | Selective · risk-on, narrow | — | S&P +0.59%... |
 ```
+
+**Put the verdict in the rating column.** That is what makes it scoreable: a
+later run can pull every `*market*` row with `deskdb.py`, read what the verdict
+was and what the tape did next, and find out whether "Favourable" days were
+actually favourable. A verdict that is never checked is decoration.
 
 That row is what lets a later run check whether the frame held.
 
