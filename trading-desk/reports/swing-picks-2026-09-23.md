@@ -212,3 +212,22 @@ this tooling can reliably confirm.
 ---
 > Research scaffold, not financial or investment advice. LLM-generated analysis
 > varies between runs and can be wrong. Verify independently before trading.
+
+---
+
+## Correction — added after the NKE desk run, 2026-09-23
+
+Two statements in the NKE section above were wrong or incomplete when written,
+and are left in place so the record shows what was known at the time:
+
+1. **The S&P 100 removal was already past.** It took effect on **2026-09-21**, two
+   days before this report. It was not a risk "inside the window".
+2. **The print's direction was already guided.** In June, Nike's outgoing CFO said
+   conditions were unlikely to improve through at least the first half of fiscal
+   2027 — which includes the quarter reported on 2026-10-01. This report did not
+   have that line.
+
+The desk rated NKE **Underweight** the same day (see `NKE-2026-09-23.md`). The
+swing idea survives only as a **smaller** event bet that a quarter already
+guided to be poor surprises by being less poor. Size it as that, not as mean
+reversion.
