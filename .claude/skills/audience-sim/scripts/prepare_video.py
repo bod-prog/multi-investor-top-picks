@@ -84,11 +84,21 @@ def contact_sheets(video, meta, workdir, step):
             # -copyts keeps the real timestamp so every tile shows its own time.
             label = (f",drawtext=fontfile='{font}':text='%{{pts\\:hms}}':x=12:y=12:fontsize=h/18:"
                      "fontcolor=white:box=1:boxcolor=black@0.65:boxborderw=8")
-        vf = f"fps=1/{step}{label},scale={tile_w}:-2,tile={cols}x{rows}:padding=6:margin=6:color=white"
-        cmd = ["ffmpeg", "-v", "error", "-y", "-copyts", "-ss", f"{start:.3f}", "-i", video,
-               "-t", f"{length:.3f}", "-vf", vf, "-frames:v", "1", "-q:v", "4", out]
-        res = run(cmd)
-        if res.returncode != 0:
+        # A partial last sheet must say how many tiles it has, or tile waits for a full grid and writes
+        # nothing. The fps filter's rounding can yield one frame fewer than expected, so step down on failure.
+        expected = max(1, min(per_sheet, math.ceil(length / step - 1e-6)))
+        res = None
+        for frames in range(expected, max(0, expected - 3), -1):
+            if os.path.exists(out):
+                os.remove(out)
+            vf = (f"fps=1/{step}{label},scale={tile_w}:-2,"
+                  f"tile={cols}x{rows}:nb_frames={frames}:padding=6:margin=6:color=white")
+            cmd = ["ffmpeg", "-v", "error", "-y", "-copyts", "-ss", f"{start:.3f}", "-i", video,
+                   "-t", f"{length:.3f}", "-vf", vf, "-frames:v", "1", "-update", "1", "-q:v", "4", out]
+            res = run(cmd)
+            if res.returncode == 0 and os.path.exists(out):
+                break
+        else:
             sys.exit(f"ffmpeg failed on sheet {i + 1}: {res.stderr.strip()[-400:]}")
         sheets.append({"file": os.path.relpath(out, workdir), "start": round(start, 2),
                        "end": round(start + length, 2), "frame_every_s": step})
