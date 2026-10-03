@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Критичні дні</title>
+<!-- Vertical 9:16 short: what men should know about periods. Sound: sound.py -> sound.wav, timed to the beats below. -->
+<style>
+  :root {
+    --bg: #14101a;
+    --ink: #f6f3f7;
+    --muted: #a8a0b0;
+    --card: #1f1926;
+    --line: #342b3d;
+    --accent: #ff7aa2;
+    --accent-soft: rgba(255, 122, 162, 0.16);
+    --good: #2bd99f;
+    --radius: 36px;
+    --font: "Liberation Sans", "DejaVu Sans", system-ui, sans-serif;
+    --emoji: "Noto Color Emoji";
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  body { font-family: var(--font); color: var(--ink); }
+  .stage { position: absolute; inset: 0; }
+  .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 200px 90px 380px; text-align: center; }
+  .glow { position: absolute; width: 1000px; height: 1000px; left: 40px; top: 380px; border-radius: 50%;
+          background: radial-gradient(circle, var(--accent-soft), transparent 65%); }
+  .kicker { font-size: 40px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .hook { font-size: 108px; line-height: 1.05; font-weight: 700; letter-spacing: -0.02em; margin-top: 30px; }
+  .hook s { text-decoration-thickness: 10px; text-decoration-color: var(--accent); color: var(--muted); }
+  .sub { font-size: 56px; font-weight: 700; color: var(--accent); margin-top: 44px; }
+  em { font-style: normal; color: var(--accent); }
+  .step { font-size: 40px; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 24px; }
+  .title { font-size: 92px; line-height: 1.06; font-weight: 700; letter-spacing: -0.015em; }
+  .big { font-size: 280px; font-weight: 700; line-height: 1; color: var(--accent); letter-spacing: -0.04em; }
+  .big small { font-size: 90px; letter-spacing: 0; }
+  .note { font-size: 50px; color: var(--muted); margin-top: 36px; line-height: 1.3; }
+  .note b { color: var(--ink); }
+  .chips { display: flex; gap: 20px; margin-top: 44px; flex-wrap: wrap; justify-content: center; width: 900px; }
+  .chip { background: var(--card); border: 2px solid var(--line); border-radius: 999px; padding: 22px 36px; font-size: 46px; font-weight: 700; }
+  .card { width: 900px; background: var(--card); border: 2px solid var(--line); border-radius: var(--radius); padding: 48px 52px; margin-top: 50px; }
+  .card p { font-size: 48px; line-height: 1.3; font-weight: 700; }
+  .card p + p { margin-top: 20px; font-size: 42px; font-weight: 400; color: var(--muted); }
+  .list { display: flex; flex-direction: column; gap: 22px; width: 900px; text-align: left; margin-top: 44px; }
+  .item { background: var(--card); border: 2px solid var(--line); border-radius: 28px; padding: 28px 36px; font-size: 48px; font-weight: 700;
+          display: flex; gap: 26px; align-items: center; line-height: 1.15; }
+  .item i { flex: none; font-style: normal; font-family: var(--emoji); font-size: 58px; }
+  .cta { font-size: 100px; font-weight: 700; line-height: 1.05; }
+  .cta small { display: block; margin-top: 40px; font-size: 44px; font-weight: 400; color: var(--muted); }
+  .disc { position: absolute; left: 0; right: 0; bottom: 400px; text-align: center; font-size: 30px; color: var(--muted); }
+  .progress { position: absolute; left: 0; bottom: 0; height: 10px; background: var(--accent); transform-origin: left; width: 100%; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="glow" id="glow"></div>
+
+  <!-- 0–3s hook -->
+  <section class="scene" id="s1">
+    <div class="kicker" id="kicker">Чоловікам на замітку</div>
+    <div class="hook" id="hook">Критичні дні —<br>це не <s>примхи</s></div>
+    <div class="sub" id="sub">4 речі, які варто знати</div>
+  </section>
+
+  <!-- 3–7.4s cycle numbers -->
+  <section class="scene" id="s2">
+    <div class="step" id="s2step">1 · Цикл</div>
+    <div class="big" id="s2big"><span id="days">0</span><small> днів</small></div>
+    <div class="note" id="s2note">у середньому. Норма — <b>від 21 до 35</b>.<br>Самі місячні — <b>3–7 днів</b></div>
+  </section>
+
+  <!-- 7.4–11.6s pain is real -->
+  <section class="scene" id="s3">
+    <div class="step" id="s3step">2 · Біль</div>
+    <div class="title" id="s3title">Біль <em>справжній</em></div>
+    <div class="card" id="s3card">
+      <p>Спазми можуть заважати спати, працювати й жити</p>
+      <p>Дуже сильний біль — привід іти до лікаря, а не «терпіти»</p>
+    </div>
+  </section>
+
+  <!-- 11.6–15.8s PMS -->
+  <section class="scene" id="s4">
+    <div class="step" id="s4step">3 · ПМС</div>
+    <div class="title" id="s4title">Це гормони,<br>а не <em>ти</em></div>
+    <div class="chips" id="chips">
+      <div class="chip">втома</div>
+      <div class="chip">роздратування</div>
+      <div class="chip">сльози</div>
+      <div class="chip">тяга до солодкого</div>
+    </div>
+  </section>
+
+  <!-- 15.8–21s how to help -->
+  <section class="scene" id="s5">
+    <div class="step">4 · Як допомогти</div>
+    <div class="title">Що <em>реально</em> працює</div>
+    <div class="list">
+      <div class="item"><i>💬</i> Спитай: «Чим допомогти?»</div>
+      <div class="item"><i>🔥</i> Грілка, чай, шоколадка</div>
+      <div class="item"><i>🧹</i> Візьми побут на себе</div>
+      <div class="item"><i>🤐</i> Жодних жартів про «ці дні»</div>
+    </div>
+  </section>
+
+  <!-- 21–24s CTA -->
+  <section class="scene" id="s6">
+    <div class="cta" id="cta">Скинь другу,<br>якому <em>це треба</em><small>вона скаже тобі «дякую»</small></div>
+  </section>
+
+  <div class="disc" id="disc">Інформаційно, не медична порада</div>
+  <div class="progress" id="progress"></div>
+</div>
+
+<script src="motion.js"></script>
+<script>
+  const D = 24;
+  const tl = Timeline({ width: 1080, height: 1920, fps: 30, duration: D });
+  const up = { opacity: 0, y: 60, scale: 0.96, blur: 8 };
+
+  // Scene 1 (0–3s).
+  tl.show('#kicker', { start: 0.0, end: 2.9, dur: 0.4 })
+    .show('#hook', { start: 0.1, end: 2.9, from: up })
+    .show('#sub', { start: 1.1, end: 2.9, dur: 0.5 });
+  tl.to('#glow', { start: 0, dur: 3, from: { opacity: 0.6, scale: 0.9 }, to: { opacity: 1, scale: 1.05 }, ease: 'soft' });
+
+  // Scene 2 (3–7.4s): counter 0 → 28.
+  tl.show('#s2step', { start: 3.0, end: 7.3, dur: 0.4 })
+    .show('#s2big', { start: 3.2, end: 7.3, from: { opacity: 0, scale: 0.94, blur: 6 }, dur: 0.6 })
+    .text('#days', { start: 3.3, dur: 1.4, from: 0, to: 28 })
+    .show('#s2note', { start: 4.9, end: 7.3, dur: 0.5 });
+
+  // Scene 3 (7.4–11.6s).
+  tl.show('#s3step', { start: 7.4, end: 11.5, dur: 0.4 })
+    .show('#s3title', { start: 7.5, end: 11.5, from: up })
+    .show('#s3card', { start: 8.4, end: 11.5, from: { opacity: 0, y: 70, scale: 0.95 }, dur: 0.6 });
+
+  // Scene 4 (11.6–15.8s): symptom chips pop in.
+  tl.show('#s4step', { start: 11.6, end: 15.7, dur: 0.4 })
+    .show('#s4title', { start: 11.7, end: 15.7, from: up });
+  tl.stagger('#chips .chip', { start: 12.6, each: 0.35, dur: 0.5, from: { opacity: 0, y: 30, scale: 0.94 }, to: {} });
+  tl.to('#chips', { start: 15.4, dur: 0.3, from: {}, to: { opacity: 0, y: 30 } });
+
+  // Scene 5 (15.8–21s).
+  tl.to('#s5 .step', { start: 15.8, dur: 0.4, from: { opacity: 0, y: 30 }, to: {} });
+  tl.to('#s5 .title', { start: 15.9, dur: 0.5, from: up, to: {} });
+  tl.stagger('#s5 .item', { start: 16.7, each: 0.6, dur: 0.5, from: { opacity: 0, x: -60 }, to: {} });
+  tl.to('#s5', { start: 20.7, dur: 0.3, from: {}, to: { opacity: 0, y: -30 } });
+
+  // Scene 6 (21–24s).
+  tl.show('#cta', { start: 21.0, from: { opacity: 0, scale: 0.94, blur: 6 }, dur: 0.6 });
+
+  tl.call((t) => { document.getElementById('progress').style.transform = `scaleX(${t / D})`; });
+
+  tl.mount();
+</script>
+</body>
+</html>
