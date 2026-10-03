@@ -38,3 +38,13 @@ There is no text-to-speech in the session. If the user has a voice-over file, pu
 ## Quality bar
 
 Follow `references/motion.md`. In particular: the hook is on screen in the first second, something changes every 2–4 s, nothing scales from 0, exits are faster than entrances, and no key text in the top 200 px or bottom 380 px of a vertical video.
+
+## Editing generated clips (Grok, Veo, Kling, Sora…)
+
+When the footage comes from an AI video generator, the job is editing, not rendering:
+
+1. **Shot list first.** Write numbered shots of 1–4 s each in the final cut, with an English prompt per shot and one shared character description so the character stays consistent. Ask for clips without text or music; generators pad the start and end, so request a longer clip than the shot needs (e.g. 6 s for a 2–3 s shot) and keep only the best part.
+2. **Look before cutting.** For each clip, make a contact sheet (`python3 .claude/skills/audience-sim/scripts/prepare_video.py clip.mp4 /tmp/x --every 0.5`) or a few stills, and pick `in`/`out` where the action is.
+3. **Edit list.** Write `edit.json` (format in the docstring of `scripts/assemble.py`): shots with `in`/`out`, optional `speed`, `push` (slow zoom), `sfx` (clip's own sound volume), `caption` + `style`; `overlays` for timed text such as a "wait for it" promise; `music` with volume and fade.
+4. **Assemble.** `python3 <skill>/scripts/assemble.py edit.json out.mp4 --draft` for a quick check, then without `--draft`. Captions are rendered by Chromium (`scripts/captions.mjs`), so Cyrillic and emoji work. A `out.timeline.json` lists where every shot landed.
+5. **Test and iterate.** Run `audience-sim` on the cut; map drop-offs to shots through the timeline, then re-trim, reorder, or ask the generator for a replacement shot. Compare versions with the same panel.
