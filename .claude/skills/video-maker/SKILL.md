@@ -7,6 +7,8 @@ description: Build a finished MP4 (vertical Short/Reel/TikTok or horizontal) fro
 
 Turns a script or idea into an MP4 using only what a cloud session already has: Chromium (Playwright), Node and ffmpeg. No API keys, no editor, nothing to install.
 
+**Read `references/environment.md` first.** It says which video engine fits the request (HyperFrames `/motion-graphics`, `/general-video`, `/music-to-video`, `/slideshow`; `/remotion-best-practices`; `/video-edit` for recutting footage; or this skill's own lightweight renderer), what the session hook sets up, and the network rules that silently break renders here (jsDelivr is blocked — run `scripts/localize-cdn.mjs` on every HyperFrames project; no 3D/WebGL blocks; no TTS, music generation or transcription).
+
 Reply to the user in the language they wrote in. On-screen text goes in the language of the video's audience.
 
 ## Files
