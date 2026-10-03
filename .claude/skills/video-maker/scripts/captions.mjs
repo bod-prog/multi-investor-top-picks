@@ -21,8 +21,8 @@ mkdirSync(outDir, { recursive: true });
 const W = spec.width || 1080;
 
 const STYLES = {
-  hook: 'font-size:92px;line-height:1.05;font-weight:900;color:#fff;-webkit-text-stroke:3px #111;paint-order:stroke fill;text-shadow:0 6px 18px rgba(0,0,0,.55);max-width:960px;',
-  end: 'font-size:84px;line-height:1.08;font-weight:900;color:#fff;-webkit-text-stroke:3px #111;paint-order:stroke fill;text-shadow:0 6px 18px rgba(0,0,0,.55);max-width:940px;',
+  hook: 'font-size:78px;line-height:1.08;font-weight:900;color:#fff;-webkit-text-stroke:3px #111;paint-order:stroke fill;text-shadow:0 6px 18px rgba(0,0,0,.55);max-width:1010px;',
+  end: 'font-size:74px;line-height:1.08;font-weight:900;color:#fff;-webkit-text-stroke:3px #111;paint-order:stroke fill;text-shadow:0 6px 18px rgba(0,0,0,.55);max-width:1000px;',
   step: 'font-size:58px;line-height:1.15;font-weight:800;color:#111;background:#ffd23f;padding:18px 34px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.35);max-width:920px;',
   note: 'font-size:46px;line-height:1.2;font-weight:700;color:#fff;background:rgba(0,0,0,.62);padding:14px 28px;border-radius:999px;max-width:900px;',
 };

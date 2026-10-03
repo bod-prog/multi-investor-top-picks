@@ -68,6 +68,7 @@ def render_shot(i, shot, src, W, H, fps, tmp, preset):
     vf.append("format=yuv420p")
 
     out = os.path.join(tmp, f"shot_{i + 1:02d}.mp4")
+    # Generated clips often carry a cover image as a second video stream, so always map stream 0 explicitly.
     cmd = ["ffmpeg", "-v", "error", "-y", "-ss", f"{t_in:.3f}", "-to", f"{t_out:.3f}", "-i", src]
     sfx = float(shot.get("sfx", 0))
     if has_audio and sfx > 0:
@@ -79,9 +80,9 @@ def render_shot(i, shot, src, W, H, fps, tmp, preset):
             tempo.append("atempo=0.5"); s /= 0.5
         tempo.append(f"atempo={s:.4f}")
         af = ",".join(["asetpts=PTS-STARTPTS"] + tempo + [f"volume={sfx}", "aresample=48000", "aformat=channel_layouts=stereo"])
-        cmd += ["-vf", ",".join(vf), "-af", af]
+        cmd += ["-map", "0:v:0", "-map", "0:a:0", "-vf", ",".join(vf), "-af", af]
     else:
-        cmd += ["-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo", "-map", "0:v", "-map", "1:a", "-vf", ",".join(vf)]
+        cmd += ["-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo", "-map", "0:v:0", "-map", "1:a", "-vf", ",".join(vf)]
     cmd += ["-t", f"{dur:.3f}", "-c:v", "libx264", "-preset", preset, "-crf", "18", "-r", str(fps),
             "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2", out]
     run(cmd)
@@ -151,7 +152,7 @@ def main():
             fade = 0.15
             fc.append(f"[{idx}:v]format=rgba{scale},fade=in:st={c['a']:.3f}:d={fade}:alpha=1,"
                       f"fade=out:st={max(c['a'], c['b'] - fade):.3f}:d={fade}:alpha=1[c{idx}]")
-            y = {"hook": "H*0.11", "end": "(H-h)/2", "note": "H*0.775", "step": "H*0.66"}.get(c["style"], "H*0.66")
+            y = {"hook": "H*0.11", "end": "H*0.11", "note": "H*0.775", "step": "H*0.66"}.get(c["style"], "H*0.66")
             fc.append(f"[{last}][c{idx}]overlay=x=(W-w)/2:y={y}:enable='between(t,{c['a']:.3f},{c['b']:.3f})'[v{idx}]")
             last = f"v{idx}"
         end_fade = float(e.get("end_fade", 0))

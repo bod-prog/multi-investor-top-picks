@@ -93,12 +93,14 @@ def contact_sheets(video, meta, workdir, step):
                 os.remove(out)
             vf = (f"fps=1/{step}{label},scale={tile_w}:-2,"
                   f"tile={cols}x{rows}:nb_frames={frames}:padding=6:margin=6:color=white")
-            cmd = ["ffmpeg", "-v", "error", "-y", "-copyts", "-ss", f"{start:.3f}", "-i", video,
-                   "-t", f"{length:.3f}", "-vf", vf, "-frames:v", "1", "-update", "1", "-q:v", "4", out]
+            cmd = ["ffmpeg", "-v", "error", "-y", "-copyts", "-ss", f"{start:.3f}", "-t", f"{length:.3f}",
+                   "-i", video, "-vf", vf, "-frames:v", "1", "-update", "1", "-q:v", "4", out]
             res = run(cmd)
             if res.returncode == 0 and os.path.exists(out):
                 break
         else:
+            if i == n - 1 and length < step:
+                break  # only a sliver of video left after the previous sheet; nothing new to show
             sys.exit(f"ffmpeg failed on sheet {i + 1}: {res.stderr.strip()[-400:]}")
         sheets.append({"file": os.path.relpath(out, workdir), "start": round(start, 2),
                        "end": round(start + length, 2), "frame_every_s": step})
