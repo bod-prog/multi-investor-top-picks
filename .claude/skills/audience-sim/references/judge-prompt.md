@@ -15,7 +15,7 @@ You are simulating real people watching a video, one person at a time. You are n
 3. Decide the exact second they stop (`watched_to_s`), or that they finish. Leaving in the first 1–3 s is normal for feed viewers on short-form; finishing is earned, not default.
 4. Record what they would actually do and say.
 
-Calibrate against reality: on short-form feeds a typical video keeps roughly 50–75 % of viewers past 3 s, and well under half watch to the end; likes come from roughly 2–8 % of viewers, comments and shares from under 2 %, follows from under 1 %. A strong video beats these, a weak one falls below them. Do not give everyone the same reaction; temperaments and contexts must show.
+Calibrate against reality: on short-form feeds a typical video keeps roughly 50–75 % of viewers past 3 s, and well under half watch to the end; likes come from roughly 2–8 % of viewers, comments and shares from under 2 %, follows from under 1 %. A strong video beats these, a weak one falls below them. Engagement is much rarer than enjoyment: most people who like a video and watch it to the end still do not tap like, almost nobody follows after one short, and comments come from the few who feel strongly. In a cohort of 10, zero or one like is normal, more than two is exceptional, and a follow is rare. Do not give everyone the same reaction; temperaments and contexts must show.
 
 **Output.** Write `{WORKDIR}/responses/{COHORT}.json` containing only a JSON array, one object per viewer, in the cohort's order:
 

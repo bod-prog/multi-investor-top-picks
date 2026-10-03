@@ -236,7 +236,7 @@ blockquote{{margin:0 0 10px;padding:12px 16px}}blockquote p{{margin:0}}cite{{col
 <h1>{e(title)}</h1>
 <div class="sub">{s["viewers"]} симульованих глядачів · {fmt_t(meta["duration"])} · {meta["width"]}×{meta["height"]} · {e(" · ".join(str(v) for v in panel_context(timeline).values()))}</div>
 <div class="kpis">{kpi_html}</div>
-<h2>Крива утримання</h2>{svg_curve(s["curve"], s["duration_s"], s["hotspots"])}
+{warn_html(s)}<h2>Крива утримання</h2>{svg_curve(s["curve"], s["duration_s"], s["hotspots"])}
 <h2>Де глядачі йдуть</h2>{hot_html or "<p>Майже всі додивились.</p>"}
 <h2>Сегменти аудиторії</h2><table><tr><th>Сегмент</th><th>Глядачів</th><th>Середній перегляд</th><th>До кінця</th><th>Оцінка</th></tr>{seg_rows}</table>
 <div class="cols"><div><h2>Найкращі моменти</h2><ul>{mlist(s["best_moments"])}</ul></div><div><h2>Найгірші моменти</h2><ul>{mlist(s["worst_moments"])}</ul></div></div>
@@ -244,6 +244,14 @@ blockquote{{margin:0 0 10px;padding:12px 16px}}blockquote p{{margin:0}}cite{{col
 <h2>Коментарі, які б написали</h2><ul>{comments}</ul>
 <p class="note">Це симуляція: AI грає ролі глядачів. Цифри показують напрям, де шукати проблеми, а не реальну статистику. Порівнюй версії одного відео між собою і перевіряй висновки на реальній аналітиці після публікації.</p>
 </main></body></html>"""
+
+
+def warn_html(s):
+    if not s.get("implausible"):
+        return ""
+    items = ", ".join(html.escape(x) for x in s["implausible"])
+    return (f'<p class="card">⚠️ Завищена залученість: {items}. Довіряй кривій утримання й причинам відходу, '
+            "а лайки та підписки сприймай лише як порівняння між версіями.</p>")
 
 
 def panel_context(timeline):
@@ -262,6 +270,9 @@ def main():
     timeline["panel_context"] = panel.get("context", {})
     s = summarise(timeline, panel, viewers, responses)
     s["problems"], s["missing_viewers"] = problems, missing
+    # Simulated viewers tend to over-engage; flag numbers far outside what real feeds show.
+    limits = {"like_rate": 0.15, "comment_rate": 0.05, "share_rate": 0.05, "follow_rate": 0.03}
+    s["implausible"] = [f"{k}={s[k]:.0%} (real feeds rarely exceed {v:.0%})" for k, v in limits.items() if s[k] > v]
     with open(os.path.join(args.workdir, "summary.json"), "w", encoding="utf-8") as f:
         json.dump(s, f, ensure_ascii=False, indent=1)
     with open(os.path.join(args.workdir, "report.html"), "w", encoding="utf-8") as f:
@@ -271,6 +282,7 @@ def main():
     brief["top_dropoffs"] = [f'{h["start"]}-{h["end"]}s: {h["exits"]}' for h in s["hotspots"][:3]]
     brief["missing_viewers"] = len(missing)
     brief["problems"] = problems[:5]
+    brief["implausible"] = s["implausible"]
     print(json.dumps(brief, ensure_ascii=False, indent=1))
 
 
