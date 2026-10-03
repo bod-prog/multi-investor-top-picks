@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Перша акція</title>
+<!-- Vertical 9:16 short: how to pick your first stock. Render with .claude/skills/video-maker/scripts/render.mjs -->
+<style>
+  :root {
+    --bg: #0f1216;
+    --ink: #f3f5f7;
+    --muted: #9aa3ad;
+    --card: #1a1f26;
+    --line: #2a313a;
+    --accent: #2bd99f;
+    --accent-soft: rgba(43, 217, 159, 0.16);
+    --warn: #ff6b5e;
+    --radius: 36px;
+    --font: "Liberation Sans", "DejaVu Sans", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  body { font-family: var(--font); color: var(--ink); }
+  .stage { position: absolute; inset: 0; }
+  .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 200px 90px 380px; text-align: center; }
+  .glow { position: absolute; width: 1000px; height: 1000px; left: 40px; top: 380px; border-radius: 50%;
+          background: radial-gradient(circle, var(--accent-soft), transparent 65%); }
+  .kicker { font-size: 40px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .hook { font-size: 124px; line-height: 1.04; font-weight: 700; letter-spacing: -0.02em; margin-top: 32px; }
+  .sub { font-size: 60px; font-weight: 700; color: var(--muted); margin-top: 40px; }
+  em { font-style: normal; color: var(--accent); }
+  .step { font-size: 40px; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 28px; }
+  .title { font-size: 96px; line-height: 1.06; font-weight: 700; letter-spacing: -0.015em; }
+  .card { width: 880px; background: var(--card); border: 2px solid var(--line); border-radius: var(--radius); padding: 52px 56px; margin-top: 56px; }
+  .card .q { font-size: 50px; line-height: 1.25; font-weight: 700; }
+  .card .a { font-size: 40px; color: var(--muted); margin-top: 22px; line-height: 1.3; }
+  .list { display: flex; flex-direction: column; gap: 24px; width: 880px; text-align: left; margin-top: 48px; }
+  .item { background: var(--card); border: 2px solid var(--line); border-radius: 28px; padding: 32px 40px; font-size: 52px; font-weight: 700;
+          display: flex; gap: 28px; align-items: center; }
+  .item b { flex: none; width: 64px; height: 64px; border-radius: 50%; background: var(--accent); color: var(--bg);
+            font-size: 42px; display: flex; align-items: center; justify-content: center; }
+  .big { font-size: 300px; font-weight: 700; line-height: 1; color: var(--accent); letter-spacing: -0.04em; margin-top: 30px; }
+  .bar { width: 880px; height: 48px; border-radius: 24px; background: var(--line); margin-top: 40px; overflow: hidden; position: relative; }
+  .bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; background: var(--accent); transform-origin: left; }
+  .note { font-size: 48px; color: var(--muted); margin-top: 40px; line-height: 1.3; }
+  .note b { color: var(--ink); }
+  .chart { width: 880px; height: 420px; margin-top: 50px; }
+  .cta { font-size: 104px; font-weight: 700; line-height: 1.05; }
+  .cta small { display: block; margin-top: 40px; font-size: 44px; font-weight: 400; color: var(--muted); }
+  .disc { position: absolute; left: 0; right: 0; bottom: 400px; text-align: center; font-size: 30px; color: var(--muted); }
+  .progress { position: absolute; left: 0; bottom: 0; height: 10px; background: var(--accent); transform-origin: left; width: 100%; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="glow" id="glow"></div>
+
+  <section class="scene" id="s1">
+    <div class="kicker" id="kicker">Інвестиції з нуля</div>
+    <div class="hook" id="hook">Твоя <em>перша</em><br>акція</div>
+    <div class="sub" id="sub">4 кроки, щоб не злити гроші</div>
+  </section>
+
+  <section class="scene" id="s2">
+    <div class="step" id="s2step">Крок 1</div>
+    <div class="title" id="s2title">Купуй те,<br>що <em>розумієш</em></div>
+    <div class="card" id="s2card">
+      <div class="q">Можеш пояснити другу, як компанія заробляє?</div>
+      <div class="a">Ні — пропускай. Без винятків.</div>
+    </div>
+  </section>
+
+  <section class="scene" id="s3">
+    <div class="step">Крок 2</div>
+    <div class="title">Перевір <em>цифри</em></div>
+    <div class="list">
+      <div class="item"><b>✓</b> Виручка росте 3+ роки</div>
+      <div class="item"><b>✓</b> Компанія прибуткова</div>
+      <div class="item"><b>✓</b> Борг під контролем</div>
+      <div class="item"><b>✓</b> P/E не захмарний</div>
+    </div>
+  </section>
+
+  <section class="scene" id="s4">
+    <div class="step" id="s4step">Крок 3</div>
+    <div class="title" id="s4title">Не все в одну</div>
+    <div class="big" id="s4big"><span id="pct">0</span>%</div>
+    <div class="bar" id="s4bar"><i id="barfill"></i></div>
+    <div class="note" id="s4note">максимум на одну акцію.<br>Решта — <b>ETF на S&amp;P 500</b></div>
+  </section>
+
+  <section class="scene" id="s5">
+    <div class="step" id="s5step">Крок 4</div>
+    <div class="title" id="s5title">Купив — <em>тримай</em><br>роками</div>
+    <svg class="chart" id="chart" viewBox="0 0 880 420">
+      <path id="line" fill="none" stroke="#2bd99f" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"
+        d="M10 380 L80 340 L130 370 L200 300 L250 330 L320 250 L370 290 L430 230 L480 270 L550 180 L600 215 L670 140 L720 170 L790 80 L870 40"/>
+    </svg>
+    <div class="note" id="s5note">Не відкривай застосунок щодня</div>
+  </section>
+
+  <section class="scene" id="s6">
+    <div class="cta" id="cta">Збережи,<br>щоб <em>не забути</em><small>і скинь другу, який хоче почати</small></div>
+  </section>
+
+  <div class="disc" id="disc">Не є інвестиційною порадою</div>
+  <div class="progress" id="progress"></div>
+</div>
+
+<script src="motion.js"></script>
+<script>
+  const D = 21;
+  const tl = Timeline({ width: 1080, height: 1920, fps: 30, duration: D });
+  const up = { opacity: 0, y: 60, scale: 0.96, blur: 8 };
+
+  // Scene 1 (0–3s): hook is on screen in the first second.
+  tl.show('#kicker', { start: 0.0, end: 2.9, dur: 0.4 })
+    .show('#hook', { start: 0.1, end: 2.9, from: up })
+    .show('#sub', { start: 0.9, end: 2.9, dur: 0.5 });
+  tl.to('#glow', { start: 0, dur: 3, from: { opacity: 0.6, scale: 0.9 }, to: { opacity: 1, scale: 1.05 }, ease: 'soft' });
+
+  // Scene 2 (3–6.6s): understand the business.
+  tl.show('#s2step', { start: 3.0, end: 6.5, dur: 0.4 })
+    .show('#s2title', { start: 3.1, end: 6.5, from: up })
+    .show('#s2card', { start: 4.2, end: 6.5, from: { opacity: 0, y: 80, scale: 0.95 }, dur: 0.6 });
+
+  // Scene 3 (6.6–11s): checklist staggers in.
+  tl.to('#s3 .step', { start: 6.6, dur: 0.4, from: { opacity: 0, y: 30 }, to: {} });
+  tl.to('#s3 .title', { start: 6.7, dur: 0.5, from: up, to: {} });
+  tl.stagger('#s3 .item', { start: 7.5, each: 0.45, dur: 0.5, from: { opacity: 0, x: -60 }, to: {} });
+  tl.to('#s3', { start: 10.7, dur: 0.3, from: {}, to: { opacity: 0, y: -30 } });
+
+  // Scene 4 (11–15s): position size + counter + bar.
+  tl.show('#s4step', { start: 11.0, end: 14.9, dur: 0.4 })
+    .show('#s4title', { start: 11.1, end: 14.9, from: up })
+    .show('#s4big', { start: 11.6, end: 14.9, from: { opacity: 0, scale: 0.94 }, dur: 0.5 })
+    .text('#pct', { start: 11.7, dur: 1.2, from: 0, to: 5 })
+    .show('#s4bar', { start: 11.6, end: 14.9, dur: 0.4 })
+    .show('#s4note', { start: 12.9, end: 14.9, dur: 0.5 });
+  tl.call((t) => {
+    // Bar fills to 5% of width; scale here is drawn as scaleX only.
+    const k = Math.max(0, Math.min(1, (t - 11.7) / 1.2));
+    const e = tl.ease.out(k);
+    document.getElementById('barfill').style.transform = `scaleX(${0.05 * e})`;
+  });
+
+  // Scene 5 (15–18.6s): hold for years, line draws itself.
+  tl.show('#s5step', { start: 15.0, end: 18.5, dur: 0.4 })
+    .show('#s5title', { start: 15.1, end: 18.5, from: up })
+    .show('#chart', { start: 15.4, end: 18.5, dur: 0.4 })
+    .show('#s5note', { start: 16.8, end: 18.5, dur: 0.5 });
+  const line = document.getElementById('line');
+  const len = line.getTotalLength();
+  line.style.strokeDasharray = len;
+  tl.call((t) => {
+    const k = tl.ease.out(Math.max(0, Math.min(1, (t - 15.5) / 1.6)));
+    line.style.strokeDashoffset = len * (1 - k);
+  });
+
+  // Scene 6 (18.6–21s): call to action.
+  tl.show('#cta', { start: 18.6, from: { opacity: 0, scale: 0.94, blur: 6 }, dur: 0.6 });
+
+  tl.call((t) => { document.getElementById('progress').style.transform = `scaleX(${t / D})`; });
+
+  tl.mount();
+</script>
+</body>
+</html>
