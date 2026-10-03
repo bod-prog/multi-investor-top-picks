@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Short template</title>
+<!-- Vertical 9:16 short. Copy this file next to motion.js, change the copy and timings, render with scripts/render.mjs. -->
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --ink: #15171a;
+    --muted: #6b7078;
+    --card: #ffffff;
+    --accent: #22c3a0;
+    --accent-soft: rgba(34, 195, 160, 0.16);
+    --radius: 36px;
+    --font: "Noto Sans", "DejaVu Sans", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  body { font-family: var(--font); color: var(--ink); }
+  .stage { position: absolute; inset: 0; }
+  .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 90px; text-align: center; }
+  .glow { position: absolute; width: 900px; height: 900px; left: 90px; top: 520px; border-radius: 50%;
+          background: radial-gradient(circle, var(--accent-soft), transparent 65%); }
+  .kicker { font-size: 40px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .hook { font-size: 112px; line-height: 1.04; font-weight: 800; letter-spacing: -0.02em; margin-top: 28px; }
+  .hook em { font-style: normal; color: var(--accent); }
+  .card { width: 860px; background: var(--card); border-radius: var(--radius); padding: 64px 56px;
+          box-shadow: 0 40px 80px rgba(0, 0, 0, 0.08), 0 2px 0 rgba(0, 0, 0, 0.03); }
+  .card .name { font-size: 76px; font-weight: 800; }
+  .card .pill { display: inline-block; margin-top: 28px; padding: 14px 40px; border-radius: 999px;
+                background: var(--accent-soft); font-size: 64px; font-weight: 700; }
+  .card .caption { margin-top: 20px; font-size: 36px; color: var(--muted); }
+  .list { display: flex; flex-direction: column; gap: 28px; width: 860px; text-align: left; }
+  .item { background: var(--card); border-radius: 28px; padding: 36px 44px; font-size: 52px; font-weight: 600;
+          display: flex; gap: 28px; align-items: center; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06); }
+  .item b { color: var(--accent); font-size: 56px; }
+  .cta { font-size: 96px; font-weight: 800; line-height: 1.05; }
+  .cta small { display: block; margin-top: 36px; font-size: 44px; font-weight: 500; color: var(--muted); }
+  .progress { position: absolute; left: 0; bottom: 0; height: 10px; background: var(--accent); transform-origin: left; width: 100%; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="glow" id="glow"></div>
+
+  <section class="scene" id="s1">
+    <div class="kicker" id="kicker">Claude Code</div>
+    <div class="hook" id="hook">Ролик <em>без монтажу</em><br>за 5 хвилин</div>
+  </section>
+
+  <section class="scene" id="s2">
+    <div class="card" id="card">
+      <div class="name">Еміль Ковальські</div>
+      <div class="pill"><span id="count">0</span> тис. ⭐</div>
+      <div class="caption">скіли для анімацій</div>
+    </div>
+  </section>
+
+  <section class="scene" id="s3">
+    <div class="list">
+      <div class="item"><b>1</b> Пишеш сценарій</div>
+      <div class="item"><b>2</b> Claude верстає сцени</div>
+      <div class="item"><b>3</b> Рендер у MP4</div>
+    </div>
+  </section>
+
+  <section class="scene" id="s4">
+    <div class="cta" id="cta">Підпишись,<br>щоб не пропустити<small>частина 2 — завтра</small></div>
+  </section>
+
+  <div class="progress" id="progress"></div>
+</div>
+
+<script src="motion.js"></script>
+<script>
+  const tl = Timeline({ width: 1080, height: 1920, fps: 30, duration: 12 });
+
+  // Scene 1 (0–3s): the hook has to land inside the first second.
+  tl.show('#kicker', { start: 0.0, end: 2.9, dur: 0.4 })
+    .show('#hook', { start: 0.15, end: 2.9, from: { opacity: 0, y: 60, scale: 0.96, blur: 8 } });
+
+  // Scene 2 (3–6.4s): card in, number counts up.
+  tl.show('#card', { start: 3.0, end: 6.4, from: { opacity: 0, y: 80, scale: 0.94 }, dur: 0.6 })
+    .text('#count', { start: 3.3, dur: 1.4, from: 0, to: 42 });
+  tl.to('#glow', { start: 3.0, dur: 0.8, from: { opacity: 0, scale: 0.8 }, to: { opacity: 1, scale: 1 }, ease: 'soft' });
+
+  // Scene 3 (6.6–9.6s): steps stagger in.
+  tl.stagger('#s3 .item', { start: 6.6, each: 0.18, dur: 0.5, from: { opacity: 0, x: -60 }, to: {} });
+  tl.to('#s3', { start: 9.3, dur: 0.3, from: {}, to: { opacity: 0, y: -30 } });
+
+  // Scene 4 (9.7–12s): call to action.
+  tl.show('#cta', { start: 9.7, from: { opacity: 0, scale: 0.92 }, dur: 0.6 });
+
+  // A thin progress bar keeps people watching to the end.
+  tl.call((t) => { document.getElementById('progress').style.transform = `scaleX(${t / 12})`; });
+
+  tl.mount();
+</script>
+</body>
+</html>
