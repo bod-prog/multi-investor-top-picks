@@ -26,6 +26,7 @@ Caption styles: hook (top third), step (lower third), note (lower third, small),
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -178,6 +179,20 @@ def main():
              "-map", "[vout]", "-map", "[aout]", "-t", f"{total:.3f}",
              "-c:v", "libx264", "-preset", preset, "-crf", "18", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
              "-c:a", "aac", "-b:a", "192k", args.out])
+
+        # One-pass loudnorm overshoots on tracks with long quiet passages; measure and correct the gain.
+        target = float(e.get("loudness", -14))
+        for _ in range(3):  # the limiter shaves peaks, so converge in a few passes
+            meas = subprocess.run(["ffmpeg", "-v", "info", "-nostats", "-i", args.out, "-af", "ebur128", "-f", "null", "-"],
+                                  capture_output=True, text=True).stderr
+            found = re.findall(r"I:\s+(-?[\d.]+) LUFS", meas.split("Summary:")[-1])
+            if not found or abs(float(found[0]) - target) <= 0.4:
+                break
+            fixed = os.path.join(tmp, "gain.mp4")
+            run(["ffmpeg", "-v", "error", "-y", "-i", args.out, "-c:v", "copy",
+                 "-af", f"volume={target - float(found[0]):.2f}dB,alimiter=limit=0.89:level=0",
+                 "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", fixed])
+            shutil.move(fixed, args.out)
 
         tl_path = os.path.splitext(args.out)[0] + ".timeline.json"
         json.dump({"duration": round(total, 2), "shots": timeline}, open(tl_path, "w"), ensure_ascii=False, indent=1)
