@@ -3,12 +3,14 @@
 
 Music: 110 BPM light beat (kick, hat, bass, pad) in C major.
 All times come from timings.json (written by voice.py), the same schedule index.html uses.
-Usage: python3 voice.py ... && python3 sound.py  ->  sound.wav (44.1 kHz stereo)
+Usage: python3 voice.py ... && python3 sound.py [--no-voice]  ->  sound.wav (44.1 kHz stereo)
+--no-voice keeps the voice timings for the scenes but leaves the voice out (music at full level).
 """
 import json
 import math
 import random
 import struct
+import sys
 import wave
 
 SR = 44100
@@ -132,35 +134,37 @@ for i, nn in enumerate(('C5', 'E5', 'G5')):  # CTA chime
     add(SC['cta']['start'] + i * 0.09, tone(note(nn), 1.8, d=0.8, harm=(1.0, 0.25)), 0.11)
 
 # --- duck music + sfx under the voice, then lay the voice on top ----------
-DUCK, RAMP = 0.38, 0.15
-gain = [1.0] * N
-for sc in SC.values():
-    a0, a1 = sc['voice'] - RAMP, sc['voiceEnd'] + RAMP
-    for i in range(max(0, int(a0 * SR)), min(N, int(a1 * SR))):
-        t = i / SR
-        k = min(1.0, (t - a0) / RAMP, (a1 - t) / RAMP)
-        gain[i] = min(gain[i], 1 - (1 - DUCK) * max(0.0, k))
-bus_peak = max(max(abs(x) for x in L), max(abs(x) for x in R))
-for i in range(N):
-    g = gain[i] * 0.55 / bus_peak  # music bus sits well below the voice
-    L[i] *= g
-    R[i] *= g
+VOICE = '--no-voice' not in sys.argv
+if VOICE:
+    DUCK, RAMP = 0.38, 0.15
+    gain = [1.0] * N
+    for sc in SC.values():
+        a0, a1 = sc['voice'] - RAMP, sc['voiceEnd'] + RAMP
+        for i in range(max(0, int(a0 * SR)), min(N, int(a1 * SR))):
+            t = i / SR
+            k = min(1.0, (t - a0) / RAMP, (a1 - t) / RAMP)
+            gain[i] = min(gain[i], 1 - (1 - DUCK) * max(0.0, k))
+    bus_peak = max(max(abs(x) for x in L), max(abs(x) for x in R))
+    for i in range(N):
+        g = gain[i] * 0.55 / bus_peak  # music bus sits well below the voice
+        L[i] *= g
+        R[i] *= g
 
-for sc in SC.values():
-    with wave.open(sc['file']) as w:
-        vsr = w.getframerate()
-        raw = w.readframes(w.getnframes())
-    v = struct.unpack('<%dh' % (len(raw) // 2), raw)
-    vpeak = max(abs(x) for x in v) or 1
-    i0 = int(sc['voice'] * SR)
-    for i in range(int(len(v) * SR / vsr)):
-        p = i * vsr / SR  # linear resample 16 kHz -> 44.1 kHz
-        j = int(p)
-        if j + 1 >= len(v) or i0 + i >= N:
-            break
-        x = (v[j] + (v[j + 1] - v[j]) * (p - j)) / vpeak * 0.9
-        L[i0 + i] += x
-        R[i0 + i] += x
+    for sc in SC.values():
+        with wave.open(sc['file']) as w:
+            vsr = w.getframerate()
+            raw = w.readframes(w.getnframes())
+        v = struct.unpack('<%dh' % (len(raw) // 2), raw)
+        vpeak = max(abs(x) for x in v) or 1
+        i0 = int(sc['voice'] * SR)
+        for i in range(int(len(v) * SR / vsr)):
+            p = i * vsr / SR  # linear resample 16 kHz -> 44.1 kHz
+            j = int(p)
+            if j + 1 >= len(v) or i0 + i >= N:
+                break
+            x = (v[j] + (v[j + 1] - v[j]) * (p - j)) / vpeak * 0.9
+            L[i0 + i] += x
+            R[i0 + i] += x
 
 # --- master: fade out, normalize, soft clip -------------------------------
 fade = int(1.6 * SR)
