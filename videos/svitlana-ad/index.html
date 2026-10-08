@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Реклама бухгалтера</title>
+<!-- Vertical 9:16 ad reel for Svitlana Ozdemir's accounting services (pain → solution → DM keyword).
+     Navy/yellow style of her "Супровід ФОП в Україні" posts. Timings: timings.py -> timings.js; sound: sound.py --no-voice. -->
+<style>
+  :root {
+    --bg: #1b2a4e;
+    --circle: #24365f;
+    --ink: #ffffff;
+    --muted: #b9c2d8;
+    --card: #22345c;
+    --line: #304571;
+    --yellow: #f6d24a;
+    --red: #ff6b5e;
+    --navy-ink: #1b2a4e;
+    --font: "Liberation Sans", "DejaVu Sans", system-ui, sans-serif;
+    --emoji: "Noto Color Emoji";
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  body { font-family: var(--font); color: var(--ink); }
+  .stage { position: absolute; inset: 0; }
+  .circle { position: absolute; border-radius: 50%; background: var(--circle); }
+  #c1 { width: 760px; height: 760px; right: -260px; top: 60px; }
+  #c2 { width: 560px; height: 560px; left: -240px; bottom: 120px; }
+  .flash { position: absolute; inset: 0; background: var(--yellow); opacity: 0; }
+  .scene { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 260px 90px 420px; }
+  .center { align-items: center; text-align: center; }
+  i.e { font-style: normal; font-family: var(--emoji); }
+  .hook { font-size: 128px; line-height: 1.03; font-weight: 700; letter-spacing: -0.02em; }
+  .hook em, .title em { font-style: normal; color: var(--yellow); }
+  .sub { font-size: 56px; color: var(--muted); margin-top: 40px; font-weight: 700; }
+  .title { font-size: 96px; line-height: 1.06; font-weight: 700; letter-spacing: -0.01em; }
+  .pains { display: flex; flex-direction: column; gap: 26px; margin-top: 56px; }
+  .pain { align-self: flex-start; display: flex; align-items: center; gap: 24px; padding: 26px 40px; border-radius: 26px;
+          background: rgba(255, 107, 94, 0.14); border: 3px solid var(--red); font-size: 56px; font-weight: 700; }
+  .pain:nth-child(2) { margin-left: 70px; } .pain:nth-child(3) { margin-left: 20px; } .pain:nth-child(4) { margin-left: 110px; }
+  .turn { font-size: 150px; font-weight: 700; line-height: 1; letter-spacing: -0.03em; }
+  .turn small { display: block; font-size: 64px; color: var(--muted); margin-top: 30px; letter-spacing: 0; }
+  .photo { width: 520px; height: 520px; border-radius: 50%; overflow: hidden; border: 14px solid var(--yellow); box-shadow: 0 30px 80px rgba(0,0,0,0.35); }
+  .photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+  .name { font-size: 88px; font-weight: 700; margin-top: 50px; line-height: 1.05; }
+  .role { font-size: 50px; color: var(--muted); margin-top: 18px; }
+  .badge { margin-top: 36px; padding: 22px 48px; border-radius: 999px; background: var(--yellow); color: var(--navy-ink); font-size: 54px; font-weight: 700; }
+  .rows { display: flex; flex-direction: column; gap: 26px; margin-top: 56px; }
+  .row { display: flex; align-items: center; gap: 30px; font-size: 54px; line-height: 1.18; font-weight: 700; }
+  .check { flex: none; width: 80px; height: 80px; border-radius: 50%; background: var(--yellow); position: relative; }
+  .check::after { content: ""; position: absolute; left: 28px; top: 16px; width: 19px; height: 36px; border: solid var(--navy-ink); border-width: 0 9px 9px 0; transform: rotate(45deg); }
+  .row small { display: block; font-size: 38px; font-weight: 400; color: var(--muted); margin-top: 6px; }
+  .dmword { margin-top: 50px; padding: 40px 80px; border-radius: 40px; background: var(--yellow); color: var(--navy-ink); font-size: 170px; font-weight: 700; letter-spacing: 0.02em; }
+  .note { font-size: 50px; color: var(--muted); margin-top: 44px; line-height: 1.3; }
+  .note b { color: var(--ink); }
+  .mini { width: 260px; height: 260px; border-width: 10px; }
+  .quote { font-size: 72px; font-weight: 700; line-height: 1.12; margin-top: 50px; }
+  .quote em { font-style: normal; color: var(--yellow); }
+  .handle { font-size: 52px; color: var(--yellow); font-weight: 700; margin-top: 40px; }
+  .footer { position: absolute; left: 90px; right: 90px; bottom: 400px; display: flex; justify-content: space-between; font-size: 36px; color: var(--muted); }
+  .footer b { color: var(--yellow); }
+  .progress { position: absolute; left: 0; bottom: 0; height: 10px; background: var(--yellow); transform-origin: left; width: 100%; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="circle" id="c1"></div>
+  <div class="circle" id="c2"></div>
+
+  <section class="scene" id="hook">
+    <div class="hook" id="h1">ФОП, ти ще<br><em>сам</em> рахуєш<br>податки? <i class="e">😰</i></div>
+    <div class="sub" id="h2">Тоді ти знаєш це відчуття…</div>
+  </section>
+
+  <section class="scene" id="pain">
+    <div class="title" id="p-title">Що болить <i class="e">👇</i></div>
+    <div class="pains">
+      <div class="pain"><i class="e">⏰</i> Дедлайни ДПС</div>
+      <div class="pain"><i class="e">💸</i> Штрафи за помилки</div>
+      <div class="pain"><i class="e">📈</i> Ліміти доходу</div>
+      <div class="pain"><i class="e">📄</i> Декларації й ЄСВ</div>
+    </div>
+  </section>
+
+  <section class="scene center" id="turn">
+    <div class="turn" id="t1">Стоп.<small>Віддай це бухгалтеру <i class="e">✋</i></small></div>
+  </section>
+
+  <section class="scene center" id="reveal">
+    <div class="photo" id="r-photo"><img src="photo.png" alt=""></div>
+    <div class="name" id="r-name">Світлана Оздемір</div>
+    <div class="role" id="r-role">бухгалтер ФОП і ТОВ</div>
+    <div class="badge" id="r-badge">25+ років практики</div>
+  </section>
+
+  <section class="scene" id="gets">
+    <div class="title" id="g-title">Що ти <em>отримуєш</em></div>
+    <div class="rows">
+      <div class="row"><span class="check"></span><span>Облік і звітність<small>ФОП, ТОВ, ПрАТ</small></span></div>
+      <div class="row"><span class="check"></span><span>Усі платежі вчасно<small>ЄП, ВЗ, ЄСВ — без штрафів</small></span></div>
+      <div class="row"><span class="check"></span><span>Пояснення простими словами<small>без «бухгалтерської мови»</small></span></div>
+      <div class="row"><span class="check"></span><span>Дистанційно<small>з будь-якого міста й країни</small></span></div>
+    </div>
+  </section>
+
+  <section class="scene center" id="dm">
+    <div class="title" id="d-title">Напиши в дірект</div>
+    <div class="dmword" id="d-word">ФОП</div>
+    <div class="note" id="d-note">і я підкажу, <b>з чого почати</b></div>
+  </section>
+
+  <section class="scene center" id="cta">
+    <div class="photo mini" id="c-photo"><img src="photo.png" alt=""></div>
+    <div class="quote" id="c-quote">Бухгалтерія —<br>це <em>не складно</em>,<br>коли її пояснюють<br>зрозуміло</div>
+    <div class="handle" id="c-handle">@svitlana_ozdemir</div>
+  </section>
+
+  <div class="footer" id="footer"><span>Супровід ФОП в Україні</span><b>@svitlana_ozdemir</b></div>
+  <div class="flash" id="flash"></div>
+  <div class="progress" id="progress"></div>
+</div>
+
+<script src="motion.js"></script>
+<script src="timings.js"></script>
+<script>
+  const D = T.duration;
+  const S = T.scenes;
+  const tl = Timeline({ width: 1080, height: 1920, fps: 30, duration: D });
+  const up = { opacity: 0, y: 60, scale: 0.97, blur: 8 };
+  const pop = { opacity: 0, scale: 0.9 };
+
+  function leave(id, dur = 0.25) {
+    tl.to('#' + id, { start: S[id].end - dur, dur, from: {}, to: { opacity: 0, scale: 1.04, blur: 6 } });
+  }
+  function enter(sel, at, from = up, dur = 0.45, ease = 'out') {
+    tl.to(sel, { start: at, dur, from, to: {}, ease });
+  }
+  document.querySelectorAll('.scene').forEach((sc) => {
+    sc.querySelectorAll('.pain, .row').forEach((el, i) => { el.id = `${sc.id}-i${i}`; });
+  });
+
+  tl.to('#c1', { start: 0, dur: 1.0, from: { opacity: 0, x: 80 }, to: {}, ease: 'soft' });
+  tl.to('#c2', { start: 0, dur: 1.0, from: { opacity: 0, x: -80 }, to: {}, ease: 'soft' });
+  tl.to('#footer', { start: S.reveal.start, dur: 0.4, from: { opacity: 0 }, to: {} });  // hidden during the hook/pain part
+  tl.to('#footer', { start: S.cta.start, dur: 0.3, from: {}, to: { opacity: 0 } });  // end card shows the handle itself
+
+  // Hook: the question punches in on frame 1 (no fade from black), subtitle follows.
+  enter('#h1', S.hook.cues[0], { opacity: 0.001, scale: 1.12 }, 0.5, 'spring');
+  enter('#h2', S.hook.cues[1], { opacity: 0, y: 30 });
+  leave('hook');
+
+  // Pain: chips slam in one after another with a small shake.
+  enter('#p-title', S.pain.start);
+  S.pain.cues.forEach((c, i) => enter(`#pain-i${i}`, c, { opacity: 0, scale: 1.25, rotate: i % 2 ? 3 : -3 }, 0.35, 'spring'));
+  tl.call((t) => {
+    // Short camera shake on each chip landing.
+    let dx = 0;
+    S.pain.cues.forEach((c) => { const k = t - c - 0.1; if (k > 0 && k < 0.25) dx += Math.sin(k * 90) * 14 * (1 - k / 0.25); });
+    document.getElementById('pain').style.translate = `${dx}px 0`;
+  });
+  leave('pain');
+
+  // Turn: yellow flash, "Стоп."
+  tl.to('#flash', { start: S.turn.start - 0.05, dur: 0.12, from: { opacity: 0 }, to: { opacity: 0.85 }, ease: 'linear' });
+  tl.to('#flash', { start: S.turn.start + 0.07, dur: 0.35, from: { opacity: 0.85 }, to: { opacity: 0 } });
+  enter('#t1', S.turn.cues[0], pop, 0.5, 'spring');
+  leave('turn');
+
+  // Reveal: photo, name, badge.
+  enter('#r-photo', S.reveal.cues[0], { opacity: 0, scale: 0.92, blur: 10 }, 0.6);
+  enter('#r-name', S.reveal.cues[1]);
+  enter('#r-role', S.reveal.cues[1] + 0.2, { opacity: 0, y: 20 });
+  enter('#r-badge', S.reveal.cues[2], pop, 0.55, 'spring');
+  leave('reveal');
+
+  // What you get.
+  enter('#g-title', S.gets.start);
+  S.gets.cues.forEach((c, i) => enter(`#gets-i${i}`, c, { opacity: 0, x: -60 }));
+  leave('gets');
+
+  // DM keyword.
+  enter('#d-title', S.dm.cues[0]);
+  enter('#d-word', S.dm.cues[1], { opacity: 0, scale: 0.9 }, 0.6, 'spring');
+  tl.call((t) => {
+    // Gentle pulse on the keyword so the eye stays on it.
+    const k = t - S.dm.cues[1] - 0.6;
+    const s = k > 0 && t < S.dm.end - 0.3 ? 1 + 0.03 * Math.sin(k * 7) : 1;
+    document.getElementById('d-word').style.scale = s;
+  });
+  enter('#d-note', S.dm.cues[1] + 0.5, { opacity: 0, y: 20 });
+  leave('dm');
+
+  // CTA end card.
+  enter('#c-photo', S.cta.cues[0], { opacity: 0, scale: 0.92 }, 0.5);
+  enter('#c-quote', S.cta.cues[0] + 0.2);
+  enter('#c-handle', S.cta.cues[1], { opacity: 0, y: 20 });
+
+  tl.call((t) => { document.getElementById('progress').style.transform = `scaleX(${t / D})`; });
+
+  tl.mount();
+</script>
+</body>
+</html>
