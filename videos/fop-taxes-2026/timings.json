@@ -1,0 +1,115 @@
+{
+  "duration": 49.38,
+  "scenes": {
+    "hook": {
+      "id": "hook",
+      "start": 0.0,
+      "end": 4.6,
+      "voice": 0.15,
+      "voiceEnd": 4.15,
+      "cues": [
+        2.35
+      ],
+      "file": "voice/hook.wav"
+    },
+    "parts": {
+      "id": "parts",
+      "start": 4.6,
+      "end": 9.32,
+      "voice": 4.9,
+      "voiceEnd": 8.87,
+      "cues": [
+        6.57,
+        7.52,
+        8.47
+      ],
+      "file": "voice/parts.wav"
+    },
+    "single": {
+      "id": "single",
+      "start": 9.32,
+      "end": 17.51,
+      "voice": 9.62,
+      "voiceEnd": 17.06,
+      "cues": [
+        10.66,
+        12.89,
+        15.42
+      ],
+      "file": "voice/single.wav"
+    },
+    "military": {
+      "id": "military",
+      "start": 17.51,
+      "end": 23.51,
+      "voice": 17.81,
+      "voiceEnd": 23.06,
+      "cues": [
+        18.86,
+        21.27
+      ],
+      "file": "voice/military.wav"
+    },
+    "esv": {
+      "id": "esv",
+      "start": 23.51,
+      "end": 28.83,
+      "voice": 23.81,
+      "voiceEnd": 28.38,
+      "cues": [
+        24.17,
+        26.64
+      ],
+      "file": "voice/esv.wav"
+    },
+    "total": {
+      "id": "total",
+      "start": 28.83,
+      "end": 33.45,
+      "voice": 29.13,
+      "voiceEnd": 33.0,
+      "cues": [
+        30.29
+      ],
+      "file": "voice/total.wav"
+    },
+    "limits": {
+      "id": "limits",
+      "start": 33.45,
+      "end": 38.36,
+      "voice": 33.75,
+      "voiceEnd": 37.91,
+      "cues": [
+        34.5,
+        35.83,
+        37.17
+      ],
+      "file": "voice/limits.wav"
+    },
+    "deadlines": {
+      "id": "deadlines",
+      "start": 38.36,
+      "end": 45.58,
+      "voice": 38.66,
+      "voiceEnd": 45.13,
+      "cues": [
+        39.31,
+        40.6,
+        42.67,
+        44.09
+      ],
+      "file": "voice/deadlines.wav"
+    },
+    "cta": {
+      "id": "cta",
+      "start": 45.58,
+      "end": 48.58,
+      "voice": 45.88,
+      "voiceEnd": 47.48,
+      "cues": [
+        46.04
+      ],
+      "file": "voice/cta.wav"
+    }
+  }
+}

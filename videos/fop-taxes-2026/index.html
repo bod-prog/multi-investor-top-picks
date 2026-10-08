@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Податки ФОП 2026</title>
+<!-- Vertical 9:16 reel: FOP taxes 2026, in the navy/yellow style of the "Супровід ФОП в Україні" carousel.
+     Timings come from voice.py (timings.js); sound.py mixes music, SFX and the Piper voice-over. -->
+<style>
+  :root {
+    --bg: #1b2a4e;
+    --circle: #24365f;
+    --ink: #ffffff;
+    --muted: #b9c2d8;
+    --card: #22345c;
+    --line: #304571;
+    --yellow: #f6d24a;
+    --navy-ink: #1b2a4e;
+    --radius: 32px;
+    --font: "Liberation Sans", "DejaVu Sans", system-ui, sans-serif;
+    --emoji: "Noto Color Emoji";
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  body { font-family: var(--font); color: var(--ink); }
+  .stage { position: absolute; inset: 0; }
+  .circle { position: absolute; border-radius: 50%; background: var(--circle); }
+  #c1 { width: 760px; height: 760px; right: -260px; top: 60px; }
+  #c2 { width: 560px; height: 560px; left: -240px; bottom: 120px; }
+  .bar { position: absolute; left: 90px; top: 250px; width: 130px; height: 14px; background: var(--yellow); border-radius: 2px; transform-origin: left; }
+  .scene { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 330px 90px 420px; }
+  .title { font-size: 92px; line-height: 1.08; font-weight: 700; letter-spacing: -0.01em; }
+  .title em { font-style: normal; color: var(--yellow); }
+  .rows { display: flex; flex-direction: column; gap: 26px; margin-top: 56px; }
+  .row { display: flex; align-items: center; gap: 30px; font-size: 52px; line-height: 1.2; }
+  .check { flex: none; width: 76px; height: 76px; border-radius: 50%; background: var(--yellow); position: relative; }
+  .check::after { content: ""; position: absolute; left: 26px; top: 16px; width: 18px; height: 34px; border: solid var(--navy-ink); border-width: 0 9px 9px 0; transform: rotate(45deg); }
+  .grp { flex: none; min-width: 190px; padding: 14px 24px; border-radius: 18px; background: var(--card); border: 2px solid var(--line); font-size: 40px; font-weight: 700; color: var(--muted); text-align: center; }
+  .val b { font-weight: 700; }
+  .val small { display: block; font-size: 36px; color: var(--muted); margin-top: 4px; }
+  .hl .grp { background: var(--yellow); border-color: var(--yellow); color: var(--navy-ink); }
+  .note { font-size: 42px; color: var(--muted); margin-top: 48px; line-height: 1.35; }
+  .note b { color: var(--ink); }
+  .big { font-size: 190px; font-weight: 700; color: var(--yellow); letter-spacing: -0.03em; line-height: 1; margin-top: 50px; }
+  .big small { font-size: 80px; }
+  .per { font-size: 50px; color: var(--muted); margin-top: 18px; }
+  .hryvnia { font-size: 300px; font-weight: 700; color: var(--yellow); line-height: 1; }
+  .hook { font-size: 120px; line-height: 1.05; font-weight: 700; margin-top: 30px; letter-spacing: -0.015em; }
+  .pill { align-self: flex-start; margin-top: 50px; padding: 30px 56px; border-radius: 999px; background: var(--yellow); color: var(--navy-ink); font-size: 52px; font-weight: 700; }
+  .sum { display: flex; flex-direction: column; gap: 14px; margin-top: 50px; font-size: 54px; }
+  .sum div { display: flex; justify-content: space-between; color: var(--muted); }
+  .sum div b { color: var(--ink); }
+  .sum hr { border: none; height: 4px; background: var(--line); margin: 10px 0; }
+  .cal { display: flex; flex-direction: column; gap: 22px; margin-top: 50px; }
+  .day { display: flex; align-items: center; gap: 30px; background: var(--card); border: 2px solid var(--line); border-radius: var(--radius); padding: 26px 32px; }
+  .day .d { flex: none; width: 210px; text-align: center; font-size: 56px; font-weight: 700; color: var(--yellow); line-height: 1; }
+  .day .d small { display: block; font-size: 26px; color: var(--muted); margin-top: 8px; letter-spacing: 0.02em; }
+  .day .w { font-size: 42px; font-weight: 700; line-height: 1.2; }
+  .day .w small { display: block; font-size: 32px; font-weight: 400; color: var(--muted); margin-top: 6px; }
+  .day.hot { border-color: var(--yellow); }
+  .cta { font-size: 112px; font-weight: 700; line-height: 1.05; }
+  .cta i { font-style: normal; font-family: var(--emoji); }
+  .cta small { display: block; margin-top: 44px; font-size: 46px; font-weight: 400; color: var(--muted); line-height: 1.35; }
+  .footer { position: absolute; left: 90px; right: 90px; bottom: 400px; display: flex; justify-content: space-between; align-items: baseline; font-size: 36px; color: var(--muted); }
+  .footer .src { color: var(--muted); }
+  .footer .year { color: var(--yellow); font-weight: 700; }
+  .progress { position: absolute; left: 0; bottom: 0; height: 10px; background: var(--yellow); transform-origin: left; width: 100%; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="circle" id="c1"></div>
+  <div class="circle" id="c2"></div>
+  <div class="bar" id="bar"></div>
+
+  <section class="scene" id="hook">
+    <div class="hryvnia" id="h-sign">₴</div>
+    <div class="hook" id="h-title">Податки ФОП<br>простими словами</div>
+    <div class="pill" id="h-pill">Що, скільки і коли платити</div>
+  </section>
+
+  <section class="scene" id="parts">
+    <div class="title" id="p-title">З чого складаються<br>платежі ФОП</div>
+    <div class="rows">
+      <div class="row"><span class="check"></span>Єдиний податок</div>
+      <div class="row"><span class="check"></span>Військовий збір</div>
+      <div class="row"><span class="check"></span>ЄСВ: внесок за себе</div>
+    </div>
+  </section>
+
+  <section class="scene" id="single">
+    <div class="title" id="s-title"><em>Єдиний</em> податок</div>
+    <div class="rows">
+      <div class="row"><span class="grp">1 група</span><span class="val">до <b>332,80 ₴</b><small>на місяць</small></span></div>
+      <div class="row"><span class="grp">2 група</span><span class="val">до <b>1 729,40 ₴</b><small>на місяць</small></span></div>
+      <div class="row"><span class="grp">3 група</span><span class="val"><b>5% від доходу</b><small>або 3% + ПДВ</small></span></div>
+    </div>
+    <div class="note" id="s-note">Рахується з <b>доходу</b>, а не з прибутку.<br>Ставку 1–2 групи встановлює місцева рада.</div>
+  </section>
+
+  <section class="scene" id="military">
+    <div class="title" id="m-title"><em>Військовий</em> збір</div>
+    <div class="rows">
+      <div class="row"><span class="grp">1 і 2 гр.</span><span class="val"><b>864,70 ₴</b><small>на місяць, фіксовано</small></span></div>
+      <div class="row"><span class="grp">3 група</span><span class="val"><b>1% від доходу</b><small>сплачується щокварталу</small></span></div>
+    </div>
+  </section>
+
+  <section class="scene" id="esv">
+    <div class="title" id="e-title"><em>ЄСВ</em>: внесок за себе</div>
+    <div class="big" id="e-big">1 902,34<small> ₴</small></div>
+    <div class="per" id="e-per">на місяць · для всіх груп</div>
+    <div class="note" id="e-note">Платиться, <b>навіть якщо доходу не було</b>.<br>Можна щомісяця або раз на квартал.</div>
+  </section>
+
+  <section class="scene" id="total">
+    <div class="title" id="t-title">Скільки разом?<br><em>2 група</em></div>
+    <div class="sum" id="t-sum">
+      <div><span>Єдиний податок</span><b>1 729,40</b></div>
+      <div><span>Військовий збір</span><b>864,70</b></div>
+      <div><span>ЄСВ</span><b>1 902,34</b></div>
+      <hr>
+    </div>
+    <div class="big" id="t-big"><span id="t-count">0</span><small> ₴</small></div>
+    <div class="per" id="t-per">на місяць · максимум за ставкою</div>
+  </section>
+
+  <section class="scene" id="limits">
+    <div class="title" id="l-title">Ліміт доходу<br>на <em>2026</em> рік</div>
+    <div class="rows">
+      <div class="row"><span class="grp">1 група</span><span class="val"><b>1 444 049 ₴</b></span></div>
+      <div class="row hl"><span class="grp">2 група</span><span class="val"><b>7 211 598 ₴</b></span></div>
+      <div class="row"><span class="grp">3 група</span><span class="val"><b>10 091 049 ₴</b></span></div>
+    </div>
+    <div class="note" id="l-note">Перевищив — доведеться <b>змінити групу</b>.</div>
+  </section>
+
+  <section class="scene" id="deadlines">
+    <div class="title" id="d-title">Найближчі <em>дедлайни</em></div>
+    <div class="cal">
+      <div class="day hot"><span class="d">19<small>ЖОВТНЯ</small></span><span class="w">ЄСВ за III квартал<small>5 707,02 ₴ · усі групи</small></span></div>
+      <div class="day"><span class="d">20<small>ЖОВТНЯ</small></span><span class="w">ЄП + ВЗ за жовтень<small>1 і 2 група</small></span></div>
+      <div class="day"><span class="d">9<small>ЛИСТОПАДА</small></span><span class="w">Декларація за 9 місяців<small>3 група</small></span></div>
+      <div class="day"><span class="d">19<small>ЛИСТОПАДА</small></span><span class="w">ЄП + ВЗ за III квартал<small>3 група</small></span></div>
+    </div>
+  </section>
+
+  <section class="scene" id="cta">
+    <div class="cta" id="c-text">Збережи,<br>щоб не <span style="color: var(--yellow)">загубити</span> <i>💰</i>
+      <small>Не хочеш рахувати сам?<br>Пиши в дірект — супровід ФОП</small></div>
+  </section>
+
+  <div class="footer" id="footer"><span class="src">Супровід ФОП в Україні</span><span class="year">Дані на 2026 рік</span></div>
+  <div class="progress" id="progress"></div>
+</div>
+
+<script src="motion.js"></script>
+<script src="timings.js"></script>
+<script>
+  const D = T.duration;
+  const S = T.scenes;
+  const tl = Timeline({ width: 1080, height: 1920, fps: 30, duration: D });
+  const up = { opacity: 0, y: 60, scale: 0.97, blur: 8 };
+  const side = { opacity: 0, x: -60 };
+  const ex = (id) => S[id].end - 0.05;
+
+  // Scene whose children enter at given times and leave together at the scene end.
+  function scene(id, parts) {
+    parts.forEach(([sel, at, from, dur]) => tl.to(sel, { start: at, dur: dur || 0.5, from: from || up, to: {} }));
+    tl.to('#' + id, { start: ex(id) - 0.3, dur: 0.3, from: {}, to: { opacity: 0, y: -30 } });
+  }
+  // Number each row so cues can target them one by one.
+  document.querySelectorAll('.scene').forEach((sc) => {
+    sc.querySelectorAll('.row, .day').forEach((el, i) => { el.id = `${sc.id}-r${i}`; });
+  });
+
+  tl.to('#bar', { start: 0, dur: 0.6, from: { scale: 0.2, opacity: 0 }, to: {} });
+  tl.to('#c1', { start: 0, dur: 1.2, from: { opacity: 0, x: 80 }, to: {}, ease: 'soft' });
+  tl.to('#c2', { start: 0.1, dur: 1.2, from: { opacity: 0, x: -80 }, to: {}, ease: 'soft' });
+  tl.to('#footer', { start: 0.4, dur: 0.5, from: { opacity: 0, y: 20 }, to: {} });
+
+  scene('hook', [
+    ['#h-sign', 0.0, { opacity: 0, scale: 0.92, blur: 10 }, 0.6],
+    ['#h-title', 0.15],
+    ['#h-pill', S.hook.cues[0], { opacity: 0, y: 30, scale: 0.95 }],
+  ]);
+
+  scene('parts', [
+    ['#p-title', S.parts.start],
+    ...S.parts.cues.map((c, i) => [`#parts-r${i}`, c - 0.15, side]),
+  ]);
+
+  scene('single', [
+    ['#s-title', S.single.start],
+    ...S.single.cues.map((c, i) => [`#single-r${i}`, c - 0.15, side]),
+    ['#s-note', S.single.voiceEnd - 0.2, { opacity: 0, y: 30 }],
+  ]);
+
+  scene('military', [
+    ['#m-title', S.military.start],
+    ...S.military.cues.map((c, i) => [`#military-r${i}`, c - 0.15, side]),
+  ]);
+
+  scene('esv', [
+    ['#e-title', S.esv.start],
+    ['#e-big', S.esv.cues[0], { opacity: 0, scale: 0.94, blur: 8 }, 0.6],
+    ['#e-per', S.esv.cues[0] + 0.3, { opacity: 0, y: 20 }],
+    ['#e-note', S.esv.cues[1] - 0.15, { opacity: 0, y: 30 }],
+  ]);
+
+  scene('total', [
+    ['#t-title', S.total.start],
+    ['#t-sum', S.total.start + 0.4, { opacity: 0, y: 40 }],
+    ['#t-big', S.total.cues[0], { opacity: 0, scale: 0.94 }],
+    ['#t-per', S.total.cues[0] + 1.2, { opacity: 0, y: 20 }],
+  ]);
+  tl.text('#t-count', { start: S.total.cues[0], dur: 1.4, from: 0, to: 4496.44,
+    format: (n) => n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ') });
+
+  scene('limits', [
+    ['#l-title', S.limits.start],
+    ...S.limits.cues.map((c, i) => [`#limits-r${i}`, c - 0.15, side]),
+    ['#l-note', S.limits.voiceEnd - 0.1, { opacity: 0, y: 30 }],
+  ]);
+
+  scene('deadlines', [
+    ['#d-title', S.deadlines.start],
+    ...S.deadlines.cues.map((c, i) => [`#deadlines-r${i}`, c - 0.15, { opacity: 0, x: 60 }]),
+  ]);
+
+  tl.to('#c-text', { start: S.cta.start, dur: 0.6, from: { opacity: 0, scale: 0.95, blur: 6 }, to: {} });
+
+  tl.call((t) => { document.getElementById('progress').style.transform = `scaleX(${t / D})`; });
+
+  tl.mount();
+</script>
+</body>
+</html>
